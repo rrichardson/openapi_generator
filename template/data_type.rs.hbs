@@ -1,0 +1,34 @@
+{{#unless required}}Option<{{/unless~}}
+{{~#if (eq type "string")}}
+    {{~#if (eq format "binary")~}}
+Vec<u8>
+    {{~else if (eq format "byte")~}}
+Vec<u8>
+    {{~else}}
+String
+    {{~/if}}
+{{~/if}}
+{{~#if (eq type "number")~}}
+    {{~#if (eq format "float")~}}
+f32
+    {{else}}
+f64
+    {{~/if}}
+{{~/if}}
+{{~#if (eq type "integer")~}}
+    {{~#if (eq format "int32")~}}
+i32
+    {{else}}
+i64
+    {{~/if}}
+{{~/if}}
+{{~#if (eq type "boolean")~}}
+bool
+{{~/if}}
+{{~#if (eq type "array")~}}
+Vec<{{camelcase name "item"}}>
+{{~/if}}
+{{~#if [$ref]}}
+{{component_path [$ref]}}
+{{~/if}}
+{{~#unless required}}>{{/unless}}

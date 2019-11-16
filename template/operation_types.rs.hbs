@@ -1,0 +1,23 @@
+{{~#if operationId}}
+pub mod {{snakecase operationId}} {
+    use super::components;
+    use serde::Deserialize;
+    {{#each parameters}}
+        {{~>schema name=name schema}}
+    {{/each}}
+    #[derive(Deserialize)]
+    pub struct Query {
+    {{~#each parameters}}
+        {{~#if (eq in "query")}}
+        {{#if description}}/// {{description}}{{/if}}
+        pub {{snakecase name}}: {{#unless required}}Option<{{~/unless}}
+        {{~camelcase name}}
+        {{~#unless required}}>{{~/unless}},
+        {{~/if}}
+    {{~/each}}
+    }
+    {{#each responses}}
+        {{~>schema name=(camelcase "Response" @key) content.[application/json].schema}}
+    {{/each}}
+}
+{{/if}}

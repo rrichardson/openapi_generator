@@ -1,0 +1,62 @@
+#![allow(dead_code, unused_variables)]
+
+use actix_web::{web::*, App, HttpServer, Responder, HttpResponse};
+
+pub mod components {
+{{~#with components}}
+    pub mod schemas {
+    use serde::Deserialize;
+{{~#each schemas}}
+    {{~>schema name=@key this}}
+{{~/each}}
+    }
+{{~/with}}
+}
+{{#each paths}}
+    {{~>operation_types get}}
+    {{~>operation_types head}}
+    {{~>operation_types post}}
+    {{~>operation_types put}}
+    {{~>operation_types delete}}
+    {{~>operation_types options}}
+    {{~>operation_types trace}}
+    {{~>operation_types patch}}
+{{~/each}}
+{{~#each paths}}
+    {{~#with get}}
+    {{#if summary}}/// {{summary}}{{/if}}
+    {{~#if description}}/// {{description}}{{/if}}
+    fn {{snakecase operationId}}(
+    {{~#if parameters}}
+        query: Query<{{snakecase operationId}}::Query>
+    {{~/if}}
+    ) -> impl Responder {
+        HttpResponse::Ok().body("{{summary}}")
+    }
+    {{/with}}
+    {{~#with post}}
+    {{#if summary}}/// {{summary}}{{/if}}
+    {{~#if description}}/// {{description}}{{/if}}
+    fn {{snakecase operationId}}() -> impl Responder {
+        HttpResponse::Ok().body("{{summary}}")
+    }
+    {{/with}}
+{{~/each}}
+fn main() -> std::io::Result<()> {
+    HttpServer::new(||
+        App::new()
+        {{~#each paths}}
+            .service(
+                resource("{{@key}}")
+                    {{~#with get}}
+                    .route(get().to({{snakecase operationId}}))
+                    {{~/with}}
+                    {{~#with post}}
+                    .route(post().to({{snakecase operationId}}))
+                    {{~/with}}
+            )
+        {{~/each}}
+    )
+    .bind("127.0.0.1:8080")?
+    .run()
+}
