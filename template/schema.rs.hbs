@@ -1,31 +1,20 @@
-{{#if (eq type "array")~}}
-{{~>schema name=(camelcase name item) items.schema}}
-{{/if}}
-{{#if (eq type "object")~}}
-    {{~#each properties}}
-        {{~#if (eq type "object")}}
-            {{~>schema name=(camelcase ../name ../suffix @key) this}}
-        {{~/if}}
-        {{~#if (eq type "array")}}
-            {{~>schema name=(camelcase ../name ../suffix @key) items.schema}}
-        {{~/if}}
-    {{~/each}}
-{{/if}}
+{{~>subtypes name=name}}
 {{#if description}}/// {{description}}{{/if}}
-#[derive(Deserialize)]
-pub struct {{camelcase name suffix}} {
+{{~#if [$ref]}}
+pub type {{camelcase name suffix}} = {{~>data_type required="true"}};
+{{~else}}
+#[derive(Deserialize, Serialize)]
+pub struct {{camelcase name suffix}}
+{{~#if type}} {
     {{~#if (eq type "object")}}
         {{~#each properties}}
-        pub {{snakecase @key}}:
-            {{~#if (eq type "object")}}
-                {{~#unless required}}Option<{{/unless~}}
-                    {{camelcase ../name ../suffix @key}}
-                {{~#unless required}}>{{/unless}}
-            {{~else}}
-                {{~> data_type name=(camelcase ../name ../suffix @key)}}
-            {{~/if}},
+        pub {{snakecase @key}}: {{>data_type name=(camelcase ../name @key)}},
         {{~/each}}
     {{~else}}
-    pub data: {{~> data_type}},
+    pub data: {{~>data_type required="true"}},
     {{~/if}}
 }
+{{else}}
+;
+{{~/if}}
+{{~/if}}

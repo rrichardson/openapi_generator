@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 actix-web = "1.0.9"
 serde = { version = "1.0.102", features = ["derive"] }
+actix-service = "0.4.2"
+actix-http  = "0.2.11"

@@ -1,23 +1,53 @@
 {{~#if operationId}}
 pub mod {{snakecase operationId}} {
-    use super::components;
-    use serde::Deserialize;
+    use actix_web::HttpResponse;
+    use serde::{Deserialize, Serialize};
     {{#each parameters}}
-        {{~>schema name=name schema}}
-    {{/each}}
+        {{~>subtypes name=name}}
+    {{~/each}}
+
+    {{~#if parameters}}
+    /// Parameters for {{snakecase operationId}} operation
     #[derive(Deserialize)]
-    pub struct Query {
+    pub struct Parameters {
     {{~#each parameters}}
-        {{~#if (eq in "query")}}
         {{#if description}}/// {{description}}{{/if}}
-        pub {{snakecase name}}: {{#unless required}}Option<{{~/unless}}
-        {{~camelcase name}}
-        {{~#unless required}}>{{~/unless}},
-        {{~/if}}
+        pub {{snakecase name}}: {{>data_type name=name required=required schema}},
     {{~/each}}
     }
+
+    impl Parameters {
+        pub fn new(query: Query, path: Path) -> Self {
+            Self {
+            {{~#each parameters}}
+                {{snakecase name}}:
+                    {{~#if (eq in "query")}} query.{{snakecase name}} {{~/if}}
+                    {{~#if (eq in "path")}} path.{{snakecase name}} {{~/if}}
+            {{~/each}}
+            }
+        }
+    }
+
+    {{>parameter_type type="query"}}
+
+    {{>parameter_type type="path"}}
+
+    {{~/if}}
+
+    #[derive(Serialize)]
+    pub enum Response {
+    {{~#each responses}}
+        {{~#if (not (eq @key "default"))}}
+        {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
+        {{~/if}}
+    {{~/each}}
+        Unspecified(HttpResponse),
+    }
+
     {{#each responses}}
-        {{~>schema name=(camelcase "Response" @key) content.[application/json].schema}}
+        {{~#if (not (eq @key "default"))}}
+        {{~>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
+        {{~/if}}
     {{/each}}
 }
 {{/if}}

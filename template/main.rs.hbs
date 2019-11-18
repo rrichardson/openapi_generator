@@ -1,11 +1,12 @@
 #![allow(dead_code, unused_variables)]
 
 use actix_web::{web::*, App, HttpServer, Responder, HttpResponse};
+use std::error::Error;
 
 pub mod components {
 {{~#with components}}
     pub mod schemas {
-    use serde::Deserialize;
+        use serde::{Deserialize, Serialize};
 {{~#each schemas}}
     {{~>schema name=@key this}}
 {{~/each}}
@@ -22,40 +23,58 @@ pub mod components {
     {{~>operation_types trace}}
     {{~>operation_types patch}}
 {{~/each}}
-{{~#each paths}}
+pub trait {{camelcase info.title}}: Clone {
+    type Error: std::error::Error;
+
+{{#each paths}}
+    {{~#with get}}
+    fn {{snakecase operationId}}(&self, parameters: {{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response, Self::Error> {
+        unimplemented!()
+    }
+    {{~/with}}
+{{/each}}
+}
+
+{{#each paths}}
     {{~#with get}}
     {{#if summary}}/// {{summary}}{{/if}}
     {{~#if description}}/// {{description}}{{/if}}
-    fn {{snakecase operationId}}(
+    fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
+        server: Data<Server>,
     {{~#if parameters}}
-        query: Query<{{snakecase operationId}}::Query>
+        query: Query<{{snakecase operationId}}::Query>,
+        path: Path<{{snakecase operationId}}::Path>,
     {{~/if}}
     ) -> impl Responder {
-        HttpResponse::Ok().body("{{summary}}")
-    }
-    {{/with}}
-    {{~#with post}}
-    {{#if summary}}/// {{summary}}{{/if}}
-    {{~#if description}}/// {{description}}{{/if}}
-    fn {{snakecase operationId}}() -> impl Responder {
-        HttpResponse::Ok().body("{{summary}}")
+        use {{snakecase operationId}}::*;
+        let parameters = Parameters::new(query.into_inner(), path.into_inner());
+        match server.{{snakecase operationId}}(parameters) {
+            Ok(response) => HttpResponse::Ok().body("{{summary}}"),
+            Err(err) => HttpResponse::InternalServerError().body(err.description().to_string()),
+        }
     }
     {{/with}}
 {{~/each}}
+
+#[derive(Clone)]
+struct Server;
+impl {{camelcase info.title}} for Server {
+    type Error = std::io::Error;
+}
+
 fn main() -> std::io::Result<()> {
-    HttpServer::new(||
+    let server = Server {};
+    HttpServer::new(move ||
         App::new()
-        {{~#each paths}}
-            .service(
-                resource("{{@key}}")
-                    {{~#with get}}
-                    .route(get().to({{snakecase operationId}}))
-                    {{~/with}}
-                    {{~#with post}}
-                    .route(post().to({{snakecase operationId}}))
-                    {{~/with}}
-            )
-        {{~/each}}
+            .data(server.clone())
+            {{~#each paths}}
+                .service(
+                    resource("{{@key}}")
+                        {{~#with get}}
+                        .route(get().to({{snakecase operationId}}::<Server>))
+                        {{~/with}}
+                )
+            {{~/each}}
     )
     .bind("127.0.0.1:8080")?
     .run()

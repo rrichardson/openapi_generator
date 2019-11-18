@@ -4,21 +4,21 @@
 Vec<u8>
     {{~else if (eq format "byte")~}}
 Vec<u8>
-    {{~else}}
+    {{~else~}}
 String
     {{~/if}}
 {{~/if}}
 {{~#if (eq type "number")~}}
     {{~#if (eq format "float")~}}
 f32
-    {{else}}
+    {{~else~}}
 f64
     {{~/if}}
 {{~/if}}
 {{~#if (eq type "integer")~}}
     {{~#if (eq format "int32")~}}
 i32
-    {{else}}
+    {{~else~}}
 i64
     {{~/if}}
 {{~/if}}
@@ -26,9 +26,12 @@ i64
 bool
 {{~/if}}
 {{~#if (eq type "array")~}}
-Vec<{{camelcase name "item"}}>
+Vec<{{~>data_type name=(camelcase name "item") required="true" items}}>
 {{~/if}}
 {{~#if [$ref]}}
-{{component_path [$ref]}}
+{{~component_path [$ref]}}
+{{~/if}}
+{{~#if (eq type "object")~}}
+{{camelcase name}}
 {{~/if}}
 {{~#unless required}}>{{/unless}}
