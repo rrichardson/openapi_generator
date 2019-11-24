@@ -17,11 +17,10 @@ paths:
         - name: limit
           in: query
           description: How many items to return at one time (max 100)
-          required: true
+          required: false
           schema:
             type: integer
             format: int32
-            maximum: 100
       responses:
         "200":
           description: A paged array of pets

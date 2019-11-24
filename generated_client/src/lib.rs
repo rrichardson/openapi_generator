@@ -1,7 +1,4 @@
-#![allow(dead_code, unused_variables)]
-
-use actix_web::{web::*, App, HttpResponse, HttpServer, Responder};
-use std::error::Error;
+#![allow(dead_code, unused_variables, clippy::clone_on_copy)]
 
 pub mod components {
     pub mod schemas {
@@ -28,7 +25,7 @@ pub mod components {
 }
 
 pub mod list_pets {
-    use actix_web::HttpResponse;
+
     use serde::{Deserialize, Serialize};
 
     /// Parameters for list_pets operation
@@ -42,20 +39,30 @@ pub mod list_pets {
         pub fn new(query: Query, path: Path) -> Self {
             Self { limit: query.limit }
         }
+
+        pub fn query(&self) -> Query {
+            Query {
+                limit: self.limit.clone(),
+            }
+        }
+
+        pub fn path(&self) -> Path {
+            Path {}
+        }
     }
 
     /// Query parameters for list_pets operation
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Serialize)]
     pub struct Query {
         /// How many items to return at one time (max 100)
         pub limit: Option<i32>,
     }
 
     /// Path parameters for list_pets operation
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Serialize)]
     pub struct Path {}
 
-    #[derive(Serialize)]
+    #[derive(Deserialize, Serialize)]
     pub enum Response {
         Response200(Response200),
         // Unspecified(HttpResponse),
@@ -66,7 +73,7 @@ pub mod list_pets {
 }
 
 pub mod create_pets {
-    use actix_web::HttpResponse;
+
     use serde::{Deserialize, Serialize};
 
     /// Parameters for create_pets operation
@@ -77,17 +84,25 @@ pub mod create_pets {
         pub fn new(query: Query, path: Path) -> Self {
             Self {}
         }
+
+        pub fn query(&self) -> Query {
+            Query {}
+        }
+
+        pub fn path(&self) -> Path {
+            Path {}
+        }
     }
 
     /// Query parameters for create_pets operation
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Serialize)]
     pub struct Query {}
 
     /// Path parameters for create_pets operation
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Serialize)]
     pub struct Path {}
 
-    #[derive(Serialize)]
+    #[derive(Deserialize, Serialize)]
     pub enum Response {
         Response201(Response201),
         // Unspecified(HttpResponse),
@@ -99,7 +114,7 @@ pub mod create_pets {
 }
 
 pub mod show_pet_by_id {
-    use actix_web::HttpResponse;
+
     use serde::{Deserialize, Serialize};
 
     /// Parameters for show_pet_by_id operation
@@ -115,20 +130,30 @@ pub mod show_pet_by_id {
                 pet_id: path.pet_id,
             }
         }
+
+        pub fn query(&self) -> Query {
+            Query {}
+        }
+
+        pub fn path(&self) -> Path {
+            Path {
+                pet_id: self.pet_id.clone(),
+            }
+        }
     }
 
     /// Query parameters for show_pet_by_id operation
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Serialize)]
     pub struct Query {}
 
     /// Path parameters for show_pet_by_id operation
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Serialize)]
     pub struct Path {
         /// The id of the pet to retrieve
         pub pet_id: String,
     }
 
-    #[derive(Serialize)]
+    #[derive(Deserialize, Serialize)]
     pub enum Response {
         Response200(Response200),
         // Unspecified(HttpResponse),
@@ -138,68 +163,40 @@ pub mod show_pet_by_id {
     pub type Response200 = crate::components::schemas::Pet;
 }
 
-pub trait SwaggerPetstore: Clone {
-    type Error: std::error::Error;
+pub struct SwaggerPetstoreClient {
+    uri: String,
+}
 
-    fn list_pets(
+impl SwaggerPetstoreClient {
+    pub fn new(uri: &str) -> Self {
+        Self {
+            uri: uri.to_string(),
+        }
+    }
+
+    pub async fn list_pets(
         &self,
         parameters: list_pets::Parameters,
-    ) -> Result<list_pets::Response, Self::Error> {
-        unimplemented!()
+    ) -> Result<list_pets::Response, surf::Exception> {
+        let uri = format!("{uri}/pets", uri = self.uri);
+        surf::get(uri)
+            .set_query(&parameters.query())?
+            .recv_json()
+            .await
     }
 
-    fn show_pet_by_id(
+    pub async fn show_pet_by_id(
         &self,
         parameters: show_pet_by_id::Parameters,
-    ) -> Result<show_pet_by_id::Response, Self::Error> {
-        unimplemented!()
+    ) -> Result<show_pet_by_id::Response, surf::Exception> {
+        let uri = format!(
+            "{uri}/pets/{petId}",
+            uri = self.uri,
+            petId = parameters.pet_id
+        );
+        surf::get(uri)
+            .set_query(&parameters.query())?
+            .recv_json()
+            .await
     }
-}
-
-/// List all pets
-fn list_pets<Server: SwaggerPetstore>(
-    server: Data<Server>,
-
-    query: Query<list_pets::Query>,
-    path: Path<list_pets::Path>,
-) -> impl Responder {
-    use list_pets::*;
-    let parameters = Parameters::new(query.into_inner(), path.into_inner());
-    match server.list_pets(parameters) {
-        Ok(response) => HttpResponse::Ok().body("List all pets"),
-        Err(err) => HttpResponse::InternalServerError().body(err.description().to_string()),
-    }
-}
-
-/// Info for a specific pet
-fn show_pet_by_id<Server: SwaggerPetstore>(
-    server: Data<Server>,
-
-    query: Query<show_pet_by_id::Query>,
-    path: Path<show_pet_by_id::Path>,
-) -> impl Responder {
-    use show_pet_by_id::*;
-    let parameters = Parameters::new(query.into_inner(), path.into_inner());
-    match server.show_pet_by_id(parameters) {
-        Ok(response) => HttpResponse::Ok().body("Info for a specific pet"),
-        Err(err) => HttpResponse::InternalServerError().body(err.description().to_string()),
-    }
-}
-
-#[derive(Clone)]
-struct Server;
-impl SwaggerPetstore for Server {
-    type Error = std::io::Error;
-}
-
-fn main() -> std::io::Result<()> {
-    let server = Server {};
-    HttpServer::new(move || {
-        App::new()
-            .data(server.clone())
-            .service(resource("/pets").route(get().to(list_pets::<Server>)))
-            .service(resource("/pets/{petId}").route(get().to(show_pet_by_id::<Server>)))
-    })
-    .bind("127.0.0.1:8080")?
-    .run()
 }

@@ -1,12 +1,12 @@
 {{~#if operationId}}
 pub mod {{snakecase operationId}} {
-    use actix_web::HttpResponse;
+    use super::components;
     use serde::{Deserialize, Serialize};
     {{#each parameters}}
         {{~>subtypes name=name}}
     {{~/each}}
 
-    {{~#if parameters}}
+    {{!-- {{~#if parameters}} --}}
     /// Parameters for {{snakecase operationId}} operation
     #[derive(Deserialize)]
     pub struct Parameters {
@@ -21,8 +21,24 @@ pub mod {{snakecase operationId}} {
             Self {
             {{~#each parameters}}
                 {{snakecase name}}:
-                    {{~#if (eq in "query")}} query.{{snakecase name}} {{~/if}}
-                    {{~#if (eq in "path")}} path.{{snakecase name}} {{~/if}}
+                    {{~#if (eq in "query")}} query.{{snakecase name}}, {{~/if}}
+                    {{~#if (eq in "path")}} path.{{snakecase name}}, {{~/if}}
+            {{~/each}}
+            }
+        }
+
+        pub fn query(&self) -> Query {
+            Query {
+            {{~#each parameters}}
+                {{~#if (eq in "query")}}{{snakecase name}}: self.{{snakecase name}}.clone(),{{~/if}}
+            {{~/each}}
+            }
+        }
+
+        pub fn path(&self) -> Path {
+            Path {
+            {{~#each parameters}}
+                {{~#if (eq in "path")}}{{snakecase name}}: self.{{snakecase name}}.clone(),{{~/if}}
             {{~/each}}
             }
         }
@@ -32,16 +48,16 @@ pub mod {{snakecase operationId}} {
 
     {{>parameter_type type="path"}}
 
-    {{~/if}}
+    {{!-- {{~/if}} --}}
 
-    #[derive(Serialize)]
+    #[derive(Deserialize, Serialize)]
     pub enum Response {
     {{~#each responses}}
         {{~#if (not (eq @key "default"))}}
         {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
         {{~/if}}
     {{~/each}}
-        Unspecified(HttpResponse),
+        // Unspecified(HttpResponse),
     }
 
     {{#each responses}}

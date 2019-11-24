@@ -1,29 +1,8 @@
-#![allow(dead_code, unused_variables)]
-
 use actix_web::{web::*, App, HttpServer, Responder, HttpResponse};
 use std::error::Error;
+use crate::models::*;
 
-pub mod components {
-{{~#with components}}
-    pub mod schemas {
-        use serde::{Deserialize, Serialize};
-{{~#each schemas}}
-    {{~>schema name=@key this}}
-{{~/each}}
-    }
-{{~/with}}
-}
-{{#each paths}}
-    {{~>operation_types get}}
-    {{~>operation_types head}}
-    {{~>operation_types post}}
-    {{~>operation_types put}}
-    {{~>operation_types delete}}
-    {{~>operation_types options}}
-    {{~>operation_types trace}}
-    {{~>operation_types patch}}
-{{~/each}}
-pub trait {{camelcase info.title}}: Clone {
+pub trait {{camelcase info.title}} {
     type Error: std::error::Error;
 
 {{#each paths}}
@@ -40,11 +19,10 @@ pub trait {{camelcase info.title}}: Clone {
     {{#if summary}}/// {{summary}}{{/if}}
     {{~#if description}}/// {{description}}{{/if}}
     fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
-        server: Data<Server>,
-    {{~#if parameters}}
+        server: Data<Server>,{{!-- {{~#if parameters}} --}}
         query: Query<{{snakecase operationId}}::Query>,
         path: Path<{{snakecase operationId}}::Path>,
-    {{~/if}}
+    {{!-- {{~/if}} --}}
     ) -> impl Responder {
         use {{snakecase operationId}}::*;
         let parameters = Parameters::new(query.into_inner(), path.into_inner());
@@ -56,14 +34,9 @@ pub trait {{camelcase info.title}}: Clone {
     {{/with}}
 {{~/each}}
 
-#[derive(Clone)]
-struct Server;
-impl {{camelcase info.title}} for Server {
-    type Error = std::io::Error;
-}
-
-fn main() -> std::io::Result<()> {
-    let server = Server {};
+pub fn run<Server: SwaggerPetstore + Send + Sync + Clone + 'static>(
+    server: Server,
+) -> std::io::Result<()> {
     HttpServer::new(move ||
         App::new()
             .data(server.clone())
