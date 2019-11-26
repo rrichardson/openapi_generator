@@ -34,7 +34,7 @@ pub trait {{camelcase info.title}} {
     {{/with}}
 {{~/each}}
 
-pub fn run<Server: SwaggerPetstore + Send + Sync + Clone + 'static>(
+pub fn run<Server: {{camelcase info.title}} + Send + Sync + Clone + 'static>(
     server: Server,
 ) -> std::io::Result<()> {
     HttpServer::new(move ||
