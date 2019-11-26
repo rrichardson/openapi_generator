@@ -1,5 +1,5 @@
-gen:
-    RUST_LOG=info cargo run
+gen openapi:
+    RUST_LOG=info cargo run {{openapi}}
 
 watch directory="output":
     cd {{directory}} && cargo +nightly watch -x fmt -x "check --all-features --all-targets"
