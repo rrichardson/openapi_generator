@@ -1,3 +1,5 @@
+pub mod blocking;
+
 use crate::models::*;
 
 pub struct SwaggerPetstoreClient {
