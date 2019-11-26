@@ -30,6 +30,7 @@ case_helper!(mixedcase, to_mixed_case);
 case_helper!(camelcase, to_camel_case);
 case_helper!(snakecase, to_snake_case);
 handlebars_helper!(component_path: |ref_path: str| parse_component_path(ref_path));
+handlebars_helper!(sanitize: |word: str| apply_sanitize(word));
 
 pub(crate) fn parse_component_path(ref_path: &str) -> String {
     use heck::CamelCase;
@@ -43,6 +44,22 @@ pub(crate) fn parse_component_path(ref_path: &str) -> String {
     }
     path.reverse();
     path.join("::")
+}
+
+const KEYWORDS: &[&str] = &[
+    "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn", "for",
+    "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return",
+    "self", "Self", "static", "struct", "super", "trait", "true", "type", "unsafe", "use", "where",
+    "while", "dyn", "abstract", "become", "box", "do", "final", "macro", "override", "priv",
+    "typeof", "unsized", "virtual", "yield", "async", "await", "try",
+];
+
+pub(crate) fn apply_sanitize(word: &str) -> String {
+    if KEYWORDS.iter().any(|&keyword| word == keyword) {
+        format!("r#{}", word)
+    } else {
+        word.to_string()
+    }
 }
 
 #[cfg(test)]

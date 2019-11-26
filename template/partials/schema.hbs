@@ -8,13 +8,8 @@ pub struct {{camelcase name suffix}}
 {{~#if type}} {
     {{~#if (eq type "object")}}
         {{~#each properties}}
-            {{~#if (eq @key "type")}}
             #[serde(rename = "{{snakecase @key}}")]
-            pub _{{snakecase @key}}: {{>data_type name=(camelcase ../name @key)}},
-            {{~else}}
-            pub {{snakecase @key}}: {{>data_type name=(camelcase ../name @key)}},
-            {{~/if}}
-
+            pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key)}},
         {{~/each}}
     {{~else}}
     pub data: {{~>data_type required="true"}},
