@@ -7,7 +7,7 @@ pub trait {{camelcase info.title}} {
 
 {{#each paths}}
     {{~#with get}}
-    fn {{snakecase operationId}}(&self, parameters: {{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response, Self::Error> {
+    fn {{snakecase operationId}}(&self, _parameters: {{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response, Self::Error> {
         unimplemented!()
     }
     {{~/with}}

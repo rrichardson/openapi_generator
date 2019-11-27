@@ -20,5 +20,15 @@ impl {{camelcase info.title "Client"}} {
         block_on(self.client.{{snakecase operationId}}(parameters))
     }
     {{~/with}}
+    {{#with put}}
+    pub fn {{snakecase operationId}}(&self, parameters: &{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response, surf::Exception> {
+        block_on(self.client.{{snakecase operationId}}(parameters))
+    }
+    {{~/with}}
+    {{#with delete}}
+    pub fn {{snakecase operationId}}(&self, parameters: &{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response, surf::Exception> {
+        block_on(self.client.{{snakecase operationId}}(parameters))
+    }
+    {{~/with}}
     {{~/each}}
 }
