@@ -148,6 +148,7 @@
           "in" : "path",
           "name" : "blueprint_id",
           "required" : true,
+          "example": "5dbb00953130352a54ef46cd",
           "schema" : {
             "type" : "string"
           },
@@ -205,6 +206,7 @@
           "in" : "path",
           "name" : "blueprint_id",
           "required" : true,
+          "example": "5dbb00953130352a54ef46cd",
           "schema" : {
             "type" : "string"
           },
@@ -263,6 +265,7 @@
           "in" : "path",
           "name" : "blueprint_id",
           "required" : true,
+          "example": "5dbb00953130352a54ef46cd",
           "schema" : {
             "type" : "string"
           },
@@ -1403,6 +1406,7 @@
           "in" : "query",
           "name" : "x",
           "required" : true,
+          "example": 0.0,
           "schema" : {
             "format" : "double",
             "type" : "number"
@@ -1414,6 +1418,7 @@
           "in" : "query",
           "name" : "y",
           "required" : true,
+          "example": 0.0,
           "schema" : {
             "format" : "double",
             "type" : "number"
@@ -1425,6 +1430,7 @@
           "in" : "query",
           "name" : "battery",
           "required" : true,
+          "example": 1.0,
           "schema" : {
             "format" : "double",
             "type" : "number"
@@ -1989,52 +1995,52 @@
         "operationId" : "get_costmap",
         "parameters" : [ {
           "description" : "horizontal coordinate in meters of the center of the costmap in global Vizyr frame",
-          "example" : 0,
+          "example" : 0.0,
           "explode" : true,
           "in" : "query",
           "name" : "center_x",
           "required" : false,
           "schema" : {
-            "default" : 0,
+            "default" : 0.0,
             "format" : "double",
             "type" : "number"
           },
           "style" : "form"
         }, {
           "description" : "vertical coordinate in meters of the center of the costmap in global Vizyr frame",
-          "example" : 0,
+          "example" : 0.0,
           "explode" : true,
           "in" : "query",
           "name" : "center_y",
           "required" : false,
           "schema" : {
-            "default" : 0,
+            "default" : 0.0,
             "format" : "double",
             "type" : "number"
           },
           "style" : "form"
         }, {
           "description" : "width of the costmap in meters",
-          "example" : 5,
+          "example" : 5.0,
           "explode" : true,
           "in" : "query",
           "name" : "width",
           "required" : false,
           "schema" : {
-            "default" : 5,
+            "default" : 5.0,
             "format" : "double",
             "type" : "number"
           },
           "style" : "form"
         }, {
           "description" : "height of the costmap in meters",
-          "example" : 5,
+          "example" : 5.0,
           "explode" : true,
           "in" : "query",
           "name" : "height",
           "required" : false,
           "schema" : {
-            "default" : 5,
+            "default" : 5.0,
             "format" : "double",
             "type" : "number"
           },
@@ -2095,6 +2101,7 @@
           "in" : "query",
           "name" : "robot",
           "required" : true,
+          "example": "robot",
           "schema" : {
             "type" : "string"
           },
@@ -2105,6 +2112,7 @@
           "in" : "query",
           "name" : "x",
           "required" : true,
+          "example": 0.0,
           "schema" : {
             "type" : "number"
           },
@@ -2115,6 +2123,7 @@
           "in" : "query",
           "name" : "y",
           "required" : true,
+          "example": 0.0,
           "schema" : {
             "type" : "number"
           },
@@ -2184,6 +2193,7 @@
           "explode" : true,
           "in" : "query",
           "name" : "robot",
+          "example": "robot",
           "required" : true,
           "schema" : {
             "type" : "string"
