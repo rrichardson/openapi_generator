@@ -1,29 +1,43 @@
+use super::blocking::{{camelcase info.title "Client"}} as Client;
 use super::*;
 use mockito::{mock, Matcher};
+use serde_json::json;
 
 {{~#each paths}}
 {{#with get}}
 #[test]
 fn test_{{snakecase operationId}}() {
-  let vizyr_api = VizyrApiClient::new(&mockito::server_url());
+  let api_client = Client::new(&mockito::server_url());
 
   let uri = format!("{{@../key}}"
     {{~#each parameters}}
-      {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
+      {{~#if (eq in "path")}}, {{name}} = {{>example}}{{/if}}
     {{~/each~}}
   );
 
-  let mock = mock("GET", uri)
-    .match_body(Matcher::JsonString(
-      r#"{"name":"name1","model":"model1"}"#.to_string(),
-    ))
-    .with_status(201)
-    .with_body(r#""robot_token""#)
+  let mock = mock("GET", Matcher::Exact(uri))
+    .match_query(Matcher::AllOf(vec![
+      {{~#each parameters}}
+        {{~#if (eq in "query")}}
+        Matcher::UrlEncoded("{{name}}".into(), {{>example}}.into()),
+        {{/if}}
+      {{~/each~}}
+    ]))
+    .with_status(200)
     .create();
 
-  let parameters = {{snakecase operationId}}::Parameters {};
+  let parameters = {{snakecase operationId}}::Parameters {
+    {{~#each parameters}}
+      {{~#if (eq in "path")}}
+      {{name}}: {{>example}},
+      {{/if}}
+      {{~#if (eq in "query")}}
+      {{name}}: {{>example}},
+      {{/if}}
+    {{~/each~}}
+  };
 
-  let result = vizyr_api.{{snakecase operationId}}(&parameters);
+  let result = api_client.{{snakecase operationId}}(&parameters);
   mock.assert();
 }
 {{~/with}}

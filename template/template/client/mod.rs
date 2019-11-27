@@ -21,7 +21,9 @@ impl {{camelcase info.title "Client"}} {
                 {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
             {{~/each~}}
         );
+        dbg!(uri.clone());
         let mut response = surf::get(uri).set_query(&parameters.query())?.await?;
+        println!("{:?}", response);
         use {{snakecase operationId}}::Response::*;
         Ok(
             match response.status().as_str() {
@@ -30,7 +32,7 @@ impl {{camelcase info.title "Client"}} {
                 "{{@key}}" => {{camelcase "Response" @key}}(response.body_json().await?),
             {{~/if}}
             {{~/each}}
-                _ => unimplemented!(),
+                _ => Unspecified,
         })
     }
     {{~/with}}

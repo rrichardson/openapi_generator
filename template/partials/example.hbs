@@ -1,0 +1,22 @@
+{{#unless required}}Some({{/unless~}}
+{{~#if (eq schema.type "string")}}
+"{{example}}".to_string()
+{{~/if}}
+{{~#if (eq schema.type "number")~}}
+    {{~#if (eq format "float")~}}
+{{example}} as f32
+    {{~else~}}
+{{example}} as f64
+    {{~/if}}
+{{~/if}}
+{{~#if (eq schema.type "integer")~}}
+    {{~#if (eq format "int32")~}}
+{{example}} as i32
+    {{~else~}}
+{{example}} as i64
+    {{~/if}}
+{{~/if}}
+{{~#if (eq schema.type "boolean")~}}
+{{example}}
+{{~/if}}
+{{~#unless required}}){{/unless}}

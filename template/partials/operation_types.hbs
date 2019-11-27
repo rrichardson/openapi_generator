@@ -77,7 +77,7 @@ pub mod {{snakecase operationId}} {
         {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
         {{~/if}}
     {{~/each}}
-        // Unspecified(HttpResponse),
+        Unspecified,
     }
 
     {{#each responses}}
