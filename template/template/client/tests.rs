@@ -2,6 +2,7 @@ use super::blocking::{{camelcase info.title "Client"}} as Client;
 use super::*;
 use mockito::{mock, Matcher};
 use serde_json::json;
+use crate::openapi_serialization::OpenapiSerialization;
 
 {{~#each paths}}
 {{#with get}}
@@ -19,7 +20,7 @@ fn test_{{snakecase operationId}}() {
     .match_query(Matcher::AllOf(vec![
       {{~#each parameters}}
         {{~#if (eq in "query")}}
-        Matcher::UrlEncoded("{{name}}".into(), {{>example}}.into()),
+        Matcher::UrlEncoded("{{name}}".into(), ({{>example}}).serialize().unwrap()),
         {{/if}}
       {{~/each~}}
     ]))
