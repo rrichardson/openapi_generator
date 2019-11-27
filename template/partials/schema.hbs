@@ -3,7 +3,7 @@
 {{~#if [$ref]}}
 pub type {{camelcase name suffix}} = {{~>data_type required="true"}};
 {{~else}}
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct {{camelcase name suffix}}
 {{~#if type}} {
     {{~#if (eq type "object")}}
