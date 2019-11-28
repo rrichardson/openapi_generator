@@ -5,8 +5,6 @@ pub mod {{snakecase operationId}} {
     {{#each parameters}}
         {{~>subtypes name=name}}
     {{~/each}}
-
-    {{!-- {{~#if parameters}} --}}
     /// Parameters for {{snakecase operationId}} operation
     #[derive(Deserialize)]
     pub struct Parameters {
@@ -14,16 +12,28 @@ pub mod {{snakecase operationId}} {
         {{#if description}}/// {{description}}{{/if}}
         pub {{snakecase name}}: {{>data_type name=name required=required schema}},
     {{~/each}}
+    {{~#with requestBody.content.[application/json]}}
+        pub body: Body,
+    {{~/with}}
     }
 
     impl Parameters {
+        {{~#if requestBody}}
+        {{~#with requestBody.content.[application/json]}}
+        pub fn new(query: Query, path: Path, body: Body) -> Self {
+        {{~/with}}
+        {{~else}}
         pub fn new(query: Query, path: Path) -> Self {
+        {{~/if}}
             Self {
             {{~#each parameters}}
                 {{snakecase name}}:
                     {{~#if (eq in "query")}} query.{{snakecase name}}, {{~/if}}
                     {{~#if (eq in "path")}} path.{{snakecase name}}, {{~/if}}
             {{~/each}}
+            {{~#with requestBody.content.[application/json]}}
+                body
+            {{~/with}}
             }
         }
 
@@ -42,28 +52,36 @@ pub mod {{snakecase operationId}} {
             {{~/each}}
             }
         }
+
+        {{~#with requestBody.content.[application/json]}}
+
+        pub fn body(&self) -> Body {
+            self.body.clone()
+        }
+        {{~/with}}
     }
 
-    {{>parameter_type type="query"}}
+{{>parameter_type type="query"}}
 
-    {{>parameter_type type="path"}}
+{{>parameter_type type="path"}}
 
-    {{!-- {{~/if}} --}}
+{{#with requestBody}}
+{{>schema name="Body" description=description content.[application/json].schema}}
+{{~/with}}
 
-    #[derive(Deserialize, Serialize)]
-    pub enum Response {
+    pub enum Response<T> {
     {{~#each responses}}
         {{~#if (not (eq @key "default"))}}
         {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
         {{~/if}}
     {{~/each}}
-        // Unspecified(HttpResponse),
+        Unspecified(T),
     }
-
-    {{#each responses}}
+    {{~#each responses}}
         {{~#if (not (eq @key "default"))}}
-        {{~>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
+
+{{>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
         {{~/if}}
-    {{/each}}
+    {{~/each}}
 }
 {{/if}}

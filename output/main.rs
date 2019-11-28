@@ -1,11 +1,8 @@
-mod models;
-mod server;
-
-use server::*;
+use vizyr_api::server::*;
 
 #[derive(Clone)]
 struct Server;
-impl SwaggerPetstore for Server {
+impl VizyrApi for Server {
     type Error = std::io::Error;
 }
 

@@ -1,0 +1,2874 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "contact" : {
+      "email" : "support@easymov.com",
+      "name" : "Support",
+      "url" : "https://easymov.com/support"
+    },
+    "description" : "This is the API for Vizyr Application",
+    "title" : "Vizyr API",
+    "version" : "0.9.0",
+    "x-logo" : {
+      "url" : "https://easymov.gitlab.io/vizyr/openapi/vizyr-logo.png",
+      "backgroundColor" : "#fafafa",
+      "altText" : "Vizyr logo"
+    }
+  },
+  "servers" : [ {
+    "description" : "default",
+    "url" : "http://localhost:8000/api"
+  } ],
+  "tags" : [ {
+    "name" : "general"
+  }, {
+    "name" : "blueprint"
+  }, {
+    "name" : "map"
+  }, {
+    "name" : "robot"
+  }, {
+    "name" : "scenario"
+  }, {
+    "name" : "mission"
+  }, {
+    "name" : "navigation"
+  } ],
+  "paths" : {
+    "/info" : {
+      "get" : {
+        "operationId" : "get_info",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/info"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "general" ]
+      }
+    },
+    "/blueprint" : {
+      "get" : {
+        "operationId" : "get_blueprint",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "examples" : { },
+                "schema" : {
+                  "$ref" : "#/components/schemas/blueprintlist"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/forbidden"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          }
+        },
+        "summary" : "Get blueprint",
+        "tags" : [ "blueprint" ]
+      },
+      "post" : {
+        "operationId" : "add_blueprint",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/blueprint"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          }
+        },
+        "tags" : [ "blueprint" ]
+      }
+    },
+    "/blueprint/{blueprint_id}" : {
+      "delete" : {
+        "operationId" : "delete_blueprint_by_id",
+        "parameters" : [ {
+          "description" : "id of a blueprint",
+          "explode" : false,
+          "in" : "path",
+          "name" : "blueprint_id",
+          "required" : true,
+          "example": "5dbb00953130352a54ef46cd",
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "blueprint" ]
+      },
+      "get" : {
+        "operationId" : "get_blueprint_by_id",
+        "parameters" : [ {
+          "description" : "id of a blueprint",
+          "explode" : false,
+          "in" : "path",
+          "name" : "blueprint_id",
+          "required" : true,
+          "example": "5dbb00953130352a54ef46cd",
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "examples" : { },
+                "schema" : {
+                  "$ref" : "#/components/schemas/blueprint"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "blueprint" ]
+      },
+      "put" : {
+        "operationId" : "update_blueprint_by_id",
+        "parameters" : [ {
+          "description" : "id of a blueprint",
+          "explode" : false,
+          "in" : "path",
+          "name" : "blueprint_id",
+          "required" : true,
+          "example": "5dbb00953130352a54ef46cd",
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/blueprint"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "blueprint" ]
+      }
+    },
+    "/blueprint/{blueprint_id}/location" : {
+      "get" : {
+        "operationId" : "get_location",
+        "parameters" : [ {
+          "description" : "id of a blueprint",
+          "explode" : false,
+          "in" : "path",
+          "name" : "blueprint_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/locationlist"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          }
+        },
+        "tags" : [ "blueprint" ]
+      },
+      "post" : {
+        "operationId" : "add_location",
+        "parameters" : [ {
+          "description" : "id of a blueprint",
+          "explode" : false,
+          "in" : "path",
+          "name" : "blueprint_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/location"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "example" : "locationId",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          }
+        },
+        "tags" : [ "blueprint" ]
+      }
+    },
+    "/blueprint/{blueprint_id}/location/{location_id}" : {
+      "delete" : {
+        "operationId" : "delete_location_by_id",
+        "parameters" : [ {
+          "description" : "id of a blueprint",
+          "explode" : false,
+          "in" : "path",
+          "name" : "blueprint_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        }, {
+          "description" : "id of a location",
+          "explode" : false,
+          "in" : "path",
+          "name" : "location_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "blueprint" ]
+      },
+      "get" : {
+        "operationId" : "get_location_by_id",
+        "parameters" : [ {
+          "description" : "id of a blueprint",
+          "explode" : false,
+          "in" : "path",
+          "name" : "blueprint_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        }, {
+          "description" : "id of a location",
+          "explode" : false,
+          "in" : "path",
+          "name" : "location_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/location"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "blueprint" ]
+      },
+      "put" : {
+        "operationId" : "update_location_by_id",
+        "parameters" : [ {
+          "description" : "id of a blueprint",
+          "explode" : false,
+          "in" : "path",
+          "name" : "blueprint_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        }, {
+          "description" : "id of a location",
+          "explode" : false,
+          "in" : "path",
+          "name" : "location_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/location"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "blueprint" ]
+      }
+    },
+    "/map" : {
+      "get" : {
+        "operationId" : "get_map",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/maplist"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "map" ]
+      },
+      "post" : {
+        "operationId" : "add_map",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/map"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          }
+        },
+        "tags" : [ "map" ]
+      }
+    },
+    "/map/{map_id}" : {
+      "delete" : {
+        "operationId" : "delete_map_by_id",
+        "parameters" : [ {
+          "description" : "id of a map",
+          "explode" : false,
+          "in" : "path",
+          "name" : "map_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "map" ]
+      },
+      "get" : {
+        "operationId" : "get_map_by_id",
+        "parameters" : [ {
+          "description" : "id of a map",
+          "explode" : false,
+          "in" : "path",
+          "name" : "map_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/map"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "map" ]
+      },
+      "put" : {
+        "operationId" : "update_map_by_id",
+        "parameters" : [ {
+          "description" : "id of a map",
+          "explode" : false,
+          "in" : "path",
+          "name" : "map_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/map"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "map" ]
+      }
+    },
+    "/selected_map" : {
+      "get" : {
+        "operationId" : "get_selected_map",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/mapwithid"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "map" ]
+      }
+    },
+    "/selected_map/location" : {
+      "get" : {
+        "operationId" : "get_selected_map_locations",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/locationlist"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "map" ]
+      }
+    },
+    "/robot" : {
+      "get" : {
+        "operationId" : "get_robot",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/robotlist"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "robot" ]
+      },
+      "post" : {
+        "operationId" : "add_robot",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/robot"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          }
+        },
+        "tags" : [ "robot" ]
+      }
+    },
+    "/robot/{robot_id}" : {
+      "delete" : {
+        "operationId" : "delete_robot_by_id",
+        "parameters" : [ {
+          "description" : "id of a robot",
+          "explode" : false,
+          "in" : "path",
+          "name" : "robot_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "robot" ]
+      },
+      "get" : {
+        "operationId" : "get_robot_by_id",
+        "parameters" : [ {
+          "description" : "id of a robot",
+          "explode" : false,
+          "in" : "path",
+          "name" : "robot_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/robot"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "robot" ]
+      },
+      "put" : {
+        "operationId" : "update_robot_by_id",
+        "parameters" : [ {
+          "description" : "id of a robot",
+          "explode" : false,
+          "in" : "path",
+          "name" : "robot_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/robot"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "robot" ]
+      }
+    },
+    "/task" : {
+      "get" : {
+        "operationId" : "get_task",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/tasklist"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "mission" ]
+      },
+      "post" : {
+        "operationId" : "add_task",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/mission"
+              }
+            }
+          },
+          "description" : "Add task request",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "mission" ]
+      }
+    },
+    "/task/next" : {
+      "get" : {
+        "operationId" : "get_next_task",
+        "parameters" : [ {
+          "description" : "id of a robot",
+          "explode" : true,
+          "in" : "query",
+          "name" : "robot",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "form"
+        }, {
+          "description" : "x position of a robot",
+          "explode" : true,
+          "in" : "query",
+          "name" : "x",
+          "required" : true,
+          "example": 0.0,
+          "schema" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "style" : "form"
+        }, {
+          "description" : "y position of a robot",
+          "explode" : true,
+          "in" : "query",
+          "name" : "y",
+          "required" : true,
+          "example": 0.0,
+          "schema" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "style" : "form"
+        }, {
+          "description" : "battery of a robot",
+          "explode" : true,
+          "in" : "query",
+          "name" : "battery",
+          "required" : true,
+          "example": 1.0,
+          "schema" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "style" : "form"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/taskwithid"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "mission" ]
+      }
+    },
+    "/task/{task_id}" : {
+      "delete" : {
+        "operationId" : "delete_task_by_id",
+        "parameters" : [ {
+          "description" : "id of a task",
+          "explode" : false,
+          "in" : "path",
+          "name" : "task_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "mission" ]
+      },
+      "get" : {
+        "operationId" : "get_task_by_id",
+        "parameters" : [ {
+          "description" : "id of a task",
+          "explode" : false,
+          "in" : "path",
+          "name" : "task_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/task"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "mission" ]
+      }
+    },
+    "/flow" : {
+      "get" : {
+        "operationId" : "get_flow",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/flowlist"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "flow" ]
+      }
+    },
+    "/dashboard/{dashboard_id}" : {
+      "delete" : {
+        "operationId" : "delete_dashboard",
+        "parameters" : [ {
+          "description" : "id of a dashboard",
+          "explode" : false,
+          "in" : "path",
+          "name" : "dashboard_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "dashboard" ]
+      },
+      "get" : {
+        "operationId" : "get_dashboard_by_id",
+        "parameters" : [ {
+          "description" : "id of a dashboard",
+          "explode" : false,
+          "in" : "path",
+          "name" : "dashboard_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/dashboard"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "dashboard" ]
+      },
+      "put" : {
+        "operationId" : "update_dashboard",
+        "parameters" : [ {
+          "description" : "id of a dashboard",
+          "explode" : false,
+          "in" : "path",
+          "name" : "dashboard_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/dashboard"
+              }
+            }
+          },
+          "description" : "Update dashboard request",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "dashboard" ]
+      }
+    },
+    "/dashboard" : {
+      "get" : {
+        "operationId" : "get_dashboard",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/dashboardlist"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "dashboard" ]
+      },
+      "post" : {
+        "operationId" : "add_dashboard",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/dashboard"
+              }
+            }
+          },
+          "description" : "Add dashboard request",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "dashboard" ]
+      }
+    },
+    "/route" : {
+      "post" : {
+        "operationId" : "get_route",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "items" : {
+                  "$ref" : "#/components/schemas/location"
+                },
+                "type" : "array"
+              }
+            }
+          },
+          "description" : "Route request",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/route"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "navigation" ]
+      }
+    },
+    "/costmap" : {
+      "get" : {
+        "operationId" : "get_costmap",
+        "parameters" : [ {
+          "description" : "horizontal coordinate in meters of the center of the costmap in global Vizyr frame",
+          "example" : 0.0,
+          "explode" : true,
+          "in" : "query",
+          "name" : "center_x",
+          "required" : false,
+          "schema" : {
+            "default" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "style" : "form"
+        }, {
+          "description" : "vertical coordinate in meters of the center of the costmap in global Vizyr frame",
+          "example" : 0.0,
+          "explode" : true,
+          "in" : "query",
+          "name" : "center_y",
+          "required" : false,
+          "schema" : {
+            "default" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "style" : "form"
+        }, {
+          "description" : "width of the costmap in meters",
+          "example" : 5.0,
+          "explode" : true,
+          "in" : "query",
+          "name" : "width",
+          "required" : false,
+          "schema" : {
+            "default" : 5.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "style" : "form"
+        }, {
+          "description" : "height of the costmap in meters",
+          "example" : 5.0,
+          "explode" : true,
+          "in" : "query",
+          "name" : "height",
+          "required" : false,
+          "schema" : {
+            "default" : 5.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "style" : "form"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/costmap"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "Resource not found"
+          }
+        },
+        "tags" : [ "navigation" ]
+      }
+    },
+    "/parking_spot" : {
+      "get" : {
+        "description" : "Asign a parking spot to the robot.",
+        "operationId" : "get_parking_spot",
+        "parameters" : [ {
+          "description" : "id of a robot",
+          "explode" : true,
+          "in" : "query",
+          "name" : "robot",
+          "required" : true,
+          "example": "robot",
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "form"
+        }, {
+          "description" : "x position of a robot",
+          "explode" : true,
+          "in" : "query",
+          "name" : "x",
+          "required" : true,
+          "example": 0.0,
+          "schema" : {
+            "type" : "number"
+          },
+          "style" : "form"
+        }, {
+          "description" : "y position of a robot",
+          "explode" : true,
+          "in" : "query",
+          "name" : "y",
+          "required" : true,
+          "example": 0.0,
+          "schema" : {
+            "type" : "number"
+          },
+          "style" : "form"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/parkingspot"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/forbidden"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/notfound"
+                }
+              }
+            },
+            "description" : "Not Found"
+          }
+        },
+        "summary" : "Get parking spot",
+        "tags" : [ "navigation" ]
+      }
+    },
+    "/parking_spot/{parking_id}" : {
+      "delete" : {
+        "description" : "Unasign the parking spot.",
+        "operationId" : "delete_parking_spot_by_id",
+        "parameters" : [ {
+          "explode" : false,
+          "in" : "path",
+          "name" : "parking_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        }, {
+          "description" : "id of a robot",
+          "explode" : true,
+          "in" : "query",
+          "name" : "robot",
+          "example": "robot",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "form"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/forbidden"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/notfound"
+                }
+              }
+            },
+            "description" : "Not Found"
+          }
+        },
+        "tags" : [ "navigation" ]
+      }
+    }
+  },
+  "components" : {
+    "responses" : {
+      "BadRequest" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Error"
+            }
+          }
+        },
+        "description" : "Bad request"
+      },
+      "NotFound" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Error"
+            }
+          }
+        },
+        "description" : "Resource not found"
+      },
+      "Forbidden" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Error"
+            }
+          }
+        },
+        "description" : "Forbidden"
+      },
+      "Unauthorized" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Error"
+            }
+          }
+        },
+        "description" : "Unauthorized"
+      }
+    },
+    "schemas" : {
+      "Error" : {
+        "type" : "string"
+      },
+      "info" : {
+        "example" : {
+          "version" : "version"
+        },
+        "properties" : {
+          "version" : {
+            "type" : "string"
+          }
+        },
+        "title" : "Info",
+        "type" : "object"
+      },
+      "blueprintlist" : {
+        "description" : "List of blueprint id",
+        "items" : {
+          "type" : "string"
+        },
+        "title" : "BlueprintList",
+        "type" : "array"
+      },
+      "unauthorized" : {
+        "description" : "Unauthorized",
+        "title" : "Unauthorized",
+        "type" : "string"
+      },
+      "forbidden" : {
+        "description" : "Forbidden",
+        "title" : "Forbidden",
+        "type" : "string"
+      },
+      "blueprint" : {
+        "example" : {
+          "offset_theta" : 1.4658129805029452,
+          "name" : "name",
+          "top_left_y" : 6.027456183070403,
+          "top_left_x" : 0.8008281904610115,
+          "resolution" : 5.962133916683182,
+          "content" : "[]"
+        },
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "content" : {
+            "default" : "[]",
+            "type" : "string"
+          },
+          "top_left_x" : {
+            "default" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "top_left_y" : {
+            "default" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "offset_theta" : {
+            "default" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "resolution" : {
+            "default" : 0.05,
+            "format" : "double",
+            "type" : "number"
+          }
+        },
+        "title" : "Blueprint",
+        "type" : "object"
+      },
+      "locationlist" : {
+        "items" : {
+          "$ref" : "#/components/schemas/location"
+        },
+        "title" : "LocationList",
+        "type" : "array"
+      },
+      "location" : {
+        "example" : {
+          "name" : "name",
+          "x" : 0.0,
+          "roll" : 0.0,
+          "y" : 0.0,
+          "z" : 0.0,
+          "pitch" : 0.0,
+          "yaw" : 0.0
+        },
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "x" : {
+            "example" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "y" : {
+            "example" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "z" : {
+            "example" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "roll" : {
+            "example" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "pitch" : {
+            "example" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          },
+          "yaw" : {
+            "example" : 0.0,
+            "format" : "double",
+            "type" : "number"
+          }
+        },
+        "required" : [ "x", "y" ],
+        "title" : "Location",
+        "type" : "object"
+      },
+      "maplist" : {
+        "items" : {
+          "type" : "string"
+        },
+        "title" : "MapList",
+        "type" : "array",
+        "x-examples" : {
+          "example-1" : { }
+        }
+      },
+      "map" : {
+        "example" : {
+          "preview" : "data:image/png;base64,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Vv1aEznUmnbt2on8/Hzpqb5gIiJyr5c0TfvS4oiIKEb6V03TOlocERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERkb/6O8i8p7lF8wLQAAAAAElFTkSuQmCC",
+          "blueprint" : "5ce2732b313464900111502b",
+          "name" : "map",
+          "selected" : false,
+          "content" : "[           {\"id\":\"577cac4d-97c6-48c7-9ca5-2b117ae6aeff\",\"type\":\"FREE\",\"width\":95.1456,\"height\":29.8064,\"rotation\":0,\"x\":19.104,\"y\":-71.6584},           {\"id\":\"40a71d9b-2358-4a4b-ba94-fd389503e154\",\"type\":\"FORBIDDEN\",\"width\":24.916,\"height\":16.3968,\"rotation\":0,\"x\":19.7864,\"y\":-41.9848},           {\"id\":\"7bb34b94-c21e-4b05-8c14-255922efa63d\",\"type\":\"FREE\",\"width\":69.344,\"height\":16.3056,\"rotation\":0,\"x\":44.9768,\"y\":-41.9848},           {\"id\":\"00b2d189-dd89-45e6-8f95-41432fe0ae8b\",\"type\":\"FORBIDDEN\",\"width\":14.4736,\"height\":9.7096,\"rotation\":0,\"x\":99.756,\"y\":-25.496},           {\"id\":\"0f9ec514-92d2-4ce6-946f-2b2de7608403\",\"type\":\"FORBIDDEN\",\"width\":14.3816,\"height\":22.992,\"rotation\":0,\"x\":4.7632,\"y\":-48.672}           ]"
+        },
+        "properties" : {
+          "selected" : {
+            "example" : false,
+            "type" : "boolean"
+          },
+          "content" : {
+            "default" : "[]",
+            "example" : "[           {\"id\":\"577cac4d-97c6-48c7-9ca5-2b117ae6aeff\",\"type\":\"FREE\",\"width\":95.1456,\"height\":29.8064,\"rotation\":0,\"x\":19.104,\"y\":-71.6584},           {\"id\":\"40a71d9b-2358-4a4b-ba94-fd389503e154\",\"type\":\"FORBIDDEN\",\"width\":24.916,\"height\":16.3968,\"rotation\":0,\"x\":19.7864,\"y\":-41.9848},           {\"id\":\"7bb34b94-c21e-4b05-8c14-255922efa63d\",\"type\":\"FREE\",\"width\":69.344,\"height\":16.3056,\"rotation\":0,\"x\":44.9768,\"y\":-41.9848},           {\"id\":\"00b2d189-dd89-45e6-8f95-41432fe0ae8b\",\"type\":\"FORBIDDEN\",\"width\":14.4736,\"height\":9.7096,\"rotation\":0,\"x\":99.756,\"y\":-25.496},           {\"id\":\"0f9ec514-92d2-4ce6-946f-2b2de7608403\",\"type\":\"FORBIDDEN\",\"width\":14.3816,\"height\":22.992,\"rotation\":0,\"x\":4.7632,\"y\":-48.672}           ]",
+            "type" : "string"
+          },
+          "preview" : {
+            "example" : "data:image/png;base64,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Vv1aEznUmnbt2on8/Hzpqb5gIiJyr5c0TfvS4oiIKEb6V03TOlocERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERkb/6O8i8p7lF8wLQAAAAAElFTkSuQmCC",
+            "type" : "string"
+          },
+          "blueprint" : {
+            "example" : "5ce2732b313464900111502b",
+            "type" : "string"
+          },
+          "name" : {
+            "example" : "map",
+            "type" : "string"
+          }
+        },
+        "title" : "Map",
+        "type" : "object"
+      },
+      "mapwithid" : {
+        "example" : {
+          "data" : {
+            "preview" : "data:image/png;base64,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Vv1aEznUmnbt2on8/Hzpqb5gIiJyr5c0TfvS4oiIKEb6V03TOlocERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERkb/6O8i8p7lF8wLQAAAAAElFTkSuQmCC",
+            "blueprint" : "5ce2732b313464900111502b",
+            "name" : "map",
+            "selected" : false,
+            "content" : "[           {\"id\":\"577cac4d-97c6-48c7-9ca5-2b117ae6aeff\",\"type\":\"FREE\",\"width\":95.1456,\"height\":29.8064,\"rotation\":0,\"x\":19.104,\"y\":-71.6584},           {\"id\":\"40a71d9b-2358-4a4b-ba94-fd389503e154\",\"type\":\"FORBIDDEN\",\"width\":24.916,\"height\":16.3968,\"rotation\":0,\"x\":19.7864,\"y\":-41.9848},           {\"id\":\"7bb34b94-c21e-4b05-8c14-255922efa63d\",\"type\":\"FREE\",\"width\":69.344,\"height\":16.3056,\"rotation\":0,\"x\":44.9768,\"y\":-41.9848},           {\"id\":\"00b2d189-dd89-45e6-8f95-41432fe0ae8b\",\"type\":\"FORBIDDEN\",\"width\":14.4736,\"height\":9.7096,\"rotation\":0,\"x\":99.756,\"y\":-25.496},           {\"id\":\"0f9ec514-92d2-4ce6-946f-2b2de7608403\",\"type\":\"FORBIDDEN\",\"width\":14.3816,\"height\":22.992,\"rotation\":0,\"x\":4.7632,\"y\":-48.672}           ]"
+          },
+          "id" : "id"
+        },
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/map"
+          }
+        },
+        "required" : [ "data", "id" ],
+        "title" : "MapWithId",
+        "type" : "object"
+      },
+      "robotlist" : {
+        "items" : {
+          "type" : "string"
+        },
+        "title" : "RobotList",
+        "type" : "array"
+      },
+      "robot" : {
+        "example" : {
+          "name" : "robot",
+          "model" : "erPallet"
+        },
+        "properties" : {
+          "model" : {
+            "example" : "erPallet",
+            "type" : "string"
+          },
+          "name" : {
+            "example" : "robot",
+            "type" : "string"
+          }
+        },
+        "title" : "Robot",
+        "type" : "object"
+      },
+      "tasklist" : {
+        "items" : {
+          "$ref" : "#/components/schemas/taskwithid"
+        },
+        "title" : "TaskList",
+        "type" : "array"
+      },
+      "mission" : {
+        "properties" : {
+          "data" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "data" ],
+        "title" : "Mission",
+        "type" : "object"
+      },
+      "taskwithid" : {
+        "example" : {
+          "data" : {
+            "robot" : "robot",
+            "mission" : "mission",
+            "created_at" : 0.8008281904610115,
+            "status" : "AVAILABLE"
+          },
+          "id" : "id"
+        },
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/task"
+          }
+        },
+        "required" : [ "data", "id" ],
+        "title" : "TaskWithId",
+        "type" : "object"
+      },
+      "task" : {
+        "description" : "Task that need to be executed",
+        "example" : {
+          "robot" : "robot",
+          "mission" : "mission",
+          "created_at" : 0.8008281904610115,
+          "status" : "AVAILABLE"
+        },
+        "properties" : {
+          "created_at" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "status" : {
+            "enum" : [ "AVAILABLE", "RUNNING", "FINISH" ],
+            "type" : "string"
+          },
+          "robot" : {
+            "type" : "string"
+          },
+          "mission" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "created_at", "mission", "status" ],
+        "title" : "Task",
+        "type" : "object"
+      },
+      "flowlist" : {
+        "items" : {
+          "$ref" : "#/components/schemas/flow"
+        },
+        "title" : "FlowList",
+        "type" : "array"
+      },
+      "dashboard" : {
+        "description" : "Dashboard",
+        "example" : {
+          "name" : "name",
+          "id" : "id",
+          "widgets" : [ {
+            "flowOptions" : {
+              "key" : "flowOptions"
+            },
+            "id" : "id",
+            "type" : "type",
+            "flowId" : "flowId",
+            "config" : {
+              "key" : "config"
+            }
+          }, {
+            "flowOptions" : {
+              "key" : "flowOptions"
+            },
+            "id" : "id",
+            "type" : "type",
+            "flowId" : "flowId",
+            "config" : {
+              "key" : "config"
+            }
+          } ],
+          "layouts" : {
+            "key" : [ {
+              "w" : 1,
+              "x" : 0,
+              "h" : 5,
+              "i" : "i",
+              "y" : 6
+            }, {
+              "w" : 1,
+              "x" : 0,
+              "h" : 5,
+              "i" : "i",
+              "y" : 6
+            } ]
+          },
+          "selected" : true
+        },
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "selected" : {
+            "type" : "boolean"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "layouts" : {
+            "additionalProperties" : {
+              "items" : {
+                "$ref" : "#/components/schemas/dashboardlayout"
+              },
+              "type" : "array"
+            },
+            "type" : "object"
+          },
+          "widgets" : {
+            "items" : {
+              "$ref" : "#/components/schemas/widget"
+            },
+            "type" : "array"
+          }
+        },
+        "title" : "Dashboard",
+        "type" : "object"
+      },
+      "dashboardlist" : {
+        "items" : {
+          "$ref" : "#/components/schemas/dashboardlistitem"
+        },
+        "title" : "DashboardList",
+        "type" : "array"
+      },
+      "route" : {
+        "items" : {
+          "$ref" : "#/components/schemas/routeitem"
+        },
+        "title" : "Route",
+        "type" : "array"
+      },
+      "costmap" : {
+        "example" : {
+          "data" : "data",
+          "width" : 0,
+          "height" : 6
+        },
+        "properties" : {
+          "width" : {
+            "description" : "costmap width in pixels",
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "height" : {
+            "description" : "costmap height in pixels",
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "costmap bytes base64 encoded",
+            "format" : "byte",
+            "type" : "string"
+          }
+        },
+        "required" : [ "data", "height", "width" ],
+        "title" : "Costmap",
+        "type" : "object"
+      },
+      "parkingspot" : {
+        "example" : {
+          "location" : {
+            "name" : "name",
+            "x" : 0.0,
+            "roll" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0,
+            "pitch" : 0.0,
+            "yaw" : 0.0
+          },
+          "id" : "id"
+        },
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "location" : {
+            "$ref" : "#/components/schemas/location"
+          }
+        },
+        "title" : "parkingspot",
+        "type" : "object"
+      },
+      "notfound" : {
+        "description" : "Not Found",
+        "title" : "Not Found",
+        "type" : "string"
+      },
+      "flow" : {
+        "properties" : {
+          "id" : {
+            "example" : "5a380e7b-bd52-4feb-8d2d-064537e7ff81",
+            "type" : "string"
+          },
+          "config" : {
+            "$ref" : "#/components/schemas/flow_config"
+          },
+          "type" : {
+            "enum" : [ "NUMBER", "TEXT", "BOOLEAN", "LIST", "OBJECT" ],
+            "example" : "NUMBER",
+            "type" : "string"
+          },
+          "direction" : {
+            "enum" : [ "SOURCE", "SINK" ],
+            "example" : "SOURCE",
+            "type" : "string"
+          },
+          "description" : {
+            "example" : "Robot speed in m/s",
+            "type" : "string"
+          },
+          "name" : {
+            "example" : "Speed",
+            "type" : "string"
+          }
+        },
+        "title" : "Flow",
+        "type" : "object"
+      },
+      "dashboardlayout" : {
+        "example" : {
+          "w" : 1,
+          "x" : 0,
+          "h" : 5,
+          "i" : "i",
+          "y" : 6
+        },
+        "properties" : {
+          "i" : {
+            "type" : "string"
+          },
+          "x" : {
+            "type" : "integer"
+          },
+          "y" : {
+            "type" : "integer"
+          },
+          "w" : {
+            "type" : "integer"
+          },
+          "h" : {
+            "type" : "integer"
+          }
+        },
+        "title" : "DashboardLayout",
+        "type" : "object"
+      },
+      "widget" : {
+        "description" : "",
+        "example" : {
+          "flowOptions" : {
+            "key" : "flowOptions"
+          },
+          "id" : "id",
+          "type" : "type",
+          "flowId" : "flowId",
+          "config" : {
+            "key" : "config"
+          }
+        },
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "flowId" : {
+            "type" : "string"
+          },
+          "flowOptions" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "config" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          }
+        },
+        "title" : "Widget",
+        "type" : "object"
+      },
+      "dashboardlistitem" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "selected" : {
+            "type" : "boolean"
+          }
+        },
+        "title" : "DashboardListItem",
+        "type" : "object"
+      },
+      "routeitem" : {
+        "properties" : {
+          "x" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "y" : {
+            "format" : "double",
+            "type" : "number"
+          }
+        },
+        "required" : [ "x", "y" ],
+        "title" : "RouteItem",
+        "type" : "object"
+      },
+      "flow_config" : {
+        "properties" : {
+          "type" : {
+            "enum" : [ "NCHAN", "ROS" ],
+            "example" : "NCHAN",
+            "type" : "string"
+          },
+          "settings" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "example" : {
+              "subscriber" : "websocket",
+              "id" : "md_vel"
+            },
+            "type" : "object"
+          }
+        }
+      }
+    },
+    "securitySchemes" : { }
+  }
+}
