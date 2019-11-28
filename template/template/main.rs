@@ -1,7 +1,4 @@
-mod models;
-mod server;
-
-use server::*;
+use {{snakecase info.title}}::server::*;
 
 #[derive(Clone)]
 struct Server;

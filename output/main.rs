@@ -1,7 +1,4 @@
-mod models;
-mod server;
-
-use server::*;
+use swagger_petstore::server::*;
 
 #[derive(Clone)]
 struct Server;
