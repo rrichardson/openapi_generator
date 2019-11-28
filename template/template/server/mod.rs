@@ -1,37 +1,63 @@
-use actix_web::{web::*, App, HttpServer, Responder, HttpResponse};
+use actix_web::{web::*, App, HttpServer, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
 use std::error::Error;
 use crate::models::*;
 
-pub trait {{camelcase info.title}} {
-    type Error: std::error::Error;
+{{~#*inline "operation_fn_trait"}}
 
-{{#each paths}}
-    {{~#with get}}
-    fn {{snakecase operationId}}(&self, _parameters: {{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response, Self::Error> {
+    fn {{snakecase operationId}}(&self, _parameters: {{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<HttpResponse>, Self::Error> {
         unimplemented!()
     }
-    {{~/with}}
-{{/each}}
-}
+{{~/inline}}
 
-{{#each paths}}
-    {{~#with get}}
-    {{#if summary}}/// {{summary}}{{/if}}
-    {{~#if description}}/// {{description}}{{/if}}
-    fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
-        server: Data<Server>,{{!-- {{~#if parameters}} --}}
-        query: Query<{{snakecase operationId}}::Query>,
-        path: Path<{{snakecase operationId}}::Path>,
-    {{!-- {{~/if}} --}}
-    ) -> impl Responder {
-        use {{snakecase operationId}}::*;
-        let parameters = Parameters::new(query.into_inner(), path.into_inner());
-        match server.{{snakecase operationId}}(parameters) {
-            Ok(response) => HttpResponse::Ok().body("{{summary}}"),
-            Err(err) => HttpResponse::InternalServerError().body(err.description().to_string()),
-        }
+pub trait {{camelcase info.title}} {
+    type Error: std::error::Error;
+{{~#each paths}}
+    {{~#with get}}{{~> operation_fn_trait}}{{~/with}}
+    {{~#with head}}{{~> operation_fn_trait}}{{~/with}}
+    {{~#with post}}{{~> operation_fn_trait}}{{~/with}}
+    {{~#with put}}{{~> operation_fn_trait}}{{~/with}}
+    {{~#with delete}}{{~> operation_fn_trait}}{{~/with}}
+    {{~#with options}}{{~> operation_fn_trait}}{{~/with}}
+    {{~#with trace}}{{~> operation_fn_trait}}{{~/with}}
+    {{~#with patch}}{{~> operation_fn_trait}}{{~/with}}
+{{~/each}}
+}
+{{#*inline "operation_fn"}}
+{{#if summary}}/// {{summary}}{{/if}}
+{{~#if description}}/// {{description}}{{/if}}
+async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
+    server: Data<Server>,{{!-- {{~#if parameters}} --}}
+    query: Query<{{snakecase operationId}}::Query>,
+    path: Path<{{snakecase operationId}}::Path>,
+    {{~#if requestBody}}
+    body: Json<{{snakecase operationId}}::Body>,
+    {{~/if}}
+) -> impl Responder {
+    use {{snakecase operationId}}::*;
+    let parameters = Parameters::new(query.into_inner(), path.into_inner()
+        {{~#if requestBody}}, body.into_inner(),{{/if~}}
+    );
+    match server.{{snakecase operationId}}(parameters) {
+        {{~#each responses}}
+            {{~#if (not (eq @key "default"))}}
+        Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
+            {{~/if}}
+        {{~/each}}
+        Ok(Response::Unspecified(response)) => response,
+        Err(err) => HttpResponse::InternalServerError().body(err.description().to_string()),
     }
-    {{/with}}
+}
+{{~/inline}}
+
+{{~#each paths}}
+    {{~#with get}}{{~> operation_fn}}{{~/with}}
+    {{~#with head}}{{~> operation_fn}}{{~/with}}
+    {{~#with post}}{{~> operation_fn}}{{~/with}}
+    {{~#with put}}{{~> operation_fn}}{{~/with}}
+    {{~#with delete}}{{~> operation_fn}}{{~/with}}
+    {{~#with options}}{{~> operation_fn}}{{~/with}}
+    {{~#with trace}}{{~> operation_fn}}{{~/with}}
+    {{~#with patch}}{{~> operation_fn}}{{~/with}}
 {{~/each}}
 
 pub fn run<Server: {{camelcase info.title}} + Send + Sync + Clone + 'static>(

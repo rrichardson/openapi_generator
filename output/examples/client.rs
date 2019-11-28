@@ -1,11 +1,11 @@
 use async_std::task;
-use swagger_petstore::client::*;
+use vizyr_api::client::*;
 
 fn main() -> Result<(), surf::Exception> {
     femme::start(log::LevelFilter::Info)?;
 
     task::block_on(async {
-        let _client = SwaggerPetstoreClient::new("https://service");
+        let _client = VizyrApiClient::new("https://service");
         Ok(())
     })
 }

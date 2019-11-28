@@ -4,7 +4,8 @@ pub mod components {
         use super::super::components;
         use serde::{Deserialize, Serialize};
 {{~#each schemas}}
-    {{~>schema name=@key this}}
+
+{{>schema name=@key this}}
 {{~/each}}
     }
 {{~/with}}

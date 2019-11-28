@@ -1,8 +1,10 @@
 {{~>subtypes name=name}}
-{{#if description}}/// {{description}}{{/if}}
-{{~#if [$ref]}}
-pub type {{camelcase name suffix}} = {{~>data_type required="true"}};
-{{~else}}
+{{~#if description~}}
+/// {{description}}
+{{/if}}
+{{~#if [$ref]~}}
+pub type {{camelcase name suffix}} = {{>data_type required="true"}};
+{{~else~}}
 #[derive(Deserialize, Serialize, Clone)]
 pub struct {{camelcase name suffix}}
 {{~#if type}} {
@@ -12,6 +14,7 @@ pub struct {{camelcase name suffix}}
             {{~#if (has @key ../../required)}}
             pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key) required="true"}},
             {{~else}}
+            #[serde(skip_serializing_if = "Option::is_none")] 
             pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key)}},
             {{~/if}}
         {{~/each}}
@@ -19,7 +22,7 @@ pub struct {{camelcase name suffix}}
     pub data: {{~>data_type required="true"}},
     {{~/if}}
 }
-{{else}}
+{{~else~}}
 ;
 {{~/if}}
 {{~/if}}
