@@ -8,7 +8,7 @@ impl {{camelcase info.title}} for Server {
 }
 
 fn main() -> std::io::Result<()> {
-    HttpServer::new(move || App::new().configure(config::<Server>))
+    HttpServer::new(move || App::new().data(Server {}).configure(config::<Server>))
     .bind("127.0.0.1:8080")?
     .run()
 }
