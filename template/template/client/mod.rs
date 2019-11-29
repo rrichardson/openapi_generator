@@ -1,7 +1,7 @@
 pub mod blocking;
 
-// #[cfg(test)]
-// mod tests;
+#[cfg(test)]
+mod tests;
 
 use crate::models::*;
 
