@@ -25,6 +25,9 @@ fn test_{{snakecase operationId}}() {
       {{name}}: {{>example}},
       {{~/if}}
     {{~/each~}}
+    {{#with requestBody.content.[application/json]}}
+      body: {{>example}},
+    {{~/with}}
   };
   let result = api_client.{{snakecase operationId}}(&parameters);
   mock.assert();

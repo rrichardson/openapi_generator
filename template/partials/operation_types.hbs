@@ -51,8 +51,7 @@ pub mod {{snakecase operationId}} {
             }
         }
 
-        {{~#with requestBody.content.[application/json]}}
-
+        {{#with requestBody.content.[application/json]}}
         pub fn body(&self) -> Body {
             self.body.clone()
         }
