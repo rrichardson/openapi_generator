@@ -9,13 +9,11 @@ use crate::openapi_serialization::OpenapiSerialization;
 #[test]
 fn test_{{snakecase operationId}}() {
   let api_client = Client::new(&mockito::server_url());
-
   let uri = format!("{{@../key}}"
     {{~#each parameters}}
       {{~#if (eq in "path")}}, {{name}} = {{>example}}{{/if}}
     {{~/each~}}
   );
-
   let mock = mock("GET", Matcher::Exact(uri))
     .match_query(Matcher::AllOf(vec![
       {{~#each parameters}}
@@ -26,7 +24,6 @@ fn test_{{snakecase operationId}}() {
     ]))
     .with_status(200)
     .create();
-
   let parameters = {{snakecase operationId}}::Parameters {
     {{~#each parameters}}
       {{~#if (eq in "path")}}
@@ -37,7 +34,6 @@ fn test_{{snakecase operationId}}() {
       {{/if}}
     {{~/each~}}
   };
-
   let result = api_client.{{snakecase operationId}}(&parameters);
   mock.assert();
 }
