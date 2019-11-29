@@ -8,3 +8,5 @@ pub mod openapi_serialization;
 pub mod server;
 
 pub use models::*;
+
+pub const VERSION: &str = "{{info.version}}";
