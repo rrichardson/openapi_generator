@@ -30,6 +30,7 @@ macro_rules! case_helper {
 case_helper!(mixedcase, to_mixed_case);
 case_helper!(camelcase, to_camel_case);
 case_helper!(snakecase, to_snake_case);
+case_helper!(shoutysnakecase, to_shouty_snake_case);
 handlebars_helper!(component_path: |ref_path: str| parse_component_path(ref_path));
 handlebars_helper!(sanitize: |word: str| apply_sanitize(word));
 handlebars_helper!(has: |elem: str, list: Json| apply_has(elem, list));

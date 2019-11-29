@@ -19,9 +19,7 @@ pub mod {{snakecase operationId}} {
 
     impl Parameters {
         {{~#if requestBody}}
-        {{~#with requestBody.content.[application/json]}}
         pub fn new(query: Query, path: Path, body: Body) -> Self {
-        {{~/with}}
         {{~else}}
         pub fn new(query: Query, path: Path) -> Self {
         {{~/if}}
