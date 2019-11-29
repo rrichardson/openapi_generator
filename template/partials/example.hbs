@@ -1,4 +1,5 @@
-{{#unless required}}Some({{/unless~}}
+{{~#if example includeZero=true}}
+{{~#unless required}}Some({{/unless~}}
 {{~#if (eq schema.type "string")}}
 "{{example}}".to_string()
 {{~/if}}
@@ -20,3 +21,6 @@
 {{example}}
 {{~/if}}
 {{~#unless required}}){{/unless}}
+{{~else~}}
+(panic!("missing example: '{{name}}'"))
+{{~/if}}

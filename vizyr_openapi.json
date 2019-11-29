@@ -335,6 +335,7 @@
           "in" : "path",
           "name" : "blueprint_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -382,6 +383,7 @@
           "in" : "path",
           "name" : "blueprint_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -442,6 +444,7 @@
           "in" : "path",
           "name" : "blueprint_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -452,6 +455,7 @@
           "in" : "path",
           "name" : "location_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -502,6 +506,7 @@
           "in" : "path",
           "name" : "blueprint_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -512,6 +517,7 @@
           "in" : "path",
           "name" : "location_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -569,6 +575,7 @@
           "in" : "path",
           "name" : "blueprint_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -579,6 +586,7 @@
           "in" : "path",
           "name" : "location_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -735,6 +743,7 @@
           "in" : "path",
           "name" : "map_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -792,6 +801,7 @@
           "in" : "path",
           "name" : "map_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -849,6 +859,7 @@
           "in" : "path",
           "name" : "map_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -1108,6 +1119,7 @@
           "in" : "path",
           "name" : "robot_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -1165,6 +1177,7 @@
           "in" : "path",
           "name" : "robot_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -1222,6 +1235,7 @@
           "in" : "path",
           "name" : "robot_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -1396,6 +1410,7 @@
           "in" : "query",
           "name" : "robot",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -1491,6 +1506,7 @@
           "in" : "path",
           "name" : "task_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -1541,6 +1557,7 @@
           "in" : "path",
           "name" : "task_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -1648,6 +1665,7 @@
           "in" : "path",
           "name" : "dashboard_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -1705,6 +1723,7 @@
           "in" : "path",
           "name" : "dashboard_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -1762,6 +1781,7 @@
           "in" : "path",
           "name" : "dashboard_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
@@ -2184,6 +2204,7 @@
           "in" : "path",
           "name" : "parking_id",
           "required" : true,
+          "example": "5ce2732b313464900111502b",
           "schema" : {
             "type" : "string"
           },
