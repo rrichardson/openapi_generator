@@ -11,7 +11,7 @@ fn test_{{snakecase operationId}}() {
       {{~#each parameters}}
         {{~#if (eq in "query")}}
         Matcher::UrlEncoded("{{name}}".into(), ({{>example}}).serialize().unwrap()),
-        {{/if}}
+        {{~/if}}
       {{~/each~}}
     ]))
     .with_status(200)
@@ -20,10 +20,10 @@ fn test_{{snakecase operationId}}() {
     {{~#each parameters}}
       {{~#if (eq in "path")}}
       {{name}}: {{>example}},
-      {{/if}}
+      {{~/if}}
       {{~#if (eq in "query")}}
       {{name}}: {{>example}},
-      {{/if}}
+      {{~/if}}
     {{~/each~}}
   };
   let result = api_client.{{snakecase operationId}}(&parameters);
