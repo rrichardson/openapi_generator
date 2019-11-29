@@ -82,6 +82,27 @@ pub fn config<Server: {{camelcase info.title}} + Send + Sync + Clone + 'static>(
                 {{~#with get}}
                 .route(get().to({{snakecase operationId}}::<Server>))
                 {{~/with}}
+                {{~#with head}}
+                .route(head().to({{snakecase operationId}}::<Server>))
+                {{~/with}}
+                {{~#with post}}
+                .route(post().to({{snakecase operationId}}::<Server>))
+                {{~/with}}
+                {{~#with put}}
+                .route(put().to({{snakecase operationId}}::<Server>))
+                {{~/with}}
+                {{~#with delete}}
+                .route(delete().to({{snakecase operationId}}::<Server>))
+                {{~/with}}
+                {{~#with options}}
+                .route(options().to({{snakecase operationId}}::<Server>))
+                {{~/with}}
+                {{~#with trace}}
+                .route(trace().to({{snakecase operationId}}::<Server>))
+                {{~/with}}
+                {{~#with patch}}
+                .route(patch().to({{snakecase operationId}}::<Server>))
+                {{~/with}}
         )
     {{~/each}};
 }
