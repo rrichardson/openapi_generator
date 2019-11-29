@@ -1,4 +1,6 @@
-use actix_web::{web::*, App, HttpServer, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
+#![allow(clippy::unit_arg)]
+
+use actix_web::{web::*, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
 use std::error::Error;
 use crate::models::*;
 
@@ -44,12 +46,22 @@ async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
             {{~/if}}
         {{~/each}}
         Ok(Response::Unspecified(response)) => response,
-        Err(err) => HttpResponse::InternalServerError().body(err.description().to_string()),
+        Err(err) => HttpResponse::InternalServerError().body(err_to_string(&err)),
     }
 }
 {{~/inline}}
 
-{{~#each paths}}
+fn err_to_string(err: &dyn std::error::Error) -> String {
+    let mut errors_str = Vec::new();
+    let mut current_err = err.source();
+    while let Some(err) = current_err {
+        errors_str.push(err.to_string());
+        current_err = err.source();
+    }
+    format!("error: {}\n\ncaused by:\n\t{}", err, errors_str.as_slice().join("\n\t")).to_string()
+}
+
+{{#each paths}}
     {{~#with get}}{{~> operation_fn}}{{~/with}}
     {{~#with head}}{{~> operation_fn}}{{~/with}}
     {{~#with post}}{{~> operation_fn}}{{~/with}}
@@ -60,21 +72,16 @@ async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
     {{~#with patch}}{{~> operation_fn}}{{~/with}}
 {{~/each}}
 
-pub fn run<Server: {{camelcase info.title}} + Send + Sync + Clone + 'static>(
-    server: Server,
-) -> std::io::Result<()> {
-    HttpServer::new(move ||
-        App::new()
-            .data(server.clone())
-            {{~#each paths}}
-                .service(
-                    resource("{{@key}}")
-                        {{~#with get}}
-                        .route(get().to({{snakecase operationId}}::<Server>))
-                        {{~/with}}
-                )
-            {{~/each}}
-    )
-    .bind("127.0.0.1:8080")?
-    .run()
+pub fn config<Server: {{camelcase info.title}} + Send + Sync + Clone + 'static>(
+    app: &mut ServiceConfig,
+) {
+    app
+    {{~#each paths}}
+        .service(
+            resource("{{@key}}")
+                {{~#with get}}
+                .route(get().to({{snakecase operationId}}::<Server>))
+                {{~/with}}
+        )
+    {{~/each}};
 }

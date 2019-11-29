@@ -2,10 +2,12 @@
 {{~#if (eq type "string")}}
     {{~#if (eq format "binary")~}}
 Vec<u8>
-    {{~else if (eq format "byte")~}}
-Vec<u8>
     {{~else~}}
+        {{~#if (eq format "byte")~}}
+Vec<u8>
+        {{~else~}}
 String
+        {{~/if}}
     {{~/if}}
 {{~/if}}
 {{~#if (eq type "number")~}}

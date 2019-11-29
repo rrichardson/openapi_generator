@@ -1,3 +1,5 @@
+#![allow(clippy::clone_on_copy)]
+
 pub mod components {
 {{~#with components}}
     pub mod schemas {
