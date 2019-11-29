@@ -11,4 +11,7 @@
             {{/if}}
         {{~/if}}
     {{~/each}}
+    {{~#with additionalProperties}}
+        {{~>schema name=(camelcase ../name "properties") this}}
+    {{/with}}
 {{~/if}}

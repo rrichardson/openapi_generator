@@ -72,7 +72,7 @@ pub mod {{snakecase operationId}} {
     pub enum Response<T> {
     {{~#each responses}}
         {{~#if (not (eq @key "default"))}}
-        {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
+            {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
         {{~/if}}
     {{~/each}}
         Unspecified(T),
