@@ -2541,7 +2541,10 @@
         },
         "required" : [ "data" ],
         "title" : "Mission",
-        "type" : "object"
+        "type" : "object",
+        "example" : {
+          "data" : "mission"
+        }
       },
       "taskwithid" : {
         "example" : {
