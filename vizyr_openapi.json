@@ -2724,7 +2724,10 @@
           }
         },
         "title" : "Flow",
-        "type" : "object"
+        "type" : "object",
+        "example": {
+          "id": "5a380e7b-bd52-4feb-8d2d-064537e7ff81",
+        }
       },
       "dashboardlayout" : {
         "example" : {

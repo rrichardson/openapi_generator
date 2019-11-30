@@ -1,0 +1,22 @@
+pub struct {{camelcase name suffix}}Example;
+{{#if type~}}
+    {{~#if (and (not example) (eq type "array"))}}
+    impl {{camelcase name suffix}}Example {
+        pub fn default() -> {{camelcase name suffix}} {
+            vec![{{~component_path items.[$ref]}}Example::default()]
+        }
+    }
+    {{~else~}}
+    const {{shoutysnakecase name suffix}}: &str = r#"{{json example}}"#;
+
+    impl {{camelcase name suffix}}Example {
+        pub fn default() -> {{camelcase name suffix}} {
+            {{~#if example}}
+            serde_json::from_str({{shoutysnakecase name suffix}}).unwrap()
+            {{~else~}}
+            panic!("there is no example for {{name}}")
+            {{~/if}}
+        }
+    }
+    {{~/if}}
+{{~/if}}
