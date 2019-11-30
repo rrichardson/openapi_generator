@@ -7,5 +7,6 @@ use crate::openapi_serialization::OpenapiSerialization;
 {{#each paths}}
   {{#with get}}{{> test_operation_client operation_verb="get"}}{{~/with}}
   {{#with post}}{{> test_operation_client operation_verb="post"}}{{~/with}}
+  {{#with put}}{{> test_operation_client operation_verb="put"}}{{~/with}}
   {{#with delete}}{{> test_operation_client operation_verb="delete"}}{{~/with}}
 {{~/each}}

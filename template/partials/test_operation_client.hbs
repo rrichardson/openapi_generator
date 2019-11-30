@@ -1,23 +1,28 @@
+{{~#each responses}}
+{{~#if (eq @key "200")}}
 #[test]
-fn test_{{snakecase operationId}}() {
+fn test_{{snakecase ../operationId}}_{{@key}}() {
   let api_client = Client::new(&mockito::server_url());
-  let uri = format!("{{@../key}}"
-    {{~#each parameters}}
+  let uri = format!("{{@../../key}}"
+    {{~#each ../../parameters}}
       {{~#if (eq in "path")}}, {{name}} = {{>example}}{{/if}}
     {{~/each~}}
   );
-  let mock = mock("{{shoutysnakecase operation_verb}}", Matcher::Exact(uri))
+  let mock = mock("{{shoutysnakecase ../operation_verb}}", Matcher::Exact(uri))
     .match_query(Matcher::AllOf(vec![
-      {{~#each parameters}}
+      {{~#each ../../parameters}}
         {{~#if (eq in "query")}}
         Matcher::UrlEncoded("{{name}}".into(), ({{>example}}).serialize().unwrap()),
         {{~/if}}
       {{~/each~}}
     ]))
-    .with_status(200)
+    .with_status({{@key}})
+    {{~#with content.[application/json]}}
+    .with_body(json!({{>example}}))
+    {{~/with}}
     .create();
-  let parameters = {{snakecase operationId}}::Parameters {
-    {{~#each parameters}}
+  let parameters = {{snakecase ../operationId}}::Parameters {
+    {{~#each ../../parameters}}
       {{~#if (eq in "path")}}
       {{name}}: {{>example}},
       {{~/if}}
@@ -25,10 +30,12 @@ fn test_{{snakecase operationId}}() {
       {{name}}: {{>example}},
       {{~/if}}
     {{~/each~}}
-    {{#with requestBody.content.[application/json]}}
+    {{#with ../../requestBody.content.[application/json]}}
       body: {{>example}},
     {{~/with}}
   };
-  let result = api_client.{{snakecase operationId}}(&parameters);
+  let result = api_client.{{snakecase ../operationId}}(&parameters).unwrap();
   mock.assert();
 }
+{{~/if}}
+{{/each}}

@@ -30,7 +30,7 @@
 {{~#if [$ref]~}}
 pub type {{camelcase name suffix}} = {{>data_type required="true"}};
 {{~else~}}
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub struct {{camelcase name suffix}};
 {{~/if}}
 {{~/if}}

@@ -66,6 +66,7 @@ pub mod {{snakecase operationId}} {
 {{>schema name="Body" description=description content.[application/json].schema}}
 {{~/with}}
 
+    #[derive(Debug)]
     pub enum Response<T> {
     {{~#each responses}}
         {{~#if (not (eq @key "default"))}}
