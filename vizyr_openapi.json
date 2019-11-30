@@ -155,16 +155,8 @@
           "style" : "simple"
         } ],
         "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "string"
-                }
-
-              }
-            },
-            "description" : "OK"
+          "204" : {
+            "description" : "No Content"
           },
           "401" : {
             "content" : {
@@ -464,7 +456,7 @@
         } ],
         "responses" : {
           "204" : {
-            "description" : "OK"
+            "description" : "No Content"
           },
           "401" : {
             "content" : {
@@ -751,15 +743,8 @@
           "style" : "simple"
         } ],
         "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            },
-            "description" : "OK"
+          "204" : {
+            "description" : "No Content"
           },
           "401" : {
             "content" : {
@@ -1127,15 +1112,8 @@
           "style" : "simple"
         } ],
         "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            },
-            "description" : "OK"
+          "204" : {
+            "description" : "No Content"
           },
           "401" : {
             "content" : {
@@ -1673,15 +1651,8 @@
           "style" : "simple"
         } ],
         "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            },
-            "description" : "OK"
+          "204" : {
+            "description" : "No Content"
           },
           "401" : {
             "content" : {
@@ -2223,8 +2194,8 @@
           "style" : "form"
         } ],
         "responses" : {
-          "200" : {
-            "description" : "OK"
+          "204" : {
+            "description" : "No Content"
           },
           "401" : {
             "content" : {
@@ -2326,7 +2297,10 @@
           "type" : "string"
         },
         "title" : "BlueprintList",
-        "type" : "array"
+        "type" : "array",
+        "example": [
+          "5ce2732b313464900111502b"
+        ]
       },
       "unauthorized" : {
         "description" : "Unauthorized",

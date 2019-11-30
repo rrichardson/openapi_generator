@@ -1,5 +1,5 @@
 {{~#each responses}}
-{{~#if (eq @key "200")}}
+{{~#if (or (eq @key "200") (eq @key "204"))}}
 #[test]
 fn test_{{snakecase ../operationId}}_{{@key}}() {
   let api_client = Client::new(&mockito::server_url());
@@ -18,7 +18,7 @@ fn test_{{snakecase ../operationId}}_{{@key}}() {
     ]))
     .with_status({{@key}})
     {{~#with content.[application/json]}}
-    .with_body(json!({{>example}}))
+    .with_body(serde_json::to_string(&{{>example}}).unwrap())
     {{~/with}}
     .create();
   let parameters = {{snakecase ../operationId}}::Parameters {

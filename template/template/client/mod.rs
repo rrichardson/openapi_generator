@@ -25,7 +25,11 @@ pub struct {{camelcase info.title "Client"}} {
             match response.status().as_str() {
             {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
+                {{~#if (eq @key "204")}}
+                "{{@key}}" => {{camelcase "Response" @key}}(response),
+                {{~else~}}
                 "{{@key}}" => {{camelcase "Response" @key}}(response.body_json().await?),
+                {{~/if}}
             {{~/if}}
             {{~/each}}
                 _ => Unspecified(response),

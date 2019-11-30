@@ -1,8 +1,8 @@
 {{~#if (eq schema.type "array")~}}
-vec![{{~component_path schema.items.[$ref]}}::example()]
+vec![{{~component_path schema.items.[$ref]}}Example::default()]
 {{~else~}}
     {{~#if schema.[$ref]}}
-{{~component_path schema.[$ref]}}::example()
+{{~component_path schema.[$ref]}}Example::default()
     {{~else~}}
         {{~#if example includeZero=true}}
             {{~#unless required}}Some({{/unless~}}
