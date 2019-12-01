@@ -2249,7 +2249,8 @@
     },
     "schemas" : {
       "Error" : {
-        "type" : "string"
+        "type" : "string",
+        "example" : "error"
       },
       "info" : {
         "example" : {

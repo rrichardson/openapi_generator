@@ -5,4 +5,7 @@
   {{~#if (eq @key "204")}}
   {{> test_operation_client_success status="204" request=../../this}}
   {{~/if}}
+  {{~#if (eq @key "404")}}
+  {{> test_operation_client_success status="404" request=../../this}}
+  {{~/if}}
 {{/each}}

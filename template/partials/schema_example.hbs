@@ -23,6 +23,7 @@ pub struct {{camelcase name suffix}}Example;
     {{~else~}}
     impl {{camelcase name suffix}}Example {
         pub fn default() -> {{camelcase name suffix}} {
+            {{~#if properties}}
             let {{snakecase name suffix}}: String = json!({
             {{~#each properties}}
                 {{~#if (eq type "object")}}
@@ -39,6 +40,9 @@ pub struct {{camelcase name suffix}}Example;
             {{~/each}}
             }).to_string();
             serde_json::from_str(&{{snakecase name suffix}}).unwrap()
+            {{~else~}}
+            panic!("there is no example for {{name}}")
+            {{~/if}}
         }
     }
     {{~/if}}

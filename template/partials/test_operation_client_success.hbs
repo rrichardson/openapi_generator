@@ -1,4 +1,3 @@
-{{log (json this)}}
 #[test]
 fn test_{{snakecase request.operationId}}_{{status}}() {
   let api_client = Client::new(&mockito::server_url());
