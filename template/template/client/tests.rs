@@ -5,8 +5,9 @@ use serde_json::json;
 use crate::openapi_serialization::OpenapiSerialization;
 
 {{#each paths}}
-  {{#with get}}{{> test_operation_client operation_verb="get"}}{{~/with}}
-  {{#with post}}{{> test_operation_client operation_verb="post"}}{{~/with}}
-  {{#with put}}{{> test_operation_client operation_verb="put"}}{{~/with}}
-  {{#with delete}}{{> test_operation_client operation_verb="delete"}}{{~/with}}
+  {{#each this}}
+    {{~#each responses}}
+      {{> test_operation_client uri=@../../key operation_verb=@../key status=@key ../this response=this}}
+    {{/each}}
+  {{/each}}
 {{~/each}}

@@ -110,7 +110,8 @@
               "application/json" : {
                 "schema" : {
                   "type" : "string"
-                }
+                },
+                "example" : "blueprintId"
               }
             },
             "description" : "Created"
@@ -691,7 +692,8 @@
               "application/json" : {
                 "schema" : {
                   "type" : "string"
-                }
+                },
+                "example" : "dashboardId"
               }
             },
             "description" : "Created"
@@ -1053,7 +1055,8 @@
               "application/json" : {
                 "schema" : {
                   "type" : "string"
-                }
+                },
+                "example" : "dashboardId"
               }
             },
             "description" : "Created"
@@ -1320,7 +1323,8 @@
               "application/json" : {
                 "schema" : {
                   "type" : "string"
-                }
+                },
+                "example" : "taskId"
               }
             },
             "description" : "Created"
@@ -1853,7 +1857,8 @@
               "application/json" : {
                 "schema" : {
                   "type" : "string"
-                }
+                },
+                "example" : "dashboardId"
               }
             },
             "description" : "Created"
@@ -2278,12 +2283,14 @@
       "unauthorized" : {
         "description" : "Unauthorized",
         "title" : "Unauthorized",
-        "type" : "string"
+        "type" : "string",
+        "example": "Unauthorized"
       },
       "forbidden" : {
         "description" : "Forbidden",
         "title" : "Forbidden",
-        "type" : "string"
+        "type" : "string",
+        "example": "Forbidden"
       },
       "blueprint" : {
         "example" : {
@@ -2694,7 +2701,8 @@
       "notfound" : {
         "description" : "Not Found",
         "title" : "Not Found",
-        "type" : "string"
+        "type" : "string",
+        "example": "Not Found"
       },
       "flow" : {
         "properties" : {

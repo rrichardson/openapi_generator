@@ -1,11 +1,34 @@
-{{~#each responses}}
-  {{~#if (eq @key "200")}}
-  {{> test_operation_client_success status="200" request=../../this}}
-  {{~/if}}
-  {{~#if (eq @key "204")}}
-  {{> test_operation_client_success status="204" request=../../this}}
-  {{~/if}}
-  {{~#if (eq @key "404")}}
-  {{> test_operation_client_success status="404" request=../../this}}
-  {{~/if}}
-{{/each}}
+#[test]
+fn test_{{snakecase operationId}}_{{status}}() {
+  let api_client = Client::new(&mockito::server_url());
+  let uri = format!("{{uri}}"
+    {{~#each parameters}}
+      {{~#if (eq in "path")}}, {{name}} = {{>example}}{{/if}}
+    {{~/each~}}
+  );
+  let mock = mock("{{shoutysnakecase operation_verb}}", Matcher::Exact(uri))
+    {{~#if parameters}}
+    .match_query(Matcher::AllOf(vec![
+      {{~#each parameters}}
+        {{~#if (eq in "query")}}
+        Matcher::UrlEncoded("{{name}}".into(), ({{>example}}).serialize().unwrap()),
+        {{~/if}}
+      {{~/each~}}
+    ]))
+    {{~/if}}
+    .with_status({{status}})
+    {{~#with response.content.[application/json]}}
+    .with_body(serde_json::to_string(&{{>example}}).unwrap())
+    {{~/with}}
+    .create();
+  let parameters = {{snakecase operationId}}::Parameters {
+    {{~#each parameters}}
+      {{name}}: {{>example}},
+    {{~/each~}}
+    {{#with requestBody.content.[application/json]}}
+      body: {{>example}},
+    {{~/with}}
+  };
+  let result = api_client.{{snakecase operationId}}(&parameters).unwrap();
+  mock.assert();
+}
