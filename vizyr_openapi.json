@@ -2702,7 +2702,7 @@
             "type" : "string"
           },
           "config" : {
-            "$ref" : "#/components/schemas/flow_config"
+            "$ref" : "#/components/schemas/flowconfig"
           },
           "type" : {
             "enum" : [ "NUMBER", "TEXT", "BOOLEAN", "LIST", "OBJECT" ],
@@ -2725,9 +2725,6 @@
         },
         "title" : "Flow",
         "type" : "object",
-        "example": {
-          "id": "5a380e7b-bd52-4feb-8d2d-064537e7ff81",
-        }
       },
       "dashboardlayout" : {
         "example" : {
@@ -2820,18 +2817,20 @@
         "properties" : {
           "x" : {
             "format" : "double",
-            "type" : "number"
+            "type" : "number",
+            "example": 0.0
           },
           "y" : {
             "format" : "double",
-            "type" : "number"
+            "type" : "number",
+            "example": 0.0
           }
         },
         "required" : [ "x", "y" ],
         "title" : "RouteItem",
         "type" : "object"
       },
-      "flow_config" : {
+      "flowconfig" : {
         "properties" : {
           "type" : {
             "enum" : [ "NCHAN", "ROS" ],
@@ -2848,7 +2847,8 @@
             },
             "type" : "object"
           }
-        }
+        },
+        "type" : "object"
       }
     },
     "securitySchemes" : { }

@@ -5,6 +5,8 @@ pub mod components {
     pub mod schemas {
         use super::super::components;
         use serde::{Deserialize, Serialize};
+        use serde_json::{json, value::Value};
+
 {{~#each schemas}}
 
 {{>schema name=@key this}}

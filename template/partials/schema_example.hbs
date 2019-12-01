@@ -1,3 +1,4 @@
+{{!-- https://swagger.io/docs/specification/adding-examples/ --}}
 pub struct {{camelcase name suffix}}Example;
 {{#if type~}}
     {{~#if (and (not example) (eq type "array"))}}
@@ -7,6 +8,7 @@ pub struct {{camelcase name suffix}}Example;
         }
     }
     {{~else~}}
+    {{~#if example}}
     const {{shoutysnakecase name suffix}}: &str = r#"{{json example}}"#;
 
     impl {{camelcase name suffix}}Example {
@@ -18,5 +20,27 @@ pub struct {{camelcase name suffix}}Example;
             {{~/if}}
         }
     }
+    {{~else~}}
+    impl {{camelcase name suffix}}Example {
+        pub fn default() -> {{camelcase name suffix}} {
+            let {{snakecase name suffix}}: String = json!({
+            {{~#each properties}}
+                {{~#if (eq type "object")}}
+                "{{snakecase @key}}": {{(camelcase ../name @key)}}Example::default(),
+                {{~/if}}
+                {{~#if (eq type "array")}}
+                {{~#if (eq items.type "object")}}
+                "{{snakecase @key}}": vec![{{(camelcase ../name @key)}}Example::default()],
+                {{/if}}
+                {{~/if}}
+                {{~#if (and (not (eq type "object")) (not (eq type "array")))}}
+                "{{snakecase @key}}": {{> example schema=this}},
+                {{~/if}}
+            {{~/each}}
+            }).to_string();
+            serde_json::from_str(&{{snakecase name suffix}}).unwrap()
+        }
+    }
+    {{~/if}}
     {{~/if}}
 {{~/if}}
