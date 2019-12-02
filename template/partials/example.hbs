@@ -1,30 +1,24 @@
-{{~#if (eq schema.type "array")~}}
-vec![{{~component_path schema.items.[$ref]}}_EXAMPLE]
-{{~else~}}
-        {{~#if example includeZero=true~}}
-            {{~#unless required~}}Some({{/unless~}}
-                {{~#if (eq schema.type "string")~}}
+{{~#if example includeZero=true~}}
+    {{~#unless required~}}Some({{/unless~}}
+        {{~#if (eq schema.type "string")~}}
 "{{example}}".to_string()
-                {{~/if~}}
-                {{~#if (eq schema.type "number")~}}
-                    {{~#if (eq format "float")~}}
-{{example}} as f32
-                    {{~else~}}
-{{example}} as f64
-                    {{~/if~}}
-                {{~/if~}}
-                {{~#if (eq schema.type "integer")~}}
-                    {{~#if (eq format "int32")~}}
-{{example}} as i32
-                    {{~else~}}
-{{example}} as i64
-                    {{~/if~}}
-                {{~/if~}}
-                {{~#if (eq schema.type "boolean")~}}
-{{example}}
-                {{~/if~}}
-            {{~#unless required~}}){{~/unless~}}
-        {{~else~}}
-        panic!(r#"there is no example for {{json this}}"#)
         {{~/if~}}
+        {{~#if (eq schema.type "number")~}}
+            {{~#if (eq format "float")~}}
+{{example}} as f32
+            {{~else~}}
+{{example}} as f64
+            {{~/if~}}
+        {{~/if~}}
+        {{~#if (eq schema.type "integer")~}}
+            {{~#if (eq format "int32")~}}
+{{example}} as i32
+            {{~else~}}
+{{example}} as i64
+            {{~/if~}}
+        {{~/if~}}
+        {{~#if (eq schema.type "boolean")~}}
+{{example}}
+        {{~/if~}}
+    {{~#unless required~}}){{~/unless~}}
 {{~/if~}}
