@@ -2,6 +2,7 @@
 pub mod {{snakecase operationId}} {
     use super::components;
     use serde::{Deserialize, Serialize};
+
     {{#each parameters}}
         {{~>subtypes name=name}}
     {{~/each}}
@@ -19,9 +20,7 @@ pub mod {{snakecase operationId}} {
 
     impl Parameters {
         {{~#if requestBody}}
-        {{~#with requestBody.content.[application/json]}}
         pub fn new(query: Query, path: Path, body: Body) -> Self {
-        {{~/with}}
         {{~else}}
         pub fn new(query: Query, path: Path) -> Self {
         {{~/if}}
@@ -53,34 +52,37 @@ pub mod {{snakecase operationId}} {
             }
         }
 
-        {{~#with requestBody.content.[application/json]}}
-
+        {{#with requestBody.content.[application/json]}}
         pub fn body(&self) -> Body {
             self.body.clone()
         }
         {{~/with}}
     }
 
-{{>parameter_type type="query"}}
+    {{>parameter_type type="query"}}
 
-{{>parameter_type type="path"}}
+    {{>parameter_type type="path"}}
 
-{{#with requestBody}}
-{{>schema name="Body" description=description content.[application/json].schema}}
-{{~/with}}
+    {{#with requestBody}}
+    {{>schema name="Body" description=description content.[application/json].schema}}
+    {{~/with}}
 
+    #[derive(Debug)]
     pub enum Response<T> {
     {{~#each responses}}
         {{~#if (not (eq @key "default"))}}
-            {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
+        {{~#if (eq @key "204")}}
+        {{camelcase "Response" @key}}(T),
+        {{~else~}}
+        {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
+        {{~/if}}
         {{~/if}}
     {{~/each}}
         Unspecified(T),
     }
     {{~#each responses}}
         {{~#if (not (eq @key "default"))}}
-
-{{>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
+            {{>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
         {{~/if}}
     {{~/each}}
 }

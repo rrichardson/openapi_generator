@@ -1,22 +1,30 @@
-{{#unless required}}Some({{/unless~}}
-{{~#if (eq schema.type "string")}}
+{{~#if example includeZero=true~}}
+    {{~#unless required~}}Some({{/unless~}}
+        {{~#if (eq schema.type "string")~}}
 "{{example}}".to_string()
-{{~/if}}
-{{~#if (eq schema.type "number")~}}
-    {{~#if (eq format "float")~}}
+        {{~/if~}}
+        {{~#if (eq schema.type "number")~}}
+            {{~#if (eq format "float")~}}
 {{example}} as f32
-    {{~else~}}
+            {{~else~}}
 {{example}} as f64
-    {{~/if}}
-{{~/if}}
-{{~#if (eq schema.type "integer")~}}
-    {{~#if (eq format "int32")~}}
+            {{~/if~}}
+        {{~/if~}}
+        {{~#if (eq schema.type "integer")~}}
+            {{~#if (eq format "int32")~}}
 {{example}} as i32
-    {{~else~}}
+            {{~else~}}
 {{example}} as i64
-    {{~/if}}
-{{~/if}}
-{{~#if (eq schema.type "boolean")~}}
+            {{~/if~}}
+        {{~/if~}}
+        {{~#if (eq schema.type "boolean")~}}
 {{example}}
+        {{~/if~}}
+    {{~#unless required~}}){{~/unless~}}
+{{~/if~}}
+{{~#if (eq schema.type "array")~}}
+vec![example::{{~component_path schema.items.[$ref]}}Example::default()]
 {{~/if}}
-{{~#unless required}}){{/unless}}
+{{~#if schema.[$ref]~}}
+example::{{~component_path schema.[$ref]~}}Example::default()
+{{~/if}}

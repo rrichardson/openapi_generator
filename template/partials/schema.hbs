@@ -14,7 +14,7 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
                 {{~#if (has @key ../../required)}}
                 pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key) required="true"}},
                 {{~else}}
-                #[serde(skip_serializing_if = "Option::is_none")] 
+                #[serde(skip_serializing_if = "Option::is_none")]
                 pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key)}},
                 {{~/if}}
             {{~/each}}

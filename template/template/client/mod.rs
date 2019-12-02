@@ -1,7 +1,7 @@
 pub mod blocking;
 
-// #[cfg(test)]
-// mod tests;
+#[cfg(all(test, feature = "example"))]
+mod tests;
 
 use crate::models::*;
 
@@ -17,15 +17,21 @@ pub struct {{camelcase info.title "Client"}} {
                 {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
             {{~/each~}}
         );
-        dbg!(uri.clone());
-        let mut response = surf::{{operation_verb}}(uri).set_query(&parameters.query())?.await?;
-        println!("{:?}", response);
+        let mut response = surf::{{operation_verb}}(uri)
+            {{~#if parameters}}
+            .set_query(&parameters.query())?
+            {{~/if}}
+            .await?;
         use {{snakecase operationId}}::Response::*;
         Ok(
             match response.status().as_str() {
             {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
+                {{~#if (eq @key "204")}}
+                "{{@key}}" => {{camelcase "Response" @key}}(response),
+                {{~else~}}
                 "{{@key}}" => {{camelcase "Response" @key}}(response.body_json().await?),
+                {{~/if}}
             {{~/if}}
             {{~/each}}
                 _ => Unspecified(response),

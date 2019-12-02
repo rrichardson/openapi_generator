@@ -1,4 +1,6 @@
-use crate::helpers::{camelcase, component_path, has, mixedcase, sanitize, snakecase};
+use crate::helpers::{
+    camelcase, component_path, has, json, mixedcase, sanitize, shoutysnakecase, snakecase,
+};
 use anyhow::{anyhow, Context, Result};
 use handlebars::Handlebars;
 use log;
@@ -49,12 +51,15 @@ impl OpenApiGenerator {
         self.handlebars
             .register_helper("snakecase", Box::new(snakecase));
         self.handlebars
+            .register_helper("shoutysnakecase", Box::new(shoutysnakecase));
+        self.handlebars
             .register_helper("mixedcase", Box::new(mixedcase));
         self.handlebars
             .register_helper("component_path", Box::new(component_path));
         self.handlebars
             .register_helper("sanitize", Box::new(sanitize));
         self.handlebars.register_helper("has", Box::new(has));
+        self.handlebars.register_helper("json", Box::new(json));
     }
 
     fn register_partials<T: AsRef<Path>>(&mut self, partials_dir: T) -> Result<()> {
