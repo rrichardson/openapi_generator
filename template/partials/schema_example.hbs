@@ -1,3 +1,4 @@
+{{~>subtypes_example name=name}}
 {{!-- https://swagger.io/docs/specification/adding-examples/ --}}
 pub struct {{camelcase name suffix}}Example;
 {{#if type~}}
@@ -19,6 +20,14 @@ pub struct {{camelcase name suffix}}Example;
             {{~#if properties}}
             let {{snakecase name suffix}}: String = json!({
             {{~#each properties}}
+                {{~#if (eq type "object")}}
+                "{{snakecase @key}}": {{(camelcase ../name @key)}}Example::default(),
+                {{~/if}}
+                {{~#if (eq type "array")}}
+                {{~#if (eq items.type "object")}}
+                "{{snakecase @key}}": vec![{{(camelcase ../name @key)}}Example::default()],
+                {{/if}}
+                {{~/if}}
                 {{~#if example}}
                 {{~#if (and (not (eq type "object")) (not (eq type "array")))}}
                 "{{snakecase @key}}": {{> example schema=this}},

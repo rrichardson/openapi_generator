@@ -1,11 +1,9 @@
 #![allow(clippy::clone_on_copy)]
 
-#[cfg(feature = "examples")]
-pub mod examples;
-
 pub mod components {
 {{~#with components}}
     pub mod schemas {
+
         use super::super::components;
         use serde::{Deserialize, Serialize};
 

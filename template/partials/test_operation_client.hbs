@@ -34,7 +34,9 @@ fn test_{{snakecase operationId}}_{{status}}() {
   let data = result.unwrap();
   use {{snakecase operationId}}::Response::*;
   if let {{camelcase "Response" status}}(object) = data {
-    //...
+    {{~#with response.content.[application/json]}}
+    assert_eq!(object, {{>example required="false"}});
+    {{~/with}}
   } else {
     panic!("invalid type");
   }

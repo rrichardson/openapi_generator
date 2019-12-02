@@ -3,6 +3,7 @@ use super::*;
 use mockito::{mock, Matcher};
 use serde_json::json;
 use crate::openapi_serialization::OpenapiSerialization;
+use crate::example;
 
 {{#each paths}}
   {{#each this}}

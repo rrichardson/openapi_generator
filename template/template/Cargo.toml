@@ -30,4 +30,4 @@ mockito = "0.22.0"
 default = ["server", "client"]
 server = ["actix-web", "actix-service", "actix-http"]
 client = ["surf", "async-std"]
-examples = ["serde_json"]
+example = ["serde_json"]

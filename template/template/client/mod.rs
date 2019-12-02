@@ -1,6 +1,6 @@
 pub mod blocking;
 
-#[cfg(all(test, feature = "examples"))]
+#[cfg(all(test, feature = "example"))]
 mod tests;
 
 use crate::models::*;

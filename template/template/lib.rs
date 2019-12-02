@@ -2,6 +2,8 @@
 
 #[cfg(feature = "client")]
 pub mod client;
+#[cfg(feature = "example")]
+pub mod example;
 pub mod models;
 pub mod openapi_serialization;
 #[cfg(feature = "server")]

@@ -22,3 +22,9 @@
         {{~/if~}}
     {{~#unless required~}}){{~/unless~}}
 {{~/if~}}
+{{~#if (eq schema.type "array")~}}
+vec![example::{{~component_path schema.items.[$ref]}}Example::default()]
+{{~/if}}
+{{~#if schema.[$ref]~}}
+example::{{~component_path schema.[$ref]~}}Example::default()
+{{~/if}}
