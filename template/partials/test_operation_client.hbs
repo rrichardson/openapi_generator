@@ -29,6 +29,15 @@ fn test_{{snakecase operationId}}_{{status}}() {
       body: {{>example}},
     {{~/with}}
   };
-  let result = api_client.{{snakecase operationId}}(&parameters).unwrap();
+  let result = api_client.{{snakecase operationId}}(&parameters);
   mock.assert();
+  let data = result.unwrap();
+  use {{snakecase operationId}}::Response::*;
+  if let {{camelcase "Response" status}}(object) = data {
+    {{~#with response.content.[application/json]}}
+    assert_eq!(object, {{>example required="false"}});
+    {{~/with}}
+  } else {
+    panic!("invalid type");
+  }
 }
