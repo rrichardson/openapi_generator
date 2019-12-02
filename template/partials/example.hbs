@@ -1,9 +1,6 @@
 {{~#if (eq schema.type "array")~}}
-vec![{{~component_path schema.items.[$ref]}}Example::default()]
+vec![{{~component_path schema.items.[$ref]}}_EXAMPLE]
 {{~else~}}
-    {{~#if schema.[$ref]~}}
-{{~component_path schema.[$ref]~}}Example::default()
-    {{~else~}}
         {{~#if example includeZero=true~}}
             {{~#unless required~}}Some({{/unless~}}
                 {{~#if (eq schema.type "string")~}}
@@ -30,5 +27,4 @@ vec![{{~component_path schema.items.[$ref]}}Example::default()]
         {{~else~}}
         panic!(r#"there is no example for {{json this}}"#)
         {{~/if~}}
-    {{~/if~}}
 {{~/if~}}

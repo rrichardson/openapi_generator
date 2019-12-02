@@ -60,13 +60,13 @@ pub mod {{snakecase operationId}} {
         {{~/with}}
     }
 
-{{>parameter_type type="query"}}
+    {{>parameter_type type="query"}}
 
-{{>parameter_type type="path"}}
+    {{>parameter_type type="path"}}
 
-{{#with requestBody}}
-{{>schema name="Body" description=description content.[application/json].schema}}
-{{~/with}}
+    {{#with requestBody}}
+    {{>schema name="Body" description=description content.[application/json].schema}}
+    {{~/with}}
 
     #[derive(Debug)]
     pub enum Response<T> {
@@ -83,8 +83,7 @@ pub mod {{snakecase operationId}} {
     }
     {{~#each responses}}
         {{~#if (not (eq @key "default"))}}
-
-{{>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
+            {{>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
         {{~/if}}
     {{~/each}}
 }

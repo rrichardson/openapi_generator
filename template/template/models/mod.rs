@@ -1,5 +1,8 @@
 #![allow(clippy::clone_on_copy)]
 
+#[cfg(feature = "examples")]
+pub mod examples;
+
 pub mod components {
 {{~#with components}}
     pub mod schemas {
@@ -7,10 +10,9 @@ pub mod components {
         use serde::{Deserialize, Serialize};
         use serde_json::{json, value::Value};
 
-{{~#each schemas}}
-
-{{>schema name=@key this}}
-{{~/each}}
+        {{~#each schemas}}
+            {{>schema name=@key this}}
+        {{~/each}}
     }
 {{~/with}}
 }
