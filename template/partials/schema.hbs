@@ -1,36 +1,36 @@
 {{~>subtypes name=name}}
 {{~#if description~}}
 /// {{description}}
-{{~/if}}
-{{#if type~}}
-    {{~#if (eq type "object")}}
-    #[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
-    pub struct {{camelcase name suffix}} {
-        {{~#each properties}}
-            #[serde(rename = "{{snakecase @key}}")]
-            {{~#if (has @key ../../required)}}
-            pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key) required="true"}},
-            {{~else}}
-            #[serde(skip_serializing_if = "Option::is_none")]
-            pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key)}},
-            {{~/if}}
-        {{~/each}}
-        {{~#if additionalProperties}}
-            pub properties: std::collections::HashMap<&str, {{camelcase name suffix "properties"}}>,
-        {{~/if}}
-    }
-    {{~else~}}
-    {{~#if (eq type "array")}}
-    pub type {{camelcase name suffix}} = {{>data_type required="true"}};
-    {{~else~}}
-    pub type {{camelcase name suffix}} = {{>data_type required="true"}};
-    {{~/if}}
-    {{~/if}}
-{{~else~}}
+{{/if}}
 {{~#if [$ref]~}}
 pub type {{camelcase name suffix}} = {{>data_type required="true"}};
-{{~else~}}
-#[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
-pub struct {{camelcase name suffix}};
-{{~/if}}
+{{~else}}
+    {{~#if (eq type "object")~}}
+        {{~#if properties~}}
+            #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+            pub struct {{camelcase name suffix}} {
+            {{~#each properties}}
+                #[serde(rename = "{{snakecase @key}}")]
+                {{~#if (has @key ../../required)}}
+                pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key) required="true"}},
+                {{~else}}
+                #[serde(skip_serializing_if = "Option::is_none")]
+                pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key)}},
+                {{~/if}}
+            {{~/each}}
+            {{~#if additionalProperties}}
+                pub properties: std::collections::HashMap<&str, {{camelcase name suffix "properties"}}>,
+            {{~/if}}
+            }
+        {{~else~}}
+            {{~#if additionalProperties}}
+                pub type {{camelcase name suffix}} = std::collections::HashMap<String, {{camelcase name suffix "properties"}}>;
+            {{~/if}}
+        {{~/if}}
+    {{~else~}}
+        pub type {{camelcase name suffix}} =
+            {{~#if type}} {{>data_type required="true"}}
+            {{~else}} ()
+            {{~/if}};
+    {{~/if}}
 {{~/if}}

@@ -2,7 +2,6 @@
 pub mod {{snakecase operationId}} {
     use super::components;
     use serde::{Deserialize, Serialize};
-    use serde_json::{json, value::Value};
 
     {{#each parameters}}
         {{~>subtypes name=name}}
