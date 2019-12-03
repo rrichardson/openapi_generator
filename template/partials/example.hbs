@@ -1,30 +1,34 @@
-{{~#if example includeZero=true~}}
-    {{~#unless required~}}Some({{/unless~}}
-        {{~#if (eq schema.type "string")~}}
-"{{example}}".to_string()
-        {{~/if~}}
-        {{~#if (eq schema.type "number")~}}
-            {{~#if (eq format "float")~}}
-{{example}} as f32
-            {{~else~}}
-{{example}} as f64
-            {{~/if~}}
-        {{~/if~}}
-        {{~#if (eq schema.type "integer")~}}
-            {{~#if (eq format "int32")~}}
-{{example}} as i32
-            {{~else~}}
-{{example}} as i64
-            {{~/if~}}
-        {{~/if~}}
-        {{~#if (eq schema.type "boolean")~}}
-{{example}}
-        {{~/if~}}
-    {{~#unless required~}}){{~/unless~}}
-{{~/if~}}
 {{~#if (eq schema.type "array")~}}
-vec![example::{{~component_path schema.items.[$ref]}}Example::default()]
-{{~/if}}
-{{~#if schema.[$ref]~}}
-example::{{~component_path schema.[$ref]~}}Example::default()
-{{~/if}}
+Some(vec![example::{{~component_path schema.items.[$ref]}}Example::default().unwrap()])
+{{~else~}}
+    {{~#if schema.[$ref]~}}
+Some(example::{{~component_path schema.[$ref]~}}Example::default().unwrap())
+    {{~else~}}
+        {{~#if example includeZero=true~}}
+            {{~#unless required~}}Some({{/unless~}}
+                {{~#if (eq schema.type "string")~}}
+Some("{{example}}".to_string())
+                {{~/if~}}
+                {{~#if (eq schema.type "number")~}}
+                    {{~#if (eq format "float")~}}
+Some({{example}} as f32)
+                    {{~else~}}
+Some({{example}} as f64)
+                    {{~/if~}}
+                {{~/if~}}
+                {{~#if (eq schema.type "integer")~}}
+                    {{~#if (eq format "int32")~}}
+Some({{example}} as i32)
+                    {{~else~}}
+Some({{example}} as i64)
+                    {{~/if~}}
+                {{~/if~}}
+                {{~#if (eq schema.type "boolean")~}}
+Some({{example}})
+                {{~/if~}}
+            {{~#unless required~}}){{~/unless~}}
+        {{~else~}}
+None
+        {{~/if~}}
+    {{~/if~}}
+{{~/if~}}

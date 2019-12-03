@@ -16,6 +16,11 @@ impl {{camelcase info.title "Client"}} {
     pub fn new(uri: &str) -> Self {
         Self { client: super::{{camelcase info.title "Client"}} { uri: uri.to_string() }}
     }
+
+    pub fn uri(&self) -> String {
+        self.client.uri.clone()
+    }
+
     {{~#each paths}}
         {{~#with get}}{{~> operation_fn}}{{~/with}}
         {{~#with head}}{{~> operation_fn}}{{~/with}}

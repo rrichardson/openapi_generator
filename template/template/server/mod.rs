@@ -42,11 +42,7 @@ async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
     match server.{{snakecase operationId}}(parameters) {
         {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
-            {{~#if (eq @key "204")}}
-        Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).finish(),
-            {{~else~}}
         Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
-            {{~/if}}
             {{~/if}}
         {{~/each}}
         Ok(Response::Unspecified(response)) => response,

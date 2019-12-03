@@ -3,7 +3,7 @@ fn test_{{snakecase operationId}}_{{status}}() {
   let api_client = Client::new(&mockito::server_url());
   let uri = format!("{{uri}}"
     {{~#each parameters}}
-      {{~#if (eq in "path")}}, {{name}} = {{>example}}{{/if}}
+      {{~#if (eq in "path")}}, {{name}} = {{>example}}.unwrap(){{/if}}
     {{~/each~}}
   );
   let mock = mock("{{shoutysnakecase operation_verb}}", Matcher::Exact(uri))
@@ -11,22 +11,22 @@ fn test_{{snakecase operationId}}_{{status}}() {
     .match_query(Matcher::AllOf(vec![
       {{~#each parameters}}
         {{~#if (eq in "query")}}
-        Matcher::UrlEncoded("{{name}}".into(), ({{>example}}).serialize().unwrap()),
+        Matcher::UrlEncoded("{{name}}".into(), ({{>example}}.unwrap()).serialize().unwrap()),
         {{~/if}}
       {{~/each~}}
     ]))
     {{~/if}}
     .with_status({{status}})
     {{~#with response.content.[application/json]}}
-    .with_body(serde_json::to_string(&{{>example}}).unwrap())
+    .with_body(serde_json::to_string(&{{>example}}.unwrap()).unwrap())
     {{~/with}}
     .create();
   let parameters = {{snakecase operationId}}::Parameters {
     {{~#each parameters}}
-      {{name}}: {{>example}},
+      {{name}}: {{>example}}.unwrap(),
     {{~/each~}}
     {{#with requestBody.content.[application/json]}}
-      body: {{>example}},
+      body: {{>example}}.unwrap(),
     {{~/with}}
   };
   let result = api_client.{{snakecase operationId}}(&parameters);
@@ -35,7 +35,7 @@ fn test_{{snakecase operationId}}_{{status}}() {
   use {{snakecase operationId}}::Response::*;
   if let {{camelcase "Response" status}}(object) = data {
     {{~#with response.content.[application/json]}}
-    assert_eq!(object, {{>example required="false"}});
+    assert_eq!(object, {{>example required="false"}}.unwrap());
     {{~/with}}
   } else {
     panic!("invalid type");
