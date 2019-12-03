@@ -6,7 +6,7 @@ mod tests;
 use crate::models::*;
 
 pub struct {{camelcase info.title "Client"}} {
-    uri: String,
+    pub uri: String,
 }
 
 {{~#*inline "operation_fn"}}
