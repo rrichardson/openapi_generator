@@ -1,6 +1,7 @@
 use crate::models::*;
 use async_std::task::block_on;
 
+#[derive(Clone)]
 pub struct {{camelcase info.title "Client"}} {
     client: super::{{camelcase info.title "Client"}},
 }
@@ -10,7 +11,7 @@ pub struct {{camelcase info.title "Client"}} {
     pub fn {{snakecase operationId}}(&self, parameters: &{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
         block_on(self.client.{{snakecase operationId}}(parameters))
     }
-{{~/inline~}}
+{{~/inline}}
 
 impl {{camelcase info.title "Client"}} {
     pub fn new(uri: &str) -> Self {

@@ -5,6 +5,7 @@ mod tests;
 
 use crate::models::*;
 
+#[derive(Clone)]
 pub struct {{camelcase info.title "Client"}} {
     pub uri: String,
 }
@@ -37,7 +38,7 @@ pub struct {{camelcase info.title "Client"}} {
                 _ => Unspecified(response),
         })
     }
-{{~/inline~}}
+{{~/inline}}
 
 impl {{camelcase info.title "Client"}} {
     pub fn new(uri: &str) -> Self {
