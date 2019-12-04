@@ -3,28 +3,37 @@ mod openapi_generator;
 
 use crate::openapi_generator::OpenApiGenerator;
 use anyhow::{Context, Result};
-use std::env;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
+#[structopt(
+    name = "openapi_generator",
+    about = "Generate code from OpenAPI specifications"
+)]
 struct Cli {
-    openapi: String,
+    /// Path of the template to generate
+    template: PathBuf,
+    /// Path of the OpenAPI specification file to use for generation
+    openapi: PathBuf,
     #[structopt(short = "d", long = "dest", default_value = "output")]
-    /// Destination directory of the generated code
+    /// Destination of the generated code
     destination: PathBuf,
 }
 
 fn main() -> Result<()> {
     pretty_env_logger::init();
     let args = Cli::from_args();
-    let template_dir = env::current_dir()?.join("template").join("template");
-    let mut openapi_generator = OpenApiGenerator::new(args.openapi, &template_dir)
-    .context(format!("cannot create OpenAPI generator with specifications from `openapi.yaml` and template from {}", template_dir.display()) )?;
+    let mut openapi_generator =
+        OpenApiGenerator::new(&args.openapi, &args.template).context(format!(
+            "Cannot create OpenAPI generator with specifications at `{}` and template at `{}`",
+            args.openapi.to_string_lossy(),
+            args.template.to_string_lossy()
+        ))?;
     openapi_generator
         .render(args.destination.clone())
         .context(format!(
-            "cannot render to `{}`",
+            "Cannot render to `{}`",
             args.destination.to_string_lossy()
         ))?;
     Ok(())
