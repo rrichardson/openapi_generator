@@ -9,6 +9,8 @@ use structopt::StructOpt;
 #[derive(Debug, StructOpt)]
 struct Cli {
     openapi: String,
+    #[structopt(short = "o", long = "output", default_value = "output")]
+    output: String,
 }
 
 fn main() -> Result<()> {
@@ -19,7 +21,7 @@ fn main() -> Result<()> {
     let mut openapi_generator = OpenApiGenerator::new(args.openapi, &template_dir)
     .context(format!("cannot create OpenAPI generator with specifications from `openapi.yaml` and template from {}", template_dir.display()) )?;
     openapi_generator
-        .render("output")
-        .context("cannot render to `output`")?;
+        .render(args.output.clone())
+        .context(format!("cannot render to `{}`", args.output))?;
     Ok(())
 }
