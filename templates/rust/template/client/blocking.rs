@@ -1,5 +1,6 @@
 use crate::models::*;
 use async_std::task::block_on;
+use url::{Url};
 
 #[derive(Clone)]
 pub struct {{camelcase info.title "Client"}} {
@@ -14,12 +15,12 @@ pub struct {{camelcase info.title "Client"}} {
 {{~/inline}}
 
 impl {{camelcase info.title "Client"}} {
-    pub fn new(uri: &str) -> Self {
-        Self { client: super::{{camelcase info.title "Client"}} { uri: uri.to_string() }}
+    pub fn new(url: &Url) -> Self {
+        Self { client: super::{{camelcase info.title "Client"}} { url: url.to_string() }}
     }
 
-    pub fn uri(&self) -> String {
-        self.client.uri.clone()
+    pub fn url(&self) -> String {
+        self.client.url.clone()
     }
 
     {{~#each paths}}
