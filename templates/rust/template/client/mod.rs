@@ -42,9 +42,11 @@ pub struct {{camelcase info.title "Client"}} {
 {{~/inline}}
 
 impl {{camelcase info.title "Client"}} {
-    pub fn new(url: &Url) -> Self {
+    pub fn new(url: &str) -> Self {
+        let url = Url::parse(url).expect("cannot parse url");
         Self { url: url.clone() }
     }
+
     {{~#each paths}}
         {{~#with get}}{{~> operation_fn operation_verb="get"}}{{~/with}}
         {{~#with head}}{{~> operation_fn operation_verb="head"}}{{~/with}}

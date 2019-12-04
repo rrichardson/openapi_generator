@@ -15,11 +15,11 @@ pub struct {{camelcase info.title "Client"}} {
 {{~/inline}}
 
 impl {{camelcase info.title "Client"}} {
-    pub fn new(url: &Url) -> Self {
-        Self { client: super::{{camelcase info.title "Client"}} { url: url.to_string() }}
+    pub fn new(url: &str) -> Self {
+        Self { client: super::{{camelcase info.title "Client"}}::new(url) }
     }
 
-    pub fn url(&self) -> String {
+    pub fn url(&self) -> Url {
         self.client.url.clone()
     }
 
