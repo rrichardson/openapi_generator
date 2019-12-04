@@ -5,7 +5,6 @@ use anyhow::{anyhow, Context, Result};
 use handlebars::Handlebars;
 use log;
 use std::{
-    env,
     fs::File,
     path::{Path, PathBuf},
 };
@@ -21,13 +20,13 @@ impl OpenApiGenerator {
         let mut openapi_generator = Self {
             handlebars: Handlebars::new(),
             specs: Self::parse_specification(&specs_path.as_ref())?,
-            template_path: template_path.as_ref().to_path_buf(),
+            template_path: template_path.as_ref().join("template").to_path_buf(),
         };
-        let partials_path = env::current_dir()?.join("template").join("partials");
+        let partials_path = template_path.as_ref().join("partials");
         openapi_generator
             .register_partials(&partials_path)
             .context(format!(
-                "failed to register partials from `{}`",
+                "Failed to register partials from `{}`",
                 partials_path.display()
             ))?;
         openapi_generator.register_helpers();
@@ -36,11 +35,11 @@ impl OpenApiGenerator {
 
     fn parse_specification(specs_path: &Path) -> Result<serde_yaml::Value> {
         let specs_string = std::fs::read_to_string(&specs_path).context(format!(
-            "cannot read specification file `{}`",
+            "Cannot read specification file `{}`",
             specs_path.display()
         ))?;
         serde_yaml::from_str(&specs_string).context(format!(
-            "cannot parse specification file `{}`",
+            "Cannot parse specification file `{}`",
             specs_path.display()
         ))
     }
@@ -69,12 +68,12 @@ impl OpenApiGenerator {
                     let path = entry.path();
                     let template_name = path
                         .file_stem()
-                        .ok_or_else(|| anyhow!("file name is empty"))?
+                        .ok_or_else(|| anyhow!("File name is empty"))?
                         .to_str()
-                        .ok_or_else(|| anyhow!("file path is not unicode"))?;
+                        .ok_or_else(|| anyhow!("File path is not unicode"))?;
                     self.handlebars
                         .register_template_file(template_name, path)
-                        .context(format!("cannot register partial `{}`", path.display()))?;
+                        .context(format!("Cannot register partial `{}`", path.display()))?;
                     log::info!(
                         "new partial registered: {} ({})",
                         template_name,
@@ -93,7 +92,7 @@ impl OpenApiGenerator {
     fn render_from_path(&mut self, output_path: &Path, path: &Path) -> Result<()> {
         let template_path = self.template_path.join(path);
         for entry in std::fs::read_dir(&template_path).context(format!(
-            "cannot walk into template directory `{}`",
+            "Cannot walk into template directory `{}`",
             template_path.display()
         ))? {
             if let Ok(entry) = entry {
@@ -102,7 +101,7 @@ impl OpenApiGenerator {
                     self.handlebars
                         .register_template_file(template_key, entry.path())
                         .context(format!(
-                            "cannot register template `{}` ",
+                            "Cannot register template `{}` ",
                             entry.path().display()
                         ))?;
                     log::info!(
@@ -115,7 +114,7 @@ impl OpenApiGenerator {
                     self.handlebars
                         .render_to_write(template_key, &self.specs, &mut output_file)
                         .context(format!(
-                            "failed to render template `{}` at `{}`",
+                            "Failed to render template `{}` at `{}`",
                             template_key,
                             output_file_path.display()
                         ))?;
@@ -125,12 +124,12 @@ impl OpenApiGenerator {
                     path.push(entry.file_name());
                     let new_output_path = output_path.join(&path);
                     std::fs::create_dir_all(&new_output_path).context(format!(
-                        "cannot create directory `{}`",
+                        "Cannot create directory `{}`",
                         new_output_path.display()
                     ))?;
                     log::info!("create {}", new_output_path.display());
                     self.render_from_path(output_path, &path).context(format!(
-                        "failed to render templates under `{}`",
+                        "Failed to render templates under `{}`",
                         new_output_path.display()
                     ))?;
                 }
