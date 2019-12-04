@@ -23,6 +23,9 @@ pub struct {{camelcase info.title "Client"}} {
             {{~#if parameters}}
             .set_query(&parameters.query())?
             {{~/if}}
+            {{~#if requestBody}}
+            .body_json(&parameters.body())?
+            {{~/if}}
             .await?;
         use {{snakecase operationId}}::Response::*;
         Ok(
