@@ -1,3 +1,5 @@
+#![allow(clippy::useless_format)]
+
 use super::blocking::{{camelcase info.title "Client"}} as Client;
 use super::*;
 use mockito::{mock, Matcher};

@@ -11,16 +11,16 @@ Some("{{example}}".to_string())
                 {{~/if~}}
                 {{~#if (eq schema.type "number")~}}
                     {{~#if (eq format "float")~}}
-Some({{example}} as f32)
+Some({{example}}_f32)
                     {{~else~}}
-Some({{example}} as f64)
+Some({{example}}_f64)
                     {{~/if~}}
                 {{~/if~}}
                 {{~#if (eq schema.type "integer")~}}
                     {{~#if (eq format "int32")~}}
-Some({{example}} as i32)
+Some({{example}}_i32)
                     {{~else~}}
-Some({{example}} as i64)
+Some({{example}}_i64)
                     {{~/if~}}
                 {{~/if~}}
                 {{~#if (eq schema.type "boolean")~}}
