@@ -4,7 +4,7 @@ pub mod blocking;
 mod tests;
 
 use crate::models::*;
-use url::{Url};
+use url::Url;
 
 #[derive(Clone)]
 pub struct {{camelcase info.title "Client"}} {
