@@ -5,15 +5,11 @@ authors = ["Gérald Lelong <gerald.lelong@easymov.fr>"]
 edition = "2018"
 
 [dependencies]
-serde = { version = "1.0.102", features = ["derive"] }
-mustache = "0.9.0"
-openapi = { git = "https://github.com/softprops/openapi.git" }
-anyhow = "1.0.19"
-failure = "0.1.6"
+anyhow = "1.0.25"
 handlebars = "2.0.2"
 heck = "0.3.1"
 pretty_env_logger = "0.3.1"
-serde_json = "1.0.41"
+serde_json = "1.0.44"
 json-pointer = "0.3.2"
 serde_yaml = "0.8.11"
 walkdir = "2.2.9"
