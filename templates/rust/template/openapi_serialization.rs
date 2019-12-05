@@ -2,6 +2,18 @@ pub trait OpenapiSerialization {
   fn serialize(self: &Self) -> Option<String>;
 }
 
+impl OpenapiSerialization for i32 {
+  fn serialize(self: &Self) -> Option<String> {
+    Some(format!("{:?}", self))
+  }
+}
+
+impl OpenapiSerialization for i64 {
+  fn serialize(self: &Self) -> Option<String> {
+    Some(format!("{:?}", self))
+  }
+}
+
 impl OpenapiSerialization for f32 {
   fn serialize(self: &Self) -> Option<String> {
     Some(format!("{:?}", self))

@@ -10,7 +10,9 @@ use crate::example;
 {{#each paths}}
   {{#each this}}
     {{~#each responses}}
-      {{> test_operation_client uri=@../../key operation_verb=@../key status=@key ../this response=this}}
+      {{~#if (not (eq @key "default"))}}
+        {{~> test_operation_client uri=@../../key operation_verb=@../key status=@key ../this response=this}}
+      {{~/if}}
     {{/each}}
   {{/each}}
 {{~/each}}

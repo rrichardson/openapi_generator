@@ -23,7 +23,7 @@ fn test_{{snakecase operationId}}_{{status}}() {
     .create();
   let parameters = {{snakecase operationId}}::Parameters {
     {{~#each parameters}}
-      {{name}}: {{>example}}.unwrap(),
+      {{snakecase name}}: {{>example}}.unwrap(),
     {{~/each~}}
     {{#with requestBody.content.[application/json]}}
       body: {{>example}}.unwrap(),

@@ -4,31 +4,31 @@ Some(vec![example::{{~component_path schema.items.[$ref]}}Example::default().unw
     {{~#if schema.[$ref]~}}
 Some(example::{{~component_path schema.[$ref]~}}Example::default().unwrap())
     {{~else~}}
+        {{~#unless required~}}Some({{/unless~}}
         {{~#if example includeZero=true~}}
-            {{~#unless required~}}Some({{/unless~}}
-                {{~#if (eq schema.type "string")~}}
+            {{~#if (eq schema.type "string")~}}
 Some("{{example}}".to_string())
-                {{~/if~}}
-                {{~#if (eq schema.type "number")~}}
-                    {{~#if (eq format "float")~}}
+            {{~/if~}}
+            {{~#if (eq schema.type "number")~}}
+                {{~#if (eq format "float")~}}
 Some({{example}}_f32)
-                    {{~else~}}
+                {{~else~}}
 Some({{example}}_f64)
-                    {{~/if~}}
                 {{~/if~}}
-                {{~#if (eq schema.type "integer")~}}
-                    {{~#if (eq format "int32")~}}
+            {{~/if~}}
+            {{~#if (eq schema.type "integer")~}}
+                {{~#if (eq format "int32")~}}
 Some({{example}}_i32)
-                    {{~else~}}
+                {{~else~}}
 Some({{example}}_i64)
-                    {{~/if~}}
                 {{~/if~}}
-                {{~#if (eq schema.type "boolean")~}}
+            {{~/if~}}
+            {{~#if (eq schema.type "boolean")~}}
 Some({{example}})
-                {{~/if~}}
-            {{~#unless required~}}){{~/unless~}}
+            {{~/if~}}
         {{~else~}}
-None
+Option::<{{>data_type schema required=true}}>::None
         {{~/if~}}
+        {{~#unless required~}}){{~/unless~}}
     {{~/if~}}
 {{~/if~}}
