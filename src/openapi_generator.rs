@@ -30,6 +30,14 @@ impl OpenApiGenerator {
                 partials_path.display()
             ))?;
         openapi_generator.register_helpers();
+        let specs = openapi_generator
+            .specs
+            .as_mapping_mut()
+            .context("specification is not a mapping")?;
+        specs.insert(
+            serde_yaml::Value::String("openapi_generator_version".to_string()),
+            serde_yaml::Value::String(env!("CARGO_PKG_VERSION").to_string()),
+        );
         Ok(openapi_generator)
     }
 

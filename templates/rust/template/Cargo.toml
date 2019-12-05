@@ -1,7 +1,11 @@
+# Generated with openapi_generator {{openapi_generator_version}}
+
 [package]
 name = "{{snakecase info.title}}"
 version = "{{info.version}}"
-authors = ["{{info.contact.name}} <{{info.contact.email}}>"]
+{{~#with info.contact}}
+authors = ["{{name}}{{#if email}} <{{email}}>{{/if}}"]
+{{~/with}}
 edition = "2018"
 
 [[bin]]
