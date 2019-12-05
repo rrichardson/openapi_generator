@@ -67,10 +67,10 @@ pub(crate) fn apply_sanitize(word: &str) -> String {
 }
 
 pub(crate) fn apply_has(elem: &str, list: &Json) -> bool {
-    if let Some(array) = list.as_array() {
-        return array.iter().any(|list_elem| elem == list_elem);
-    }
-    false
+    list.as_array()
+        .unwrap_or(&vec![])
+        .iter()
+        .any(|list_elem| elem == list_elem)
 }
 
 pub(crate) fn apply_json(data: &Json) -> String {

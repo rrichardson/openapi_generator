@@ -4,22 +4,27 @@ pub mod blocking;
 mod tests;
 
 use crate::models::*;
+use url::Url;
 
+#[derive(Clone)]
 pub struct {{camelcase info.title "Client"}} {
-    pub uri: String,
+    pub url: Url,
 }
 
 {{~#*inline "operation_fn"}}
 
     pub async fn {{snakecase operationId}}(&self, parameters: &{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
-        let uri = format!("{uri}{{@../key}}", uri = self.uri
+        let url = format!("{url}{{@../key}}", url = self.url.to_string()
             {{~#each parameters}}
                 {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
             {{~/each~}}
         );
-        let mut response = surf::{{operation_verb}}(uri)
+        let mut response = surf::{{operation_verb}}(url)
             {{~#if parameters}}
             .set_query(&parameters.query())?
+            {{~/if}}
+            {{~#if requestBody}}
+            .body_json(&parameters.body())?
             {{~/if}}
             .await?;
         use {{snakecase operationId}}::Response::*;
@@ -37,12 +42,14 @@ pub struct {{camelcase info.title "Client"}} {
                 _ => Unspecified(response),
         })
     }
-{{~/inline~}}
+{{~/inline}}
 
 impl {{camelcase info.title "Client"}} {
-    pub fn new(uri: &str) -> Self {
-        Self { uri: uri.to_string() }
+    pub fn new(url: &str) -> Self {
+        let url = Url::parse(url).expect("cannot parse url");
+        Self { url }
     }
+
     {{~#each paths}}
         {{~#with get}}{{~> operation_fn operation_verb="get"}}{{~/with}}
         {{~#with head}}{{~> operation_fn operation_verb="head"}}{{~/with}}
