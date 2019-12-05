@@ -1,4 +1,4 @@
-#![allow(clippy::unit_arg)]
+#![allow(clippy::unit_arg, clippy::redundant_clone)]
 
 use actix_web::{web::*, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
 use std::error::Error;
@@ -58,7 +58,7 @@ fn err_to_string(err: &dyn std::error::Error) -> String {
         errors_str.push(err.to_string());
         current_err = err.source();
     }
-    format!("error: {}\n\ncaused by:\n\t{}", err, errors_str.as_slice().join("\n\t")).to_string()
+    format!("error: {}\n\ncaused by:\n\t{}", err, errors_str.as_slice().join("\n\t"))
 }
 
 {{#each paths}}

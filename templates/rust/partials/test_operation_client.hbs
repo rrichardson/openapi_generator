@@ -1,3 +1,5 @@
+#![allow(clippy::useless_format)]
+
 #[test]
 fn test_{{snakecase operationId}}_{{status}}() {
   let api_client = Client::new(&mockito::server_url());
