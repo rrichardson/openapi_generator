@@ -15,3 +15,9 @@
         {{~>schema name=(camelcase ../name "properties") this}}
     {{/with}}
 {{~/if}}
+{{~#if (eq type "array")}}
+    {{~#if (eq items.type "object")}}
+        {{~>schema name=(camelcase ../name @key "item") items}}
+
+    {{/if}}
+{{~/if}}
