@@ -14,11 +14,16 @@ pub struct {{camelcase info.title "Client"}} {
 {{~#*inline "operation_fn"}}
 
     pub async fn {{snakecase operationId}}(&self, parameters: &{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
-        let url = format!("{url}{{@../key}}", url = self.url.to_string()
+        let mut url = self.url.clone();
+        {{#if parameters}}
+        url.set_path(&format!("{{@../key}}"
             {{~#each parameters}}
                 {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
             {{~/each~}}
-        );
+        ));
+        {{~else~}}
+        url.set_path("{{@../key}}");
+        {{~/if}}
         let mut response = surf::{{operation_verb}}(url)
             {{~#if parameters}}
             .set_query(&parameters.query())?
