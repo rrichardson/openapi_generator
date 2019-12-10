@@ -33,9 +33,7 @@ case_helper!(snakecase, to_snake_case);
 case_helper!(shoutysnakecase, to_shouty_snake_case);
 handlebars_helper!(component_path: |ref_path: str| parse_component_path(ref_path));
 handlebars_helper!(sanitize: |word: str| apply_sanitize(word));
-handlebars_helper!(has: |elem: str, list: Json| apply_has(elem, list));
 handlebars_helper!(json: |data: Json| apply_json(data));
-handlebars_helper!(has_field: |data: Json, field: str, value: str| apply_has_field(data, field, value));
 
 pub(crate) fn parse_component_path(ref_path: &str) -> String {
     use heck::CamelCase;
@@ -67,18 +65,55 @@ pub(crate) fn apply_sanitize(word: &str) -> String {
     }
 }
 
-pub(crate) fn apply_has(elem: &str, list: &Json) -> bool {
-    list.as_array()
-        .unwrap_or(&vec![])
-        .iter()
-        .any(|list_elem| elem == list_elem)
-}
+pub(crate) fn has(helper: &Helper,
+        _: &Handlebars,
+        _: &Context,
+        _: &mut RenderContext,
+        out: &mut dyn Output
+    ) -> Result<(), RenderError> {
 
-pub(crate) fn apply_has_field(parameters: &Json, field: &str, value: &str) -> bool {
-    parameters.as_array()
-        .unwrap_or(&vec![])
-        .iter()
-        .any(|list_elem| list_elem[field] == value)
+    let data = helper.param(0).ok_or(RenderError::new("data not found"))?.value();
+    let field = helper.param(1).ok_or(RenderError::new("field not found"))?.value().as_str().ok_or(RenderError::new("field is not a string"))?;
+    let value = helper.param(2);
+    let result;
+
+    if data.is_array() {
+        match value {
+            Some(value) => {
+                let value_converted = value.value().as_str().ok_or(RenderError::new("value is not a string"))?;
+                result = data.as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|list_elem| list_elem[field] == value_converted);
+            },
+            None => {
+                result = data.as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|list_elem| list_elem == field);
+            }
+        }
+    } else if data.is_object() {
+        match value {
+            Some(value) => {
+                let field_value = data.as_object().unwrap().get(field).ok_or(RenderError::new("field does not exist"))?;
+                let value_converted = value.value().as_str().ok_or(RenderError::new("value is not a string"))?;
+                result = field_value == value_converted;
+            },
+            None => {
+                result = data.as_object().unwrap().get(field).is_some();
+            }
+        }
+    } else {
+        result = false;
+    }
+
+    if result {
+        out.write("true")?;
+    } else {
+        out.write("")?;
+    }
+    Ok(())
 }
 
 pub(crate) fn apply_json(data: &Json) -> String {
@@ -98,15 +133,15 @@ mod tests {
         )
     }
 
-    #[test]
-    fn test_has_found() {
-        let list = json!(["name", "name2"]);
-        assert_eq!(apply_has("name", &list), true)
-    }
+    // #[test]
+    // fn test_has_found() {
+    //     let list = json!(["name", "name2"]);
+    //     assert_eq!(apply_has("name", &list), true)
+    // }
 
-    #[test]
-    fn test_has_not_found() {
-        let list = json!(["name2", "name3"]);
-        assert_eq!(apply_has("name", &list), false)
-    }
+    // #[test]
+    // fn test_has_not_found() {
+    //     let list = json!(["name2", "name3"]);
+    //     assert_eq!(apply_has("name", &list), false)
+    // }
 }

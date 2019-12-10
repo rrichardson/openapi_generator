@@ -29,10 +29,10 @@ pub trait {{camelcase info.title}} {
 {{~#if description}}/// {{description}}{{/if}}
 async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
     server: Data<Server>,{{!-- {{~#if parameters}} --}}
-    {{~#if (has_field parameters "in" "query")~}}
+    {{~#if (has parameters "in" "query")~}}
     query: Query<{{snakecase operationId}}::Query>,
     {{~/if}}
-    {{~#if (has_field parameters "in" "path")~}}
+    {{~#if (has parameters "in" "path")~}}
     path: Path<{{snakecase operationId}}::Path>,
     {{~/if}}
     {{~#if requestBody}}
@@ -41,8 +41,8 @@ async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
 ) -> impl Responder {
     use {{snakecase operationId}}::*;
     let parameters = Parameters::new(
-        {{~#if (has_field parameters "in" "query")~}}query.into_inner(),{{~/if}}
-        {{~#if (has_field parameters "in" "path")~}}path.into_inner(),{{~/if}}
+        {{~#if (has parameters "in" "query")~}}query.into_inner(),{{~/if}}
+        {{~#if (has parameters "in" "path")~}}path.into_inner(),{{~/if}}
         {{~#if requestBody}}body.into_inner(),{{/if~}}
     );
     match server.{{snakecase operationId}}(parameters) {

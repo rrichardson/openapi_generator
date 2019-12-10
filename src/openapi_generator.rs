@@ -1,5 +1,5 @@
 use crate::helpers::{
-    camelcase, component_path, has, json, mixedcase, sanitize, shoutysnakecase, snakecase, has_field
+    camelcase, component_path, has, json, mixedcase, sanitize, shoutysnakecase, snakecase
 };
 use anyhow::{anyhow, Context, Result};
 use handlebars::Handlebars;
@@ -66,7 +66,6 @@ impl OpenApiGenerator {
         self.handlebars
             .register_helper("sanitize", Box::new(sanitize));
         self.handlebars.register_helper("has", Box::new(has));
-        self.handlebars.register_helper("has_field", Box::new(has_field));
         self.handlebars.register_helper("json", Box::new(json));
     }
 

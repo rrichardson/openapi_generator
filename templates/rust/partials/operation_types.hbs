@@ -20,8 +20,8 @@ pub mod {{snakecase operationId}} {
 
     impl Parameters {
         pub fn new(
-            {{~#if (has_field parameters "in" "query")~}}query: Query,{{~/if}}
-            {{~#if (has_field parameters "in" "path")~}}path: Path,{{~/if}}
+            {{~#if (has parameters "in" "query")~}}query: Query,{{~/if}}
+            {{~#if (has parameters "in" "path")~}}path: Path,{{~/if}}
             {{~#if requestBody}}body: Body,{{~/if}}
         ) -> Self {
             Self {
@@ -36,7 +36,7 @@ pub mod {{snakecase operationId}} {
             }
         }
 
-        {{~#if (has_field parameters "in" "query")~}}
+        {{#if (has parameters "in" "query")~}}
         pub fn query(&self) -> Query {
             Query {
             {{~#each parameters}}
@@ -46,7 +46,7 @@ pub mod {{snakecase operationId}} {
         }
         {{~/if}}
 
-        {{~#if (has_field parameters "in" "path")~}}
+        {{#if (has parameters "in" "path")~}}
         pub fn path(&self) -> Path {
             Path {
             {{~#each parameters}}
@@ -63,11 +63,11 @@ pub mod {{snakecase operationId}} {
         {{~/with}}
     }
 
-    {{~#if (has_field parameters "in" "query")~}}
+    {{~#if (has parameters "in" "query")~}}
     {{>parameter_type type="query"}}
     {{~/if}}
 
-    {{~#if (has_field parameters "in" "path")~}}
+    {{~#if (has parameters "in" "path")~}}
     {{>parameter_type type="path"}}
     {{~/if}}
 
