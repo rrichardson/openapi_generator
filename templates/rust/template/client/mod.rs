@@ -15,7 +15,7 @@ pub struct {{camelcase info.title "Client"}} {
 
     pub async fn {{snakecase operationId}}(&self, parameters: &{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
         let mut url = self.url.clone();
-        {{#if parameters}}
+        {{#if (has_field parameters "in" "path")~}}
         url.set_path(&format!("{{@../key}}"
             {{~#each parameters}}
                 {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
@@ -23,9 +23,9 @@ pub struct {{camelcase info.title "Client"}} {
         ));
         {{~else~}}
         url.set_path("{{@../key}}");
-        {{~/if}}
+        {{~/if~}}
         let mut response = surf::{{operation_verb}}(url)
-            {{~#if parameters}}
+            {{~#if (has_field parameters "in" "query")}}
             .set_query(&parameters.query())?
             {{~/if}}
             {{~#if requestBody}}
