@@ -6,6 +6,8 @@ pub mod {{snakecase operationId}} {
     {{#each parameters}}
         {{~>subtypes name=name}}
     {{~/each}}
+
+    {{~#if (or parameters requestBody)}}
     /// Parameters for {{snakecase operationId}} operation
     #[derive(Deserialize)]
     pub struct Parameters {
@@ -74,6 +76,10 @@ pub mod {{snakecase operationId}} {
     {{#with requestBody}}
     {{>schema name="Body" description=description content.[application/json].schema}}
     {{~/with}}
+
+    {{~else~}}
+    pub type Parameters = ();
+    {{~/if}}
 
     #[derive(Debug)]
     pub enum Response<T> {

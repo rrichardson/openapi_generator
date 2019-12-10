@@ -13,7 +13,7 @@ pub struct {{camelcase info.title "Client"}} {
 
 {{~#*inline "operation_fn"}}
 
-    pub async fn {{snakecase operationId}}(&self, parameters: &{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
+    pub async fn {{snakecase operationId}}(&self, parameters: {{~#if (or parameters requestBody)~}}&{{~/if}}{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
         let mut url = self.url.clone();
         {{#if (has parameters "in" "path")~}}
         url.set_path(&format!("{{@../key}}"

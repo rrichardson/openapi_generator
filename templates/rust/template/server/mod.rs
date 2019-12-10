@@ -40,12 +40,16 @@ async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
     {{~/if}}
 ) -> impl Responder {
     use {{snakecase operationId}}::*;
+    {{~#if (or parameters requestBody)~}}
     let parameters = Parameters::new(
         {{~#if (has parameters "in" "query")~}}query.into_inner(),{{~/if}}
         {{~#if (has parameters "in" "path")~}}path.into_inner(),{{~/if}}
         {{~#if requestBody}}body.into_inner(),{{/if~}}
     );
     match server.{{snakecase operationId}}(parameters) {
+    {{~else~}}
+    match server.{{snakecase operationId}}(()) {
+    {{~/if}}
         {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
         Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
