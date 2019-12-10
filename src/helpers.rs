@@ -35,6 +35,7 @@ handlebars_helper!(component_path: |ref_path: str| parse_component_path(ref_path
 handlebars_helper!(sanitize: |word: str| apply_sanitize(word));
 handlebars_helper!(has: |elem: str, list: Json| apply_has(elem, list));
 handlebars_helper!(json: |data: Json| apply_json(data));
+handlebars_helper!(has_field: |data: Json, field: str, value: str| apply_has_field(data, field, value));
 
 pub(crate) fn parse_component_path(ref_path: &str) -> String {
     use heck::CamelCase;
@@ -71,6 +72,13 @@ pub(crate) fn apply_has(elem: &str, list: &Json) -> bool {
         .unwrap_or(&vec![])
         .iter()
         .any(|list_elem| elem == list_elem)
+}
+
+pub(crate) fn apply_has_field(parameters: &Json, field: &str, value: &str) -> bool {
+    parameters.as_array()
+        .unwrap_or(&vec![])
+        .iter()
+        .any(|list_elem| list_elem[field] == value)
 }
 
 pub(crate) fn apply_json(data: &Json) -> String {
