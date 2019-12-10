@@ -16,13 +16,13 @@ pub struct {{camelcase info.title "Client"}} {
     pub async fn {{snakecase operationId}}(&self{{~#if (or parameters requestBody)~}}, parameters: &{{snakecase operationId}}::Parameters{{~/if}}) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
         let mut url = self.url.clone();
         {{#if (has parameters "in" "path")~}}
-        url.set_path(&format!("{{@../key}}"
+        url.set_path(&format!("{}{{@../key}}", url.path()
             {{~#each parameters}}
                 {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
             {{~/each~}}
         ));
         {{~else~}}
-        url.set_path("{{@../key}}");
+        url.set_path(&format!("{}{{@../key}}", url.path()));
         {{~/if~}}
         let mut response = surf::{{operation_verb}}(url)
             {{~#if (has parameters "in" "query")}}
