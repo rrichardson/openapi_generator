@@ -7,8 +7,8 @@ pub mod {{snakecase operationId}} {
         {{~>subtypes name=name}}
     {{~/each}}
 
-    {{~#if (or parameters requestBody)}}
     /// Parameters for {{snakecase operationId}} operation
+    {{~#if (or parameters requestBody)}}
     #[derive(Deserialize)]
     pub struct Parameters {
     {{~#each parameters}}
