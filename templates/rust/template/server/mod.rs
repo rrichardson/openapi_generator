@@ -48,7 +48,7 @@ async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
     );
     match server.{{snakecase operationId}}(parameters) {
     {{~else~}}
-    match server.{{snakecase operationId}}(()) {
+    match server.{{snakecase operationId}}(Parameters {}) {
     {{~/if}}
         {{~#each responses}}
             {{~#if (not (eq @key "default"))}}

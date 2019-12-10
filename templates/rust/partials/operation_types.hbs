@@ -78,7 +78,7 @@ pub mod {{snakecase operationId}} {
     {{~/with}}
 
     {{~else~}}
-    pub type Parameters = ();
+    pub struct Parameters;
     {{~/if}}
 
     #[derive(Debug)]
