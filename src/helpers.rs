@@ -123,7 +123,6 @@ pub(crate) fn apply_json(data: &Json) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_json::json;
 
     #[test]
     fn test_parse_component_path() {
@@ -132,16 +131,4 @@ mod tests {
             "components::schemas::Pet".to_string()
         )
     }
-
-    // #[test]
-    // fn test_has_found() {
-    //     let list = json!(["name", "name2"]);
-    //     assert_eq!(apply_has("name", &list), true)
-    // }
-
-    // #[test]
-    // fn test_has_not_found() {
-    //     let list = json!(["name2", "name3"]);
-    //     assert_eq!(apply_has("name", &list), false)
-    // }
 }
