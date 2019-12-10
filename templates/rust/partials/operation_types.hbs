@@ -19,11 +19,11 @@ pub mod {{snakecase operationId}} {
     }
 
     impl Parameters {
-        {{~#if requestBody}}
-        pub fn new(query: Query, path: Path, body: Body) -> Self {
-        {{~else}}
-        pub fn new(query: Query, path: Path) -> Self {
-        {{~/if}}
+        pub fn new(
+            {{~#if (has_field parameters "in" "query")~}}query: Query,{{~/if}}
+            {{~#if (has_field parameters "in" "path")~}}path: Path,{{~/if}}
+            {{~#if requestBody}}body: Body,{{~/if}}
+        ) -> Self {
             Self {
             {{~#each parameters}}
                 {{snakecase name}}:
@@ -36,6 +36,7 @@ pub mod {{snakecase operationId}} {
             }
         }
 
+        {{~#if (has_field parameters "in" "query")~}}
         pub fn query(&self) -> Query {
             Query {
             {{~#each parameters}}
@@ -43,7 +44,9 @@ pub mod {{snakecase operationId}} {
             {{~/each}}
             }
         }
+        {{~/if}}
 
+        {{~#if (has_field parameters "in" "path")~}}
         pub fn path(&self) -> Path {
             Path {
             {{~#each parameters}}
@@ -51,6 +54,7 @@ pub mod {{snakecase operationId}} {
             {{~/each}}
             }
         }
+        {{~/if}}
 
         {{#with requestBody.content.[application/json]}}
         pub fn body(&self) -> Body {
@@ -59,9 +63,13 @@ pub mod {{snakecase operationId}} {
         {{~/with}}
     }
 
+    {{~#if (has_field parameters "in" "query")~}}
     {{>parameter_type type="query"}}
+    {{~/if}}
 
+    {{~#if (has_field parameters "in" "path")~}}
     {{>parameter_type type="path"}}
+    {{~/if}}
 
     {{#with requestBody}}
     {{>schema name="Body" description=description content.[application/json].schema}}
