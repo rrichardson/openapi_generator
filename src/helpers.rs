@@ -84,19 +84,20 @@ pub(crate) fn has(
         .ok_or_else(|| RenderError::new("field is not a string"))?;
     let value = helper.param(2);
     let result = match data {
-        serde_json::Value::Array(data) => match value {
-            Some(value) => {
+        serde_json::Value::Array(data) => {
+            if let Some(value) = value {
                 let value_converted = value
                     .value()
                     .as_str()
                     .ok_or_else(|| RenderError::new("value is not a string"))?;
                 data.iter()
                     .any(|list_elem| list_elem[field] == value_converted)
+            } else {
+                data.iter().any(|list_elem| list_elem == field)
             }
-            None => data.iter().any(|list_elem| list_elem == field),
-        },
-        serde_json::Value::Object(data) => match value {
-            Some(value) => {
+        }
+        serde_json::Value::Object(data) => {
+            if let Some(value) = value {
                 let field_value = data
                     .get(field)
                     .ok_or_else(|| RenderError::new("field does not exist"))?;
@@ -105,9 +106,10 @@ pub(crate) fn has(
                     .as_str()
                     .ok_or_else(|| RenderError::new("value is not a string"))?;
                 field_value == value_converted
+            } else {
+                data.get(field).is_some()
             }
-            None => data.get(field).is_some(),
-        },
+        }
         _ => false,
     };
     out.write(if result { "true" } else { "" })?;
