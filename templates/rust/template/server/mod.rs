@@ -6,7 +6,11 @@ use crate::models::*;
 
 {{~#*inline "operation_fn_trait"}}
 
-    fn {{snakecase operationId}}(&self, _parameters: {{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<HttpResponse>, Self::Error> {
+    fn {{snakecase operationId}}(
+        &self,
+        _parameters: {{snakecase operationId}}::Parameters,
+        {{#unless noBody~}} _body: {{snakecase operationId}}::Body, {{~/unless}}
+    ) -> Result<{{snakecase operationId}}::Response<HttpResponse>, Self::Error> {
         unimplemented!()
     }
 {{~/inline}}
@@ -14,8 +18,8 @@ use crate::models::*;
 pub trait {{camelcase info.title}} {
     type Error: std::error::Error;
 {{~#each paths}}
-    {{~#with get}}{{~> operation_fn_trait}}{{~/with}}
-    {{~#with head}}{{~> operation_fn_trait}}{{~/with}}
+    {{~#with get}}{{~> operation_fn_trait noBody=true}}{{~/with}}
+    {{~#with head}}{{~> operation_fn_trait noBody=true}}{{~/with}}
     {{~#with post}}{{~> operation_fn_trait}}{{~/with}}
     {{~#with put}}{{~> operation_fn_trait}}{{~/with}}
     {{~#with delete}}{{~> operation_fn_trait}}{{~/with}}
@@ -27,7 +31,7 @@ pub trait {{camelcase info.title}} {
 {{#*inline "operation_fn"}}
 {{#if summary}}/// {{summary}}{{/if}}
 {{~#if description}}/// {{description}}{{/if}}
-async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
+async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
     server: Data<Server>,{{!-- {{~#if parameters}} --}}
     {{~#if (has parameters "in" "query")~}}
     query: Query<{{snakecase operationId}}::Query>,
@@ -35,20 +39,19 @@ async fn {{snakecase operationId}}<Server: {{camelcase ../../info.title}}>(
     {{~#if (has parameters "in" "path")~}}
     path: Path<{{snakecase operationId}}::Path>,
     {{~/if}}
-    {{~#if requestBody}}
+    {{~#unless noBody}}
     body: Json<{{snakecase operationId}}::Body>,
-    {{~/if}}
+    {{~/unless}}
 ) -> impl Responder {
     use {{snakecase operationId}}::*;
     {{~#if (or parameters requestBody)~}}
     let parameters = Parameters::new(
         {{~#if (has parameters "in" "query")~}}query.into_inner(),{{~/if}}
         {{~#if (has parameters "in" "path")~}}path.into_inner(),{{~/if}}
-        {{~#if requestBody}}body.into_inner(),{{/if~}}
     );
-    match server.{{snakecase operationId}}(parameters) {
+    match server.{{snakecase operationId}}(parameters {{~#unless noBody}}, body.into_inner(){{/unless}}) {
     {{~else~}}
-    match server.{{snakecase operationId}}(Parameters {}) {
+    match server.{{snakecase operationId}}(Parameters {} {{~#unless noBody}}, body.into_inner(){{/unless}}) {
     {{~/if}}
         {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
@@ -72,14 +75,14 @@ fn err_to_string(err: &dyn std::error::Error) -> String {
 }
 
 {{#each paths}}
-    {{~#with get}}{{~> operation_fn}}{{~/with}}
-    {{~#with head}}{{~> operation_fn}}{{~/with}}
-    {{~#with post}}{{~> operation_fn}}{{~/with}}
-    {{~#with put}}{{~> operation_fn}}{{~/with}}
-    {{~#with delete}}{{~> operation_fn}}{{~/with}}
-    {{~#with options}}{{~> operation_fn}}{{~/with}}
-    {{~#with trace}}{{~> operation_fn}}{{~/with}}
-    {{~#with patch}}{{~> operation_fn}}{{~/with}}
+    {{~#with get}}{{~> operation_fn title=../../info.title noBody=true}}{{~/with}}
+    {{~#with head}}{{~> operation_fn title=../../info.title noBody=true}}{{~/with}}
+    {{~#with post}}{{~> operation_fn title=../../info.title}}{{~/with}}
+    {{~#with put}}{{~> operation_fn title=../../info.title}}{{~/with}}
+    {{~#with delete}}{{~> operation_fn title=../../info.title}}{{~/with}}
+    {{~#with options}}{{~> operation_fn title=../../info.title}}{{~/with}}
+    {{~#with trace}}{{~> operation_fn title=../../info.title}}{{~/with}}
+    {{~#with patch}}{{~> operation_fn title=../../info.title}}{{~/with}}
 {{~/each}}
 
 pub fn config<Server: {{camelcase info.title}} + Send + Sync + Clone + 'static>(

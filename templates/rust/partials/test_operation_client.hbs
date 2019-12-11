@@ -21,15 +21,20 @@ fn test_{{snakecase operationId}}_{{status}}() {
     .with_body(serde_json::to_string(&{{>example}}.unwrap()).unwrap())
     {{~/with}}
     .create();
+  {{~#if parameters}}
   let parameters = {{snakecase operationId}}::Parameters {
     {{~#each parameters}}
       {{snakecase name}}: {{>example}}.unwrap(),
     {{~/each~}}
-    {{#with requestBody.content.[application/json]}}
-      body: {{>example}}.unwrap(),
-    {{~/with}}
   };
-  let result = api_client.{{snakecase operationId}}(&parameters);
+  {{~/if}}
+  let result = api_client.{{snakecase operationId}}(
+    {{~#if parameters}}
+    &parameters,
+    {{~/if}}
+    {{~#with requestBody.content.[application/json]}}
+    &{{>example}}.unwrap()
+    {{~/with}});
   mock.assert();
   let data = result.unwrap();
   use {{snakecase operationId}}::Response::*;

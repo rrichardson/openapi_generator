@@ -1,3 +1,5 @@
+#![allow(clippy::ptr_arg)]
+
 use crate::models::*;
 use async_std::task::block_on;
 use url::{Url};
@@ -9,8 +11,15 @@ pub struct {{camelcase info.title "Client"}} {
 
 {{~#*inline "operation_fn"}}
 
-    pub fn {{snakecase operationId}}(&self{{~#if (or parameters requestBody)~}}, parameters: &{{snakecase operationId}}::Parameters{{~/if}}) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
-        block_on(self.client.{{snakecase operationId}}({{~#if (or parameters requestBody)~}}parameters{{~/if}}))
+    pub fn {{snakecase operationId}}(
+        &self,
+        {{~#if parameters~}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
+        {{~#if requestBody~}} body: &{{snakecase operationId}}::Body,{{/if~}}
+    ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
+        block_on(self.client.{{snakecase operationId}}(
+            {{~#if parameters}}parameters,{{/if}}
+            {{~#if requestBody}}body,{{/if}}
+        ))
     }
 {{~/inline}}
 

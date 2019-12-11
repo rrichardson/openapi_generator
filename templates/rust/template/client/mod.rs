@@ -1,3 +1,5 @@
+#![allow(clippy::ptr_arg)]
+
 pub mod blocking;
 
 #[cfg(all(test, feature = "example"))]
@@ -13,7 +15,11 @@ pub struct {{camelcase info.title "Client"}} {
 
 {{~#*inline "operation_fn"}}
 
-    pub async fn {{snakecase operationId}}(&self{{~#if (or parameters requestBody)~}}, parameters: &{{snakecase operationId}}::Parameters{{~/if}}) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
+    pub async fn {{snakecase operationId}}(
+        &self,
+        {{~#if parameters}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
+        {{~#if requestBody}} body: &{{snakecase operationId}}::Body,{{/if~}}
+    ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
         let mut url = self.url.clone();
         {{#if (has parameters "in" "path")~}}
         url.set_path(&format!("{}{{@../key}}", url.path()
@@ -29,7 +35,7 @@ pub struct {{camelcase info.title "Client"}} {
             .set_query(&parameters.query())?
             {{~/if}}
             {{~#if requestBody}}
-            .body_json(&parameters.body())?
+            .body_json(body)?
             {{~/if}}
             .await?;
         use {{snakecase operationId}}::Response::*;
