@@ -8,23 +8,25 @@ pub mod {{snakecase operationId}} {
     {{~/each}}
 
     /// Parameters for {{snakecase operationId}} operation
-    {{~#if (or parameters requestBody)}}
+    {{~#if parameters}}
     #[derive(Deserialize)]
     pub struct Parameters {
     {{~#each parameters}}
         {{#if description}}/// {{description}}{{/if}}
         pub {{snakecase name}}: {{>data_type name=name required=required schema}},
     {{~/each}}
-    {{~#with requestBody.content.[application/json]}}
-        pub body: Body,
-    {{~/with}}
     }
+    {{~else}}
+    pub struct Parameters;
+    {{~/if}}
 
     impl Parameters {
+        {{~#unless parameters}}
+        #[allow(clippy::new_without_default)]
+        {{~/unless}}
         pub fn new(
             {{~#if (has parameters "in" "query")~}}query: Query,{{~/if}}
             {{~#if (has parameters "in" "path")~}}path: Path,{{~/if}}
-            {{~#if requestBody}}body: Body,{{~/if}}
         ) -> Self {
             Self {
             {{~#each parameters}}
@@ -32,9 +34,6 @@ pub mod {{snakecase operationId}} {
                     {{~#if (eq in "query")}} query.{{snakecase name}}, {{~/if}}
                     {{~#if (eq in "path")}} path.{{snakecase name}}, {{~/if}}
             {{~/each}}
-            {{~#with requestBody.content.[application/json]}}
-                body
-            {{~/with}}
             }
         }
 
@@ -57,12 +56,6 @@ pub mod {{snakecase operationId}} {
             }
         }
         {{~/if}}
-
-        {{#with requestBody.content.[application/json]}}
-        pub fn body(&self) -> Body {
-            self.body.clone()
-        }
-        {{~/with}}
     }
 
     {{~#if (has parameters "in" "query")~}}
@@ -73,13 +66,16 @@ pub mod {{snakecase operationId}} {
     {{>parameter_type type="path"}}
     {{~/if}}
 
-    {{#with requestBody}}
-    {{>schema name="Body" description=description content.[application/json].schema}}
-    {{~/with}}
-
-    {{~else}}
-    pub struct Parameters;
-    {{~/if}}
+    {{#unless noBody}}
+        {{~#if requestBody}}
+            {{~#with requestBody}}
+            {{>schema name="Body" description=description content.[application/json].schema}}
+            {{~/with}}
+        {{~else~}}
+            #[derive(Deserialize)]
+            pub struct Body;
+        {{~/if}}
+    {{~/unless}}
 
     #[derive(Debug)]
     pub enum Response<T> {
@@ -90,7 +86,8 @@ pub mod {{snakecase operationId}} {
     {{~/each}}
         Unspecified(T),
     }
-    {{~#each responses}}
+
+    {{#each responses}}
         {{~#if (not (eq @key "default"))}}
             {{>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
         {{~/if}}

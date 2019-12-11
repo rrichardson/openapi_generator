@@ -13,8 +13,8 @@ pub mod components {
 {{~/with}}
 }
 {{#each paths}}
-    {{~>operation_types get}}
-    {{~>operation_types head}}
+    {{~>operation_types get noBody=true}}
+    {{~>operation_types head noBody=true}}
     {{~>operation_types post}}
     {{~>operation_types put}}
     {{~>operation_types delete}}
