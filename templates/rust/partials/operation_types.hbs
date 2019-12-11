@@ -77,7 +77,7 @@ pub mod {{snakecase operationId}} {
     {{>schema name="Body" description=description content.[application/json].schema}}
     {{~/with}}
 
-    {{~else~}}
+    {{~else}}
     pub struct Parameters;
     {{~/if}}
 
