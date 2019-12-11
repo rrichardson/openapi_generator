@@ -20,15 +20,16 @@ pub struct {{camelcase info.title "Client"}} {
         {{~#if parameters}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
         {{~#if requestBody}} body: &{{snakecase operationId}}::Body,{{/if~}}
     ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
-        {{#if (has parameters "in" "path")~}}
-        let url = self.url.join(&format!("{{@../key}}"
+        let url = self.url.join(
+            {{#if (has parameters "in" "path")~}}
+            &format!("{{@../key}}"
             {{~#each parameters}}
                 {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
-            {{~/each~}}
-        )).expect("url parse error");
-        {{~else~}}
-        let url = self.url.join("{{@../key}}").expect("url parse error");
-        {{~/if~}}
+            {{~/each~}})
+            {{~else~}}
+            "{{@../key}}"
+            {{~/if~}}
+        ).expect("url parse error");
         let mut response = surf::{{operation_verb}}(url)
             {{~#if (has parameters "in" "query")}}
             .set_query(&parameters.query())?
