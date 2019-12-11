@@ -1,5 +1,5 @@
 use crate::helpers::{
-    camelcase, component_path, has, json, mixedcase, sanitize, shoutysnakecase, snakecase,
+    camelcase, component_path, has, json, mixedcase, sanitize, shoutysnakecase, snakecase
 };
 use anyhow::{anyhow, Context, Result};
 use handlebars::Handlebars;

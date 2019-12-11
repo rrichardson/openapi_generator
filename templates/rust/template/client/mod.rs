@@ -13,14 +13,19 @@ pub struct {{camelcase info.title "Client"}} {
 
 {{~#*inline "operation_fn"}}
 
-    pub async fn {{snakecase operationId}}(&self, parameters: &{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
-        let url = format!("{url}{{@../key}}", url = self.url.to_string()
+    pub async fn {{snakecase operationId}}(&self{{~#if (or parameters requestBody)~}}, parameters: &{{snakecase operationId}}::Parameters{{~/if}}) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
+        let mut url = self.url.clone();
+        {{#if (has parameters "in" "path")~}}
+        url.set_path(&format!("{}{{@../key}}", url.path()
             {{~#each parameters}}
                 {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
             {{~/each~}}
-        );
+        ));
+        {{~else~}}
+        url.set_path(&format!("{}{{@../key}}", url.path()));
+        {{~/if~}}
         let mut response = surf::{{operation_verb}}(url)
-            {{~#if parameters}}
+            {{~#if (has parameters "in" "query")}}
             .set_query(&parameters.query())?
             {{~/if}}
             {{~#if requestBody}}

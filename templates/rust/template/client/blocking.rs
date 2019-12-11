@@ -9,8 +9,8 @@ pub struct {{camelcase info.title "Client"}} {
 
 {{~#*inline "operation_fn"}}
 
-    pub fn {{snakecase operationId}}(&self, parameters: &{{snakecase operationId}}::Parameters) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
-        block_on(self.client.{{snakecase operationId}}(parameters))
+    pub fn {{snakecase operationId}}(&self{{~#if (or parameters requestBody)~}}, parameters: &{{snakecase operationId}}::Parameters{{~/if}}) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
+        block_on(self.client.{{snakecase operationId}}({{~#if (or parameters requestBody)~}}parameters{{~/if}}))
     }
 {{~/inline}}
 
