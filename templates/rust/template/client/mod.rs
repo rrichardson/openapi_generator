@@ -22,13 +22,14 @@ pub struct {{camelcase info.title "Client"}} {
     ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
         let url = self.url.join(
             {{#if (has parameters "in" "path")~}}
-            &format!("{{@../key}}"
+            format!("{{@../key}}"
             {{~#each parameters}}
                 {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
             {{~/each~}})
             {{~else~}}
             "{{@../key}}"
             {{~/if~}}
+            .trim_start_matches('/')
         ).expect("url parse error");
         let mut response = surf::{{operation_verb}}(url)
             {{~#if (has parameters "in" "query")}}
