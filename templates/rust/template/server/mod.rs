@@ -39,20 +39,24 @@ async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
     {{~#if (has parameters "in" "path")~}}
     path: Path<{{snakecase operationId}}::Path>,
     {{~/if}}
-    {{~#unless noBody}}
+    {{~#if (and requestBody (not noBody))}}
     body: Json<{{snakecase operationId}}::Body>,
-    {{~/unless}}
+    {{~/if}}
 ) -> impl Responder {
     use {{snakecase operationId}}::*;
-    {{~#if (or parameters requestBody)~}}
     let parameters = Parameters::new(
         {{~#if (has parameters "in" "query")~}}query.into_inner(),{{~/if}}
         {{~#if (has parameters "in" "path")~}}path.into_inner(),{{~/if}}
     );
-    match server.{{snakecase operationId}}(parameters {{~#unless noBody}}, body.into_inner(){{/unless}}) {
-    {{~else~}}
-    match server.{{snakecase operationId}}(Parameters {} {{~#unless noBody}}, body.into_inner(){{/unless}}) {
-    {{~/if}}
+    {{~#unless noBody}}
+    let body =
+        {{~#if requestBody}}
+            body.into_inner();
+        {{~else~}}
+            {{snakecase operationId}}::Body {};
+         {{~/if}}
+    {{~/unless}}
+    match server.{{snakecase operationId}}(parameters {{~#unless noBody}}, body{{/unless}}) {
         {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
         Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
