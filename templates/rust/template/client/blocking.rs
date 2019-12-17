@@ -3,7 +3,7 @@
 use crate::models::*;
 use async_std::task::block_on;
 use url::{Url};
-use super::interface::{{camelcase info.title}};
+use super::{{camelcase info.title}};
 
 #[derive(Clone)]
 pub struct {{camelcase info.title "Client"}} {

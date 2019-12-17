@@ -1,7 +1,6 @@
 #![allow(clippy::ptr_arg)]
 
 pub mod blocking;
-pub mod interface;
 
 #[cfg(all(test, feature = "example"))]
 mod tests;
@@ -72,5 +71,28 @@ impl {{camelcase info.title "Client"}} {
         {{~#with options}}{{~> operation_fn operation_verb="options"}}{{~/with}}
         {{~#with trace}}{{~> operation_fn operation_verb="trace"}}{{~/with}}
         {{~#with patch}}{{~> operation_fn operation_verb="patch"}}{{~/with}}
+    {{~/each}}
+}
+
+{{~#*inline "trait_operation_fn"}}
+
+    fn {{snakecase operationId}}(
+        &self,
+        {{~#if parameters}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
+        {{~#if requestBody}} body: &{{snakecase operationId}}::Body,{{/if~}}
+    ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception>;
+{{~/inline}}
+
+pub trait {{camelcase info.title}} {
+
+    {{~#each paths}}
+        {{~#with get}}{{~> trait_operation_fn operation_verb="get"}}{{~/with}}
+        {{~#with head}}{{~> trait_operation_fn operation_verb="head"}}{{~/with}}
+        {{~#with post}}{{~> trait_operation_fn operation_verb="post"}}{{~/with}}
+        {{~#with put}}{{~> trait_operation_fn operation_verb="put"}}{{~/with}}
+        {{~#with delete}}{{~> trait_operation_fn operation_verb="delete"}}{{~/with}}
+        {{~#with options}}{{~> trait_operation_fn operation_verb="options"}}{{~/with}}
+        {{~#with trace}}{{~> trait_operation_fn operation_verb="trace"}}{{~/with}}
+        {{~#with patch}}{{~> trait_operation_fn operation_verb="patch"}}{{~/with}}
     {{~/each}}
 }
