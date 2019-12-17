@@ -1,6 +1,7 @@
 #![allow(clippy::ptr_arg)]
 
 pub mod blocking;
+pub mod interface;
 
 #[cfg(all(test, feature = "example"))]
 mod tests;
