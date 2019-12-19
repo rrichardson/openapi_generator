@@ -33,7 +33,7 @@ fn test_{{snakecase operationId}}_{{status}}() {
     &parameters,
     {{~/if}}
     {{~#with requestBody.content.[application/json]}}
-    &{{>example}}.unwrap()
+    &{{>example required="true"}}.unwrap()
     {{~/with}});
   mock.assert();
   let data = result.unwrap();
