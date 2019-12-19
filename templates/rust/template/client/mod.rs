@@ -7,8 +7,10 @@ mod tests;
 
 use crate::models::*;
 use url::Url;
+use mockiato::mockable;
+use std::fmt::Debug;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct {{camelcase info.title "Client"}} {
     pub url: Url,
 }
@@ -80,9 +82,12 @@ impl {{camelcase info.title "Client"}} {
         &self,
         {{~#if parameters}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
         {{~#if requestBody}} body: &{{snakecase operationId}}::Body,{{/if~}}
-    ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception>;
+    ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
+        unimplemented!("{{snakecase operationId}}")
+    }
 {{~/inline}}
 
+#[mockable]
 pub trait {{camelcase info.title}} {
 
     {{~#each paths}}
