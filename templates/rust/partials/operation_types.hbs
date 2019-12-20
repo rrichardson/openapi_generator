@@ -77,7 +77,7 @@ pub mod {{snakecase operationId}} {
         {{~/if}}
     {{~/unless}}
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub enum Response<T> {
     {{~#each responses}}
         {{~#if (not (eq @key "default"))}}

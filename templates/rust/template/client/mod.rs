@@ -6,14 +6,18 @@ pub mod blocking;
 mod tests;
 
 use crate::models::*;
-use url::Url;
 use mockiato::mockable;
 use std::fmt::Debug;
+use std::sync::Arc;
+use url::Url;
 
 #[derive(Clone, Debug)]
 pub struct {{camelcase info.title "Client"}} {
     pub url: Url,
 }
+
+pub type Response = Arc<surf::Response>;
+pub type Error = surf::Exception;
 
 {{~#*inline "operation_fn"}}
 
@@ -21,7 +25,7 @@ pub struct {{camelcase info.title "Client"}} {
         &self,
         {{~#if parameters}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
         {{~#if requestBody}} body: &{{snakecase operationId}}::Body,{{/if~}}
-    ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
+    ) -> Result<{{snakecase operationId}}::Response<Response>, Error> {
         let url = self.url.join(
             {{#if (has parameters "in" "path")~}}
             format!("{{@../key}}"
@@ -53,7 +57,7 @@ pub struct {{camelcase info.title "Client"}} {
                 {{~/if}}
             {{~/if}}
             {{~/each}}
-                _ => Unspecified(response),
+                _ => Unspecified(Arc::new(response)),
         })
     }
 {{~/inline}}
@@ -82,7 +86,7 @@ impl {{camelcase info.title "Client"}} {
         &self,
         {{~#if parameters}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
         {{~#if requestBody}} body: &{{snakecase operationId}}::Body,{{/if~}}
-    ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
+    ) -> Result<{{snakecase operationId}}::Response<Response>, Error> {
         unimplemented!("{{snakecase operationId}}")
     }
 {{~/inline}}
