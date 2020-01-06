@@ -6,12 +6,18 @@ pub mod blocking;
 mod tests;
 
 use crate::models::*;
+use mockiato::mockable;
+use std::fmt::Debug;
+use std::sync::Arc;
 use url::Url;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct {{camelcase info.title "Client"}} {
     pub url: Url,
 }
+
+pub type Response = Arc<surf::Response>;
+pub type Error = surf::Exception;
 
 {{~#*inline "operation_fn"}}
 
@@ -19,7 +25,7 @@ pub struct {{camelcase info.title "Client"}} {
         &self,
         {{~#if parameters}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
         {{~#if requestBody}} body: &{{snakecase operationId}}::Body,{{/if~}}
-    ) -> Result<{{snakecase operationId}}::Response<surf::Response>, surf::Exception> {
+    ) -> Result<{{snakecase operationId}}::Response<Response>, Error> {
         let url = self.url.join(
             {{#if (has parameters "in" "path")~}}
             format!("{{@../key}}"
@@ -51,7 +57,7 @@ pub struct {{camelcase info.title "Client"}} {
                 {{~/if}}
             {{~/if}}
             {{~/each}}
-                _ => Unspecified(response),
+                _ => Unspecified(Arc::new(response)),
         })
     }
 {{~/inline}}
@@ -71,5 +77,30 @@ impl {{camelcase info.title "Client"}} {
         {{~#with options}}{{~> operation_fn operation_verb="options"}}{{~/with}}
         {{~#with trace}}{{~> operation_fn operation_verb="trace"}}{{~/with}}
         {{~#with patch}}{{~> operation_fn operation_verb="patch"}}{{~/with}}
+    {{~/each}}
+}
+
+{{~#*inline "trait_operation_fn"}}
+    fn {{snakecase operationId}}(
+        &self,
+        {{~#if parameters}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
+        {{~#if requestBody}} body: &{{snakecase operationId}}::Body,{{/if~}}
+    ) -> Result<{{snakecase operationId}}::Response<Response>, Error> {
+        unimplemented!("{{snakecase operationId}}")
+    }
+{{/inline}}
+
+#[mockable]
+pub trait {{camelcase info.title}} {
+
+    {{~#each paths}}
+        {{~#with get}}{{~> trait_operation_fn operation_verb="get"}}{{~/with}}
+        {{~#with head}}{{~> trait_operation_fn operation_verb="head"}}{{~/with}}
+        {{~#with post}}{{~> trait_operation_fn operation_verb="post"}}{{~/with}}
+        {{~#with put}}{{~> trait_operation_fn operation_verb="put"}}{{~/with}}
+        {{~#with delete}}{{~> trait_operation_fn operation_verb="delete"}}{{~/with}}
+        {{~#with options}}{{~> trait_operation_fn operation_verb="options"}}{{~/with}}
+        {{~#with trace}}{{~> trait_operation_fn operation_verb="trace"}}{{~/with}}
+        {{~#with patch}}{{~> trait_operation_fn operation_verb="patch"}}{{~/with}}
     {{~/each}}
 }
