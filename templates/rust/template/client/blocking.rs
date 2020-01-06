@@ -5,7 +5,7 @@ use async_std::task::block_on;
 use url::{Url};
 use super::{ {{camelcase info.title}}, Response, Error};
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct {{camelcase info.title "Client"}} {
     client: super::{{camelcase info.title "Client"}},
 }
