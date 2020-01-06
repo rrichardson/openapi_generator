@@ -81,7 +81,6 @@ impl {{camelcase info.title "Client"}} {
 }
 
 {{~#*inline "trait_operation_fn"}}
-
     fn {{snakecase operationId}}(
         &self,
         {{~#if parameters}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
@@ -89,7 +88,7 @@ impl {{camelcase info.title "Client"}} {
     ) -> Result<{{snakecase operationId}}::Response<Response>, Error> {
         unimplemented!("{{snakecase operationId}}")
     }
-{{~/inline}}
+{{/inline}}
 
 #[mockable]
 pub trait {{camelcase info.title}} {
