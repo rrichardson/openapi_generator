@@ -14,11 +14,25 @@ use mockiato::mockable;
 use std::fmt::Debug;
 use std::sync::Arc;
 use url::Url;
+use displaydoc::Display;
 #[cfg(feature = "surf-client")]
 pub use self::surf::{{camelcase info.title "Client"}};
 
 pub type Response = String;
-pub type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
+
+#[derive(Debug, thiserror::Error, Display)]
+pub enum Error {
+    /// Request failed
+    Client(#[from] surf::Exception),
+    /// IO error occured while retrieving response body
+    Io(#[from] std::io::Error),
+    /// Request body serialization to JSON failed
+    BodySerialization(#[from] serde_json::Error),
+    /// Request parameters serialization failed
+    ParametersSerialization(#[from] serde_urlencoded::ser::Error),
+    /// Timeout occured during request
+    Timeout(#[from] async_std::future::TimeoutError),
+}
 
 {{~#*inline "trait_operation_fn"}}
     fn {{snakecase operationId}}(
@@ -32,8 +46,7 @@ pub type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 
 #[mockable]
 pub trait {{camelcase info.title}} {
-
-    {{~#each paths}}
+    {{#each paths}}
         {{~#with get}}{{~> trait_operation_fn operation_verb="get"}}{{~/with}}
         {{~#with head}}{{~> trait_operation_fn operation_verb="head"}}{{~/with}}
         {{~#with post}}{{~> trait_operation_fn operation_verb="post"}}{{~/with}}
