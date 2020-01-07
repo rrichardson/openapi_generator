@@ -1,5 +1,7 @@
 #![allow(clippy::unit_arg, clippy::redundant_clone)]
 
+pub mod mock;
+
 use actix_web::{web::*, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
 use std::error::Error;
 use crate::models::*;
