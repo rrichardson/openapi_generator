@@ -43,7 +43,7 @@ pub mod {{snakecase ../operationId}} {
             self.responses.push(json!(response_body).to_string());
         }
 
-        pub fn build(&self) -> mockito::Mock {
+        pub fn create(&self) -> mockito::Mock {
             let counter = self.counter.clone();
             let responses = self.responses.clone();
             mockito::mock("{{shoutysnakecase ../operation_verb}}", Matcher::Exact(self.url.clone()))
@@ -59,6 +59,7 @@ pub mod {{snakecase ../operationId}} {
                 })
                 .with_header("content-type", "application/json")
                 .expect(self.responses.len())
+                .create()
         }
     }
 
