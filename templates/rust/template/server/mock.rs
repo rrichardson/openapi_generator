@@ -11,7 +11,7 @@ pub mod {{snakecase ../operationId}} {
     use std::sync::Arc;
 
     {{~#each responses}}
-    {{~#if (or (eq @key "200") (eq @key "201"))}}
+    {{~#if (or (eq @key "200") (or (eq @key "201") (eq @key "204")))}}
     pub struct MockBuilder {
         counter: Arc<AtomicUsize>,
         responses: Vec<String>,
@@ -39,16 +39,23 @@ pub mod {{snakecase ../operationId}} {
             }
         }
 
-        pub fn add_response(&mut self, response_body: {{snakecase ../operationId}}::Response{{@key}},) {
+        pub fn with_response(mut self, response_body: {{snakecase ../operationId}}::Response{{@key}},) -> Self {
             self.responses.push(json!(response_body).to_string());
+            self
         }
 
-        pub fn create(&self) -> mockito::Mock {
+        pub fn with_responses(mut self, response_body: {{snakecase ../operationId}}::Response{{@key}}, expect: usize) -> Self {
+            self.responses.extend(std::iter::repeat(json!(response_body).to_string()).take(expect));
+            self
+        }
+
+        pub fn build(&self) -> mockito::Mock {
             let counter = self.counter.clone();
             let responses = self.responses.clone();
             mockito::mock("{{shoutysnakecase ../operation_verb}}", Matcher::Exact(self.url.clone()))
                 .match_query(Matcher::Any)
                 .with_status({{@key}})
+                {{~#if (not (eq @key "204"))}}
                 .with_body_from_fn(move |w| {
                     let c = counter.load(Ordering::Relaxed);
                     let response = responses.get(c).unwrap();
@@ -58,15 +65,14 @@ pub mod {{snakecase ../operationId}} {
                     w.write_all((*response).as_bytes())
                 })
                 .with_header("content-type", "application/json")
+                {{~/if}}
                 .expect(self.responses.len())
-                .create()
         }
     }
 
     pub fn mock (
         {{~#if ../parameters}} parameters: &{{snakecase ../operationId}}::Parameters,{{/if}}
-        response_body: {{snakecase ../operationId}}::Response{{@key}},
-        ) -> mockito::Mock {
+        ) -> MockBuilder {
         let url =
             {{#if (has ../parameters "in" "path")~}}
             format!("{{../path}}"
@@ -76,31 +82,7 @@ pub mod {{snakecase ../operationId}} {
             {{~else~}}
             "{{../path}}".to_string()
             {{~/if~}};
-        mockito::mock("{{shoutysnakecase ../operation_verb}}", Matcher::Exact(url))
-            .match_query(Matcher::Any)
-            .with_status({{@key}})
-            .with_body(json!(response_body).to_string())
-            .with_header("content-type", "application/json")
-    }
-    {{~/if}}
-
-    {{~#if (eq @key "204")}}
-    pub fn mock (
-        {{~#if ../parameters}} parameters: &{{snakecase ../operationId}}::Parameters,{{/if}}
-        ) -> mockito::Mock {
-        let url =
-            {{#if (has ../parameters "in" "path")~}}
-            format!("{{../path}}"
-            {{~#each ../parameters}}
-                {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
-            {{~/each~}})
-            {{~else~}}
-            "{{../path}}".to_string()
-            {{~/if~}};
-        mockito::mock("{{shoutysnakecase ../operation_verb}}", Matcher::Exact(url))
-            .match_query(Matcher::Any)
-            .with_status({{@key}})
-            .with_header("content-type", "application/json")
+        MockBuilder::new({{~#if ../parameters}}parameters{{/if}})
     }
     {{~/if}}
     {{~/each}}
