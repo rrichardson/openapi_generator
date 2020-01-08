@@ -1,6 +1,4 @@
-use mockito::{mock, Matcher};
-use crate::models;
-use serde_json::json;
+#![allow(clippy::ptr_arg)]
 
 {{~#*inline "mock"}}
 pub mod {{snakecase ../operationId}} {
@@ -20,6 +18,7 @@ pub mod {{snakecase ../operationId}} {
 
     impl MockBuilder {
 
+        #[allow(clippy::new_without_default)]
         pub fn new(
             {{~#if ../parameters}} parameters: &{{snakecase ../operationId}}::Parameters,{{/if}}
         ) -> Self {
