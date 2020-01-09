@@ -67,20 +67,15 @@ pub mod {{snakecase ../operationId}} {
                 {{~/if}}
                 .expect(self.responses.len())
         }
+
+        pub fn create(&self) -> mockito::Mock {
+            self.build().create()
+        }
     }
 
     pub fn mock (
         {{~#if ../parameters}} parameters: &{{snakecase ../operationId}}::Parameters,{{/if}}
         ) -> MockBuilder {
-        let url =
-            {{#if (has ../parameters "in" "path")~}}
-            format!("{{../path}}"
-            {{~#each ../parameters}}
-                {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
-            {{~/each~}})
-            {{~else~}}
-            "{{../path}}".to_string()
-            {{~/if~}};
         MockBuilder::new({{~#if ../parameters}}parameters{{/if}})
     }
     {{~/if}}
