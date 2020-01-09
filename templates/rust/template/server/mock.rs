@@ -67,6 +67,10 @@ pub mod {{snakecase ../operationId}} {
                 {{~/if}}
                 .expect(self.responses.len())
         }
+
+        pub fn create(&self) -> mockito::Mock {
+            self.build().create()
+        }
     }
 
     pub fn mock (
