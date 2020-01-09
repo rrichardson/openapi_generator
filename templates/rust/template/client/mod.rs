@@ -14,6 +14,7 @@ use mockiato::mockable;
 use std::fmt::Debug;
 use std::sync::Arc;
 use url::Url;
+#[cfg(feature = "surf-client")]
 pub use self::surf::{{camelcase info.title "Client"}};
 
 pub type Response = String;
