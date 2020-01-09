@@ -1,6 +1,6 @@
 #![allow(dead_code, unused_variables, unused_imports)]
 
-#[cfg(feature = "client")]
+#[cfg(any(feature = "surf-client", feature = "reqwest-client"))]
 pub mod client;
 #[cfg(feature = "example")]
 pub mod example;
