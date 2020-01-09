@@ -72,15 +72,6 @@ pub mod {{snakecase ../operationId}} {
     pub fn mock (
         {{~#if ../parameters}} parameters: &{{snakecase ../operationId}}::Parameters,{{/if}}
         ) -> MockBuilder {
-        let url =
-            {{#if (has ../parameters "in" "path")~}}
-            format!("{{../path}}"
-            {{~#each ../parameters}}
-                {{~#if (eq in "path")}}, {{name}} = parameters.{{snakecase name}}{{/if}}
-            {{~/each~}})
-            {{~else~}}
-            "{{../path}}".to_string()
-            {{~/if~}};
         MockBuilder::new({{~#if ../parameters}}parameters{{/if}})
     }
     {{~/if}}
