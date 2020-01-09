@@ -9,7 +9,7 @@ pub mod blocking {
     #[derive(Clone)]
     pub struct {{camelcase info.title "Client"}} {
         pub url: Url,
-        client: reqwest::blocking::Client,
+        pub client: reqwest::blocking::Client,
     }
 
     {{~#*inline "operation_fn"}}
