@@ -5,6 +5,7 @@ pub mod blocking {
     use crate::models::*;
     use url::{Url};
     use std::sync::Arc;
+    use std::time::Duration;
 
     #[derive(Clone)]
     pub struct {{camelcase info.title "Client"}} {
@@ -48,7 +49,7 @@ pub mod blocking {
                     {{~/if}}
                 {{~/if}}
                 {{~/each}}
-                    _ => Unspecified(format!("{:?}", response)),
+                    _ => Unspecified(response),
             })
         }
     {{~/inline}}
@@ -60,6 +61,11 @@ pub mod blocking {
                 url,
                 client: reqwest::blocking::Client::new(),
             }
+        }
+
+        pub fn with_timeout(mut self, timeout: Duration) -> Self {
+            self.client = reqwest::blocking::Client::builder().timeout(timeout).build().expect("bad client build");
+            self
         }
     }
 

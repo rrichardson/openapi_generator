@@ -18,15 +18,20 @@ use displaydoc::Display;
 #[cfg(feature = "surf-client")]
 pub use self::surf::{{camelcase info.title "Client"}};
 
-pub type Response = String;
+
+#[cfg(feature = "surf-client")]
+pub type Response = ::surf::Response;
+#[cfg(feature = "reqwest-client")]
+pub type Response = ::reqwest::blocking::Response;
 
 #[derive(Debug, thiserror::Error, Display)]
 pub enum Error {
     /// Request failed
-    SurfClient(#[from] ::surf::Exception),
+    #[cfg(feature = "surf-client")]
+    Client(#[from] ::surf::Exception),
     /// Request failed
     #[cfg(feature = "reqwest-client")]
-    ReqwestClient(#[from] ::reqwest::Error),
+    Client(#[from] ::reqwest::Error),
     /// IO error occured while retrieving response body
     Io(#[from] std::io::Error),
     /// Request body serialization to JSON failed
@@ -61,7 +66,9 @@ pub trait {{camelcase info.title}} {
     {{~/each}}
 }
 
-#[cfg(feature = "surf-client")]
 pub mod blocking {
+    #[cfg(feature = "surf-client")]
     pub use super::surf::blocking::{{camelcase info.title "Client"}};
+    #[cfg(feature = "reqwest-client")]
+    pub use super::reqwest::blocking::{{camelcase info.title "Client"}};
 }

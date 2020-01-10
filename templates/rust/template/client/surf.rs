@@ -47,7 +47,7 @@ pub struct {{camelcase info.title "Client"}} {
                 {{~/if}}
             {{~/if}}
             {{~/each}}
-                _ => Unspecified(format!("{:?}", response)),
+                _ => Unspecified(response),
         })
     }
 {{~/inline}}
