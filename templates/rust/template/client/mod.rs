@@ -23,7 +23,10 @@ pub type Response = String;
 #[derive(Debug, thiserror::Error, Display)]
 pub enum Error {
     /// Request failed
-    Client(#[from] surf::Exception),
+    SurfClient(#[from] ::surf::Exception),
+    /// Request failed
+    #[cfg(feature = "reqwest-client")]
+    ReqwestClient(#[from] ::reqwest::Error),
     /// IO error occured while retrieving response body
     Io(#[from] std::io::Error),
     /// Request body serialization to JSON failed

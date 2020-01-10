@@ -4,6 +4,11 @@ use crate::models::*;
 use url::Url;
 use super::{Response, Error};
 
+#[derive(Clone, Debug)]
+pub struct {{camelcase info.title "Client"}} {
+    pub url: Url,
+}
+
 {{~#*inline "operation_fn"}}
 
     pub async fn {{snakecase operationId}}(
@@ -47,25 +52,6 @@ use super::{Response, Error};
     }
 {{~/inline}}
 
-{{~#*inline "blocking_operation_fn"}}
-
-    fn {{snakecase operationId}}(
-        &self,
-        {{~#if parameters~}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
-        {{~#if requestBody~}} body: &{{snakecase operationId}}::Body,{{/if~}}
-    ) -> Result<{{snakecase operationId}}::Response<Response>, Error> {
-        block_on(self.client.{{snakecase operationId}}(
-            {{~#if parameters}}parameters,{{/if}}
-            {{~#if requestBody}}body,{{/if}}
-        ))
-    }
-{{~/inline}}
-
-#[derive(Clone, Debug)]
-pub struct {{camelcase info.title "Client"}} {
-    pub url: Url,
-}
-
 impl {{camelcase info.title "Client"}} {
     pub fn new(url: &str) -> Self {
         let url = Url::parse(url).expect("cannot parse url");
@@ -86,18 +72,48 @@ impl {{camelcase info.title "Client"}} {
 
 pub mod blocking {
     use crate::models::*;
-    use async_std::task::block_on;
+    use async_std::{future::timeout, task::block_on};
     use url::{Url};
     use super::super::{ {{camelcase info.title}}, Response, Error};
+    use std::time::Duration;
 
     #[derive(Clone)]
     pub struct {{camelcase info.title "Client"}} {
         client: super::{{camelcase info.title "Client"}},
+        timeout: Option<Duration>,
     }
+
+    {{~#*inline "blocking_operation_fn"}}
+
+    fn {{snakecase operationId}}(
+        &self,
+        {{~#if parameters~}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
+        {{~#if requestBody~}} body: &{{snakecase operationId}}::Body,{{/if~}}
+    ) -> Result<{{snakecase operationId}}::Response<Response>, Error> {
+        let future_result = self.client.{{snakecase operationId}}(
+            {{~#if parameters}}parameters,{{/if}}
+            {{~#if requestBody}}body,{{/if}}
+        );
+        let result = if let Some(duration) = self.timeout {
+            block_on(timeout(duration, future_result))?
+        } else {
+            block_on(future_result)
+        }?;
+        Ok(result)
+    }
+    {{~/inline}}
 
     impl {{camelcase info.title "Client"}} {
         pub fn new(url: &str) -> Self {
-            Self { client: super::{{camelcase info.title "Client"}}::new(url) }
+            Self {
+                client: super::{{camelcase info.title "Client"}}::new(url),
+                timeout: None,
+            }
+        }
+
+        pub fn with_timeout(mut self, timeout: Duration) -> Self {
+            self.timeout = Some(timeout);
+            self
         }
 
         pub fn url(&self) -> Url {
