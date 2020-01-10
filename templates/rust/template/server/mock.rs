@@ -10,13 +10,13 @@ pub mod {{snakecase ../operationId}} {
 
     {{~#each responses}}
     {{~#if (or (eq @key "200") (or (eq @key "201") (eq @key "204")))}}
-    pub struct MockBuilder {
+    pub struct MockBuilder{{@key}} {
         counter: Arc<AtomicUsize>,
         responses: Vec<String>,
         url: String,
     }
 
-    impl MockBuilder {
+    impl MockBuilder{{@key}} {
 
         #[allow(clippy::new_without_default)]
         pub fn new(
@@ -61,6 +61,7 @@ pub mod {{snakecase ../operationId}} {
                     if c < responses.len() - 1 {
                         counter.store(c + 1, Ordering::Relaxed);
                     }
+                    log::debug!("call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}}): {:?}", response);
                     w.write_all((*response).as_bytes())
                 })
                 .with_header("content-type", "application/json")
@@ -73,10 +74,10 @@ pub mod {{snakecase ../operationId}} {
         }
     }
 
-    pub fn mock (
+    pub fn mock_{{@key}} (
         {{~#if ../parameters}} parameters: &{{snakecase ../operationId}}::Parameters,{{/if}}
-        ) -> MockBuilder {
-        MockBuilder::new({{~#if ../parameters}}parameters{{/if}})
+        ) -> MockBuilder{{@key}} {
+        MockBuilder{{@key}}::new({{~#if ../parameters}}parameters{{/if}})
     }
     {{~/if}}
     {{~/each}}

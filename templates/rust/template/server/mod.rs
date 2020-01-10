@@ -1,5 +1,6 @@
 #![allow(clippy::unit_arg, clippy::redundant_clone)]
 
+#[cfg(feature = "mock-server")]
 pub mod mock;
 
 use actix_web::{web::*, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
