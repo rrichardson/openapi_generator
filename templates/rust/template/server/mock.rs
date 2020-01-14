@@ -9,10 +9,10 @@ pub mod {{snakecase ../operationId}} {
     use std::sync::Arc;
 
     {{~#each responses}}
-    {{~#if (or (eq @key "200") (or (eq @key "201") (eq @key "204")))}}
     pub struct MockBuilder{{@key}} {
         counter: Arc<AtomicUsize>,
         responses: Vec<String>,
+        {{~#if ../requestBody}} request_body: Option<{{snakecase ../operationId}}::Body>,{{/if}}
         url: String,
     }
 
@@ -21,6 +21,7 @@ pub mod {{snakecase ../operationId}} {
         #[allow(clippy::new_without_default)]
         pub fn new(
             {{~#if ../parameters}} parameters: &{{snakecase ../operationId}}::Parameters,{{/if}}
+            {{~#if ../requestBody}} body: Option<{{snakecase ../operationId}}::Body>,{{/if}}
         ) -> Self {
             let url =
                 {{#if (has ../parameters "in" "path")~}}
@@ -34,6 +35,7 @@ pub mod {{snakecase ../operationId}} {
             Self {
                 counter: Arc::new(AtomicUsize::new(0)),
                 responses: Vec::new(),
+                {{~#if ../requestBody}} request_body: body.clone(),{{/if}}
                 url,
             }
         }
@@ -51,8 +53,17 @@ pub mod {{snakecase ../operationId}} {
         pub fn build(&self) -> mockito::Mock {
             let counter = self.counter.clone();
             let responses = self.responses.clone();
+
+            {{~#if ../requestBody}}
+            let request_body_matcher = match &self.request_body {
+                Some(request_body) => Matcher::Json(json!(request_body)),
+                None => Matcher::Any,
+            };
+            {{~/if}}
+
             mockito::mock("{{shoutysnakecase ../operation_verb}}", Matcher::Exact(self.url.clone()))
                 .match_query(Matcher::Any)
+                {{#if ../requestBody}}.match_body(request_body_matcher){{/if}}
                 .with_status({{@key}})
                 {{~#if (not (eq @key "204"))}}
                 .with_body_from_fn(move |w| {
@@ -61,7 +72,6 @@ pub mod {{snakecase ../operationId}} {
                     if c < responses.len() - 1 {
                         counter.store(c + 1, Ordering::Relaxed);
                     }
-                    log::debug!("call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}}): {:?}", response);
                     w.write_all((*response).as_bytes())
                 })
                 .with_header("content-type", "application/json")
@@ -76,10 +86,13 @@ pub mod {{snakecase ../operationId}} {
 
     pub fn mock_{{@key}} (
         {{~#if ../parameters}} parameters: &{{snakecase ../operationId}}::Parameters,{{/if}}
+        {{~#if ../requestBody}} body: Option<{{snakecase ../operationId}}::Body>,{{/if}}
         ) -> MockBuilder{{@key}} {
-        MockBuilder{{@key}}::new({{~#if ../parameters}}parameters{{/if}})
+        MockBuilder{{@key}}::new(
+            {{~#if ../parameters}}parameters,{{/if}}
+            {{~#if ../requestBody}}body,{{/if}}
+        )
     }
-    {{~/if}}
     {{~/each}}
 }
 {{~/inline}}

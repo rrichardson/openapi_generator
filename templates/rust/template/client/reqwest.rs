@@ -43,9 +43,30 @@ pub mod blocking {
                 {{~#each responses}}
                 {{~#if (not (eq @key "default"))}}
                     {{~#if (eq @key "204")}}
-                    "{{@key}}" => {{camelcase "Response" @key}}(()),
+                    "{{@key}}" => {
+                        log::debug!(r#"
+call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
+    {{#if ../parameters~}}parameters:{:?}{{/if}}
+    {{#if ../requestBody~}}requestBody:{:?}{{/if}}"#
+                            {{#if ../parameters~}}, parameters{{/if}}
+                            {{#if ../requestBody~}}, body{{/if~}}
+                        );
+                        {{camelcase "Response" @key}}(())
+                    }
                     {{~else~}}
-                    "{{@key}}" => {{camelcase "Response" @key}}(response.json()?),
+                    "{{@key}}" => {
+                        let response_body = response.json()?;
+                        log::debug!(r#"
+call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
+    {{#if ../parameters~}}parameters:{:?}{{/if}}
+    {{#if ../requestBody~}}requestBody:{:?}{{/if}}
+    response ({{@key}}):{:?}"#
+                            {{#if ../parameters~}}, parameters{{/if}}
+                            {{#if ../requestBody~}}, body{{/if~}}
+                            , response_body
+                        );
+                        {{camelcase "Response" @key}}(response_body)
+                    }
                     {{~/if}}
                 {{~/if}}
                 {{~/each}}
