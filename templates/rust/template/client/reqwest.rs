@@ -17,7 +17,7 @@ pub mod blocking {
 
         fn {{snakecase operationId}}(
             &self,
-            {{~#if parameters~}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
+            {{~#if ../parameters~}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
             {{~#if requestBody~}} body: &{{snakecase operationId}}::Body,{{/if~}}
         ) -> Result<{{snakecase operationId}}::Response<Response>, Error> {
             let url = self.url.join(
@@ -33,6 +33,9 @@ pub mod blocking {
             ).expect("url parse error");
             let response = self.client
                 .{{operation_verb}}(url)
+                {{#if (has parameters "in" "query")~}}
+                .query(&parameters.query())
+                {{~/if}}
                 {{~#if requestBody}}
                 .json(&body)
                 {{~/if}}
@@ -70,7 +73,16 @@ call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
                     {{~/if}}
                 {{~/if}}
                 {{~/each}}
-                    _ => Unspecified(response),
+                    _ => {
+                        log::debug!(r#"
+call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
+    {{#if ../parameters~}}parameters:{:?}{{/if}}
+    {{#if ../requestBody~}}requestBody:{:?}{{/if}}"#
+                            {{#if ../parameters~}}, parameters{{/if}}
+                            {{#if ../requestBody~}}, body{{/if~}}
+                        );
+                        Unspecified(response)
+                    },
             })
         }
     {{~/inline}}
