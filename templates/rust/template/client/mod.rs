@@ -14,11 +14,33 @@ use mockiato::mockable;
 use std::fmt::Debug;
 use std::sync::Arc;
 use url::Url;
+use displaydoc::Display;
 #[cfg(feature = "surf-client")]
 pub use self::surf::{{camelcase info.title "Client"}};
 
-pub type Response = String;
-pub type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
+
+#[cfg(feature = "surf-client")]
+pub type Response = ::surf::Response;
+#[cfg(feature = "reqwest-client")]
+pub type Response = ::reqwest::blocking::Response;
+
+#[derive(Debug, thiserror::Error, Display)]
+pub enum Error {
+    /// request failed: {0}
+    #[cfg(feature = "surf-client")]
+    Client(#[from] ::surf::Exception),
+    /// request failed: {0}
+    #[cfg(feature = "reqwest-client")]
+    Client(#[from] ::reqwest::Error),
+    /// IO error occured while retrieving response body
+    Io(#[from] std::io::Error),
+    /// request body serialization to JSON failed
+    BodySerialization(#[from] serde_json::Error),
+    /// request parameters serialization failed
+    ParametersSerialization(#[from] serde_urlencoded::ser::Error),
+    /// timeout occured during request
+    Timeout(#[from] async_std::future::TimeoutError),
+}
 
 {{~#*inline "trait_operation_fn"}}
     fn {{snakecase operationId}}(
@@ -32,8 +54,7 @@ pub type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 
 #[mockable]
 pub trait {{camelcase info.title}} {
-
-    {{~#each paths}}
+    {{#each paths}}
         {{~#with get}}{{~> trait_operation_fn operation_verb="get"}}{{~/with}}
         {{~#with head}}{{~> trait_operation_fn operation_verb="head"}}{{~/with}}
         {{~#with post}}{{~> trait_operation_fn operation_verb="post"}}{{~/with}}
@@ -45,7 +66,9 @@ pub trait {{camelcase info.title}} {
     {{~/each}}
 }
 
-#[cfg(feature = "surf-client")]
 pub mod blocking {
+    #[cfg(feature = "surf-client")]
     pub use super::surf::blocking::{{camelcase info.title "Client"}};
+    #[cfg(feature = "reqwest-client")]
+    pub use super::reqwest::blocking::{{camelcase info.title "Client"}};
 }

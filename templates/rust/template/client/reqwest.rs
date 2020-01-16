@@ -5,6 +5,7 @@ pub mod blocking {
     use crate::models::*;
     use url::{Url};
     use std::sync::Arc;
+    use std::time::Duration;
 
     #[derive(Clone)]
     pub struct {{camelcase info.title "Client"}} {
@@ -16,7 +17,7 @@ pub mod blocking {
 
         fn {{snakecase operationId}}(
             &self,
-            {{~#if parameters~}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
+            {{~#if ../parameters~}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
             {{~#if requestBody~}} body: &{{snakecase operationId}}::Body,{{/if~}}
         ) -> Result<{{snakecase operationId}}::Response<Response>, Error> {
             let url = self.url.join(
@@ -32,6 +33,9 @@ pub mod blocking {
             ).expect("url parse error");
             let response = self.client
                 .{{operation_verb}}(url)
+                {{#if (has parameters "in" "query")~}}
+                .query(&parameters.query())
+                {{~/if}}
                 {{~#if requestBody}}
                 .json(&body)
                 {{~/if}}
@@ -42,13 +46,43 @@ pub mod blocking {
                 {{~#each responses}}
                 {{~#if (not (eq @key "default"))}}
                     {{~#if (eq @key "204")}}
-                    "{{@key}}" => {{camelcase "Response" @key}}(()),
+                    "{{@key}}" => {
+                        log::debug!(r#"
+call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
+    {{#if ../parameters~}}parameters:{:?}{{/if}}
+    {{#if ../requestBody~}}requestBody:{:?}{{/if}}"#
+                            {{#if ../parameters~}}, parameters{{/if}}
+                            {{#if ../requestBody~}}, body{{/if~}}
+                        );
+                        {{camelcase "Response" @key}}(())
+                    }
                     {{~else~}}
-                    "{{@key}}" => {{camelcase "Response" @key}}(response.json()?),
+                    "{{@key}}" => {
+                        let response_body = response.json()?;
+                        log::debug!(r#"
+call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
+    {{#if ../parameters~}}parameters:{:?}{{/if}}
+    {{#if ../requestBody~}}requestBody:{:?}{{/if}}
+    response ({{@key}}):{:?}"#
+                            {{#if ../parameters~}}, parameters{{/if}}
+                            {{#if ../requestBody~}}, body{{/if~}}
+                            , response_body
+                        );
+                        {{camelcase "Response" @key}}(response_body)
+                    }
                     {{~/if}}
                 {{~/if}}
                 {{~/each}}
-                    _ => Unspecified(format!("{:?}", response)),
+                    _ => {
+                        log::debug!(r#"
+call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
+    {{#if ../parameters~}}parameters:{:?}{{/if}}
+    {{#if ../requestBody~}}requestBody:{:?}{{/if}}"#
+                            {{#if ../parameters~}}, parameters{{/if}}
+                            {{#if ../requestBody~}}, body{{/if~}}
+                        );
+                        Unspecified(response)
+                    },
             })
         }
     {{~/inline}}
@@ -60,6 +94,11 @@ pub mod blocking {
                 url,
                 client: reqwest::blocking::Client::new(),
             }
+        }
+
+        pub fn with_timeout(mut self, timeout: Duration) -> Self {
+            self.client = reqwest::blocking::Client::builder().timeout(timeout).build().expect("bad client build");
+            self
         }
     }
 

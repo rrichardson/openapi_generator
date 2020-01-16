@@ -3,13 +3,14 @@
 #[cfg(feature = "mock-server")]
 pub mod mock;
 
-use actix_web::{web::*, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
-use std::error::Error;
 use crate::models::*;
+use actix_web::{web::*, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
+use async_trait::async_trait;
+use std::error::Error;
 
 {{~#*inline "operation_fn_trait"}}
 
-    fn {{snakecase operationId}}(
+    async fn {{snakecase operationId}}(
         &self,
         _parameters: {{snakecase operationId}}::Parameters,
         {{#unless noBody~}} _body: {{snakecase operationId}}::Body, {{~/unless}}
@@ -18,6 +19,7 @@ use crate::models::*;
     }
 {{~/inline}}
 
+#[async_trait(?Send)]
 pub trait {{camelcase info.title}} {
     type Error: std::error::Error;
 {{~#each paths}}
@@ -59,7 +61,7 @@ async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
             {{snakecase operationId}}::Body {};
          {{~/if}}
     {{~/unless}}
-    match server.{{snakecase operationId}}(parameters {{~#unless noBody}}, body{{/unless}}) {
+    match server.{{snakecase operationId}}(parameters {{~#unless noBody}}, body{{/unless}}).await {
         {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
         Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
