@@ -63,5 +63,6 @@ reqwest-client = [
     "thiserror",
     "displaydoc",
     "serde_json",
-    "serde_urlencoded"]
+    "serde_urlencoded",
+    "log"]
 mock-server = ["log", "mockito", "serde_json"]
