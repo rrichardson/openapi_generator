@@ -64,7 +64,11 @@ async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
     match server.{{snakecase operationId}}(parameters {{~#unless noBody}}, body{{/unless}}).await {
         {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
+            {{~#if content.[image/png]}}
+        Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).content_type("image/png").body(response),
+            {{~else~}}
         Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
+            {{~/if}}
             {{~/if}}
         {{~/each}}
         Ok(Response::Unspecified(response)) => response,
