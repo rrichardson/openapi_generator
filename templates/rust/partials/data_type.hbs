@@ -6,7 +6,11 @@ Vec<u8>
         {{~#if (eq format "byte")~}}
 Vec<u8>
         {{~else~}}
+            {{~#if enum~}}
+{{camelcase name}}
+            {{~else~}}
 String
+            {{~/if}}
         {{~/if}}
     {{~/if}}
 {{~/if}}

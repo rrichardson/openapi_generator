@@ -10,6 +10,10 @@
 
             {{/if}}
         {{~/if}}
+        {{~#if (and (eq type "string") enum (not format))}}
+            {{~>schema name=(camelcase ../name @key) this}}
+
+        {{~/if}}
     {{~/each}}
     {{~#with additionalProperties}}
         {{~>schema name=(camelcase ../name "properties") this}}

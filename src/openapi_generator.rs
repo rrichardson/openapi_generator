@@ -1,5 +1,5 @@
 use crate::helpers::{
-    camelcase, component_path, has, json, mixedcase, sanitize, shoutysnakecase, snakecase
+    camelcase, component_path, has, json, mixedcase, sanitize, shoutysnakecase, snakecase,
 };
 use anyhow::{anyhow, Context, Result};
 use handlebars::Handlebars;
@@ -9,18 +9,18 @@ use std::{
     path::{Path, PathBuf},
 };
 
-pub struct OpenApiGenerator {
-    handlebars: Handlebars,
+pub struct OpenApiGenerator<'a> {
+    handlebars: Handlebars<'a>,
     specs: serde_yaml::Value,
     template_path: PathBuf,
 }
 
-impl OpenApiGenerator {
+impl<'a> OpenApiGenerator<'a> {
     pub fn new<T: AsRef<Path>, U: AsRef<Path>>(specs_path: T, template_path: U) -> Result<Self> {
         let mut openapi_generator = Self {
             handlebars: Handlebars::new(),
             specs: Self::parse_specification(&specs_path.as_ref())?,
-            template_path: template_path.as_ref().join("template").to_path_buf(),
+            template_path: template_path.as_ref().join("template"),
         };
         let partials_path = template_path.as_ref().join("partials");
         openapi_generator

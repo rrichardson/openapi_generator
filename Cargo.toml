@@ -10,13 +10,13 @@ keywords = ["openapi", "swagger", "generator"]
 categories = ["template-engine", "web-programming"]
 
 [dependencies]
-anyhow = "1.0.25"
-handlebars = "2.0.2"
+anyhow = "1.0.26"
+handlebars = "3.0.1"
 heck = "0.3.1"
-pretty_env_logger = "0.3.1"
-serde_json = "1.0.44"
+pretty_env_logger = "0.4.0"
+serde_json = "1.0.48"
 json-pointer = "0.3.2"
 serde_yaml = "0.8.11"
-walkdir = "2.2.9"
+walkdir = "2.3.1"
 log = "0.4.8"
-structopt = "0.3.5"
+structopt = "0.3.9"
