@@ -9,13 +9,13 @@ use std::{
     path::{Path, PathBuf},
 };
 
-pub struct OpenApiGenerator<'a> {
-    handlebars: Handlebars<'a>,
+pub struct OpenApiGenerator {
+    handlebars: Handlebars,
     specs: serde_yaml::Value,
     template_path: PathBuf,
 }
 
-impl<'a> OpenApiGenerator<'a> {
+impl OpenApiGenerator {
     pub fn new<T: AsRef<Path>, U: AsRef<Path>>(specs_path: T, template_path: U) -> Result<Self> {
         let mut openapi_generator = Self {
             handlebars: Handlebars::new(),
