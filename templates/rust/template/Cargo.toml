@@ -8,10 +8,6 @@ authors = ["{{name}}{{#if email}} <{{email}}>{{/if}}"]
 {{~/with}}
 edition = "2018"
 
-[[bin]]
-name = "server"
-path = "main.rs"
-
 [lib]
 name = "{{snakecase info.title}}"
 path = "lib.rs"

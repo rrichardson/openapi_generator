@@ -4,7 +4,7 @@ pub mod {{snakecase operationId}} {
     use serde::{Deserialize, Serialize};
 
     {{#each parameters}}
-        {{~>subtypes name=name}}
+        {{~>schema name=name schema}}
     {{~/each}}
 
     /// Parameters for {{snakecase operationId}} operation
