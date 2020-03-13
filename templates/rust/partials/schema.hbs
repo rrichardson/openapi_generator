@@ -49,7 +49,7 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
                 }
             }
 
-        {{else}}
+        {{~else~}}
             pub type {{camelcase name suffix}} =
                 {{~#if type}} {{>data_type required="true"}}
                 {{~else}} ()
