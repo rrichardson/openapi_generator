@@ -26,19 +26,19 @@ pub type Response = ::reqwest::blocking::Response;
 
 #[derive(Debug, thiserror::Error, Display)]
 pub enum Error {
-    /// request failed: {0}
+    /// Request failed
     #[cfg(feature = "surf-client")]
     Client(#[from] ::surf::Exception),
-    /// request failed: {0}
+    /// Request failed
     #[cfg(feature = "reqwest-client")]
     Client(#[from] ::reqwest::Error),
     /// IO error occured while retrieving response body
     Io(#[from] std::io::Error),
-    /// request body serialization to JSON failed
+    /// Request body serialization to JSON failed
     BodySerialization(#[from] serde_json::Error),
-    /// request parameters serialization failed
+    /// Request parameters serialization failed
     ParametersSerialization(#[from] serde_urlencoded::ser::Error),
-    /// timeout occured during request
+    /// Timeout occured during request
     Timeout(#[from] async_std::future::TimeoutError),
 }
 
