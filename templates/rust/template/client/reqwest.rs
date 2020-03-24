@@ -5,6 +5,35 @@ use url::{Url};
 use std::sync::Arc;
 use std::time::Duration;
 
+/* Reqwest's errors are bad-mannered and recurse on their source when displayed.
+ * This behavior doesn't interact well with thiserror which also recurse on error's cause
+ * when displayed. To prevent this issue, this wrapper hides the error's source from thiserror.
+ */
+pub struct ReqwestError(pub reqwest::Error);
+
+impl std::error::Error for ReqwestError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
+}
+
+impl From<reqwest::Error> for ReqwestError {
+    fn from(err: reqwest::Error) -> Self {
+        Self(err)
+    }
+}
+
+impl std::fmt::Debug for ReqwestError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::Debug::fmt(&self.0, f)
+    }
+}
+
+impl std::fmt::Display for ReqwestError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::Display::fmt(&self.0, f)
+    }
+}
 
 #[derive(Clone)]
 pub struct {{camelcase info.title "Client"}} {
@@ -38,7 +67,7 @@ pub struct {{camelcase info.title "Client"}} {
             {{~#if requestBody}}
             .json(&body)
             {{~/if}}
-            .send().await?;
+            .send().await.map_err(ReqwestError)?;
         use {{snakecase operationId}}::Response::*;
         Ok(
             match response.status().as_str() {
@@ -57,7 +86,7 @@ call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
                 }
                 {{~else~}}
                 "{{@key}}" => {
-                    let response_body = response.json().await?;
+                    let response_body = response.json().await.map_err(ReqwestError)?;
                     log::debug!(r#"
 call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
 {{#if ../parameters~}}parameters:{:?}{{/if}}
@@ -120,6 +149,7 @@ pub mod blocking {
     use url::{Url};
     use std::sync::Arc;
     use std::time::Duration;
+    use super::ReqwestError;
 
     #[derive(Clone)]
     pub struct {{camelcase info.title "Client"}} {
@@ -153,7 +183,7 @@ pub mod blocking {
                 {{~#if requestBody}}
                 .json(&body)
                 {{~/if}}
-                .send()?;
+                .send().map_err(ReqwestError)?;
             use {{snakecase operationId}}::Response::*;
             Ok(
                 match response.status().as_str() {
@@ -172,7 +202,7 @@ call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
                     }
                     {{~else~}}
                     "{{@key}}" => {
-                        let response_body = response.json()?;
+                        let response_body = response.json().map_err(ReqwestError)?;
                         log::debug!(r#"
 call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
     {{#if ../parameters~}}parameters:{:?}{{/if}}

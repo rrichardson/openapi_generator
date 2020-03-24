@@ -31,7 +31,7 @@ pub enum Error {
     Client(#[from] ::surf::Exception),
     /// Request failed
     #[cfg(feature = "reqwest-client")]
-    Client(#[from] ::reqwest::Error),
+    Client(#[from] reqwest::ReqwestError),
     /// IO error occured while retrieving response body
     Io(#[from] std::io::Error),
     /// Request body serialization to JSON failed
