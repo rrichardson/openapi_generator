@@ -86,7 +86,11 @@ call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
                 }
                 {{~else~}}
                 "{{@key}}" => {
+                    {{~#if content.[application/json]}}
                     let response_body = response.json().await.map_err(ReqwestError)?;
+                    {{~else~}}
+                    let response_body = response.text().await.map_err(ReqwestError)?;
+                    {{~/if}}
                     log::debug!(r#"
 call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
 {{#if ../parameters~}}parameters:{:?}{{/if}}
