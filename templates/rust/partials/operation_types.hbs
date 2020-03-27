@@ -92,7 +92,11 @@ pub mod {{snakecase operationId}} {
             {{~#if content.[image/png]}}
             {{>schema name=(camelcase "Response" @key) description=description content.[image/png].schema}}
             {{~else~}}
-            {{>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
+                {{~#if content.[text/plain]}}
+                {{>schema name=(camelcase "Response" @key) description=description content.[text/plain].schema}}
+                {{~else~}}
+                {{>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
+                {{~/if}}
             {{~/if}}
         {{~/if}}
     {{~/each}}
