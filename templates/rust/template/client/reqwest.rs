@@ -86,14 +86,14 @@ call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
                 }
                 {{~else~}}
                 "{{@key}}" => {
-                    {{~#if content.[application/json]}}
+                    {{~#if (or content.[application/json] content.[image/png])}}
                     let response_body = response.json().await.map_err(ReqwestError)?;
                     {{~else~}}
-                    {{~#if content.[text/plain]}}
-                    let response_body = response.text().await.map_err(ReqwestError)?;
-                    {{~else~}}
-                    let response_body = ();
-                    {{~/if}}
+                        {{~#if content.[text/plain]}}
+                        let response_body = response.text().await.map_err(ReqwestError)?;
+                        {{~else~}}
+                        let response_body = ();
+                        {{~/if}}
                     {{~/if}}
                     log::debug!(r#"
 call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
