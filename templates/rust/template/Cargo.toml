@@ -22,7 +22,7 @@ async-trait = { version = "0.1.24", optional = true }
 displaydoc = { version = "0.1.5", optional = true }
 mockiato = { version = "0.9.5", optional = true }
 serde = { version = "1.0.104", features = ["derive"] }
-serde_json = { version = "1.0.48", optional = true }
+serde_json = { version = "1.0.48" }
 surf = { version = "1.0.3", optional = true }
 thiserror = { version = "1.0.11", optional = true }
 url = { version = "2.1.1", optional = true }
@@ -41,7 +41,6 @@ femme = "1.3.0"
 [features]
 default = ["server"]
 server = ["actix-web", "actix-service", "actix-http", "async-trait"]
-example = ["serde_json"]
 surf-client = [
     "surf",
     "async-std",
@@ -49,7 +48,6 @@ surf-client = [
     "mockiato",
     "thiserror",
     "displaydoc",
-    "serde_json",
     "serde_urlencoded"]
 reqwest-client = [
     "reqwest",
@@ -58,7 +56,6 @@ reqwest-client = [
     "mockiato",
     "thiserror",
     "displaydoc",
-    "serde_json",
     "serde_urlencoded",
     "log"]
-mock-server = ["log", "mockito", "serde_json"]
+mock-server = ["log", "mockito"]

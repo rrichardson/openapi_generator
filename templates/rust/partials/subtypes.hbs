@@ -15,9 +15,6 @@
 
         {{~/if}}
     {{~/each}}
-    {{~#with additionalProperties}}
-        {{~>schema name=(camelcase ../name "properties") this}}
-    {{/with}}
 {{~/if}}
 {{~#if (eq type "array")}}
     {{~#if (eq items.type "object")}}

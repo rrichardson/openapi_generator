@@ -19,12 +19,12 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
                 {{~/if}}
             {{~/each}}
             {{~#if additionalProperties}}
-                pub properties: std::collections::HashMap<&str, {{camelcase name suffix "properties"}}>,
+                pub properties: serde_json::Map<String, serde_json::Value>,
             {{~/if}}
             }
         {{~else~}}
             {{~#if additionalProperties}}
-                pub type {{camelcase name suffix}} = std::collections::HashMap<String, {{camelcase name suffix "properties"}}>;
+                pub type {{camelcase name suffix}} = serde_json::Map<String, serde_json::Value>;
             {{~/if}}
         {{~/if}}
     {{~else~}}
