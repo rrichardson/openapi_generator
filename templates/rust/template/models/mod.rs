@@ -6,7 +6,9 @@ pub mod components {
         use super::super::components;
         use serde::{Deserialize, Serialize};
         use serde_json;
-        
+        use std::collections::HashMap;
+        use std::convert::TryFrom;
+
         {{~#each schemas}}
             {{>schema name=@key this}}
         {{~/each}}

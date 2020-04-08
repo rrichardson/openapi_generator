@@ -4,9 +4,13 @@
 pub mod mock;
 
 use crate::models::*;
+use actix_multipart::Multipart;
 use actix_web::{web::*, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
 use async_trait::async_trait;
 use std::error::Error;
+use futures::{StreamExt, TryStreamExt};
+use std::collections::HashMap;
+use std::convert::TryFrom;
 
 {{~#*inline "operation_fn_trait"}}
 
@@ -44,8 +48,14 @@ async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
     {{~#if (has parameters "in" "path")~}}
     path: Path<{{snakecase operationId}}::Path>,
     {{~/if}}
+
     {{~#if (and requestBody (not noBody))}}
-    body: Json<{{snakecase operationId}}::Body>,
+        {{~#with requestBody.content.[application/json]}}
+            body: Json<{{snakecase ../operationId}}::Body>,
+        {{~/with}}
+        {{~#with requestBody.content.[multipart/form-data]}}
+            mut payload: Multipart,
+        {{~/with}}
     {{~/if}}
 ) -> impl Responder {
     use {{snakecase operationId}}::*;
@@ -54,21 +64,64 @@ async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
         {{~#if (has parameters "in" "path")~}}path.into_inner(),{{~/if}}
     );
     {{~#unless noBody}}
-    let body =
         {{~#if requestBody}}
-            body.into_inner();
+
+            {{~#with requestBody.content.[application/json]}}
+                let body = body.into_inner();
+            {{~/with}}
+
+            {{~#with requestBody.content.[multipart/form-data]}}
+                let mut data = HashMap::new();
+
+                while let Ok(Some(mut field)) = payload.try_next().await {
+                    let content_disposition = field.content_disposition().unwrap();
+                    let field_name = content_disposition.get_name().unwrap().to_string();
+                    let mut buffer = vec![];
+                    while let Some(chunk) = field.next().await {
+                        buffer.extend_from_slice(chunk.unwrap().as_ref());
+                    }
+                    data.insert(
+                        field_name,
+                        buffer,
+                    );
+                }
+                let body = match {{snakecase ../operationId}}::Body::try_from(data) {
+                    Ok(body) => body,
+                    Err(err) => return HttpResponse::InternalServerError().body(err)
+                };
+            {{~/with}}
+
         {{~else~}}
-            {{snakecase operationId}}::Body {};
-         {{~/if}}
+            let body = {{snakecase operationId}}::Body {};
+        {{~/if}}
     {{~/unless}}
+
     match server.{{snakecase operationId}}(parameters {{~#unless noBody}}, body{{/unless}}).await {
         {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
-            {{~#if content.[image/png]}}
-        Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).content_type("image/png").body(response),
-            {{~else~}}
-        Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
-            {{~/if}}
+
+                {{~#if content}}
+
+                    {{~#with content.[image/png]}}
+                        Ok(Response::{{camelcase "Response" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("image/png").body(response),
+                    {{~/with}}
+
+                    {{~#with content.[image/jpeg]}}
+                        Ok(Response::{{camelcase "Response" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("image/jpeg").body(response),
+                    {{~/with}}
+
+                    {{~#with content.[text/plain]}}
+                        Ok(Response::{{camelcase "Response" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("text/plain").body(response),
+                    {{~/with}}
+
+                    {{~#with content.[application/json]}}
+                        Ok(Response::{{camelcase "Response" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).json(response),
+                    {{~/with}}
+
+                {{~else~}}
+                    Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
+                {{~/if}}
+
             {{~/if}}
         {{~/each}}
         Ok(Response::Unspecified(response)) => response,
