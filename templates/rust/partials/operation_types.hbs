@@ -68,9 +68,8 @@ pub mod {{snakecase operationId}} {
 
     {{#unless noBody}}
         {{~#if requestBody}}
-            {{~#with requestBody}}
-            {{>schema name="Body" description=description content.[application/json].schema}}
-            {{~/with}}
+            {{~#with requestBody.content.[application/json]}}{{~>schema name="Body" description=../description schema}}{{~/with}}
+            {{~#with requestBody.content.[multipart/form-data]}}{{~>schema name="Body" description=../description schema}}{{~/with}}
         {{~else~}}
             #[derive(Deserialize)]
             pub struct Body;
@@ -89,16 +88,14 @@ pub mod {{snakecase operationId}} {
 
     {{#each responses}}
         {{~#if (not (eq @key "default"))}}
-            {{~#if content.[image/png]}}
-            {{>schema name=(camelcase "Response" @key) description=description content.[image/png].schema}}
-            {{~else~}}
-                {{~#if content.[text/plain]}}
-                {{>schema name=(camelcase "Response" @key) description=description content.[text/plain].schema}}
-                {{~else~}}
-                {{>schema name=(camelcase "Response" @key) description=description content.[application/json].schema}}
-                {{~/if}}
-            {{~/if}}
-        {{~/if}}
+            {{~#with content.[image/png]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[image/jpeg]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[text/plain]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[application/json]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
+        {{~/if }}
+        {{~#if (not content)}}
+            {{~>schema name=(camelcase "Response" @key) description=description}}
+        {{~/if }}
     {{~/each}}
 }
 {{/if}}

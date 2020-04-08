@@ -22,6 +22,21 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
                 pub properties: serde_json::Map<String, serde_json::Value>,
             {{~/if}}
             }
+
+            {{~#if (has this.[x-tags] "multipart")}}
+            impl TryFrom<HashMap<String, Vec<u8>>> for {{camelcase name suffix}} {
+                type Error = &'static str;
+
+                fn try_from(mut data: HashMap<String, Vec<u8>>) -> Result<Self, Self::Error> {
+                    Ok({{camelcase name suffix}} {
+                        {{~#each properties}}
+                            {{sanitize (snakecase @key)}}: data.remove("{{snakecase @key}}").ok_or_else(|| "missing field {{sanitize (snakecase @key)}}")?,
+                        {{~/each}}
+                    })
+                }
+            }
+            {{~/if}}
+
         {{~else~}}
             {{~#if additionalProperties}}
                 pub type {{camelcase name suffix}} = serde_json::Map<String, serde_json::Value>;
@@ -32,7 +47,7 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
             #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize)]
             pub enum {{camelcase ../name @key suffix}} {
                 {{~#each enum}}
-                #[serde(rename = "{{this}}")] 
+                #[serde(rename = "{{this}}")]
                 {{camelcase this}},
                 {{~/each}}
             }
