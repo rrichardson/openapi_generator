@@ -27,10 +27,10 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
             impl TryFrom<HashMap<String, Vec<u8>>> for {{camelcase name suffix}} {
                 type Error = &'static str;
 
-                fn try_from(data: HashMap<String, Vec<u8>>) -> Result<Self, Self::Error> {
+                fn try_from(mut data: HashMap<String, Vec<u8>>) -> Result<Self, Self::Error> {
                     Ok({{camelcase name suffix}} {
                         {{~#each properties}}
-                            {{sanitize (snakecase @key)}}: data.get("{{snakecase @key}}").ok_or_else(|| "missing field {{sanitize (snakecase @key)}}")?.to_vec(),
+                            {{sanitize (snakecase @key)}}: data.remove("{{snakecase @key}}").ok_or_else(|| "missing field {{sanitize (snakecase @key)}}")?,
                         {{~/each}}
                     })
                 }
