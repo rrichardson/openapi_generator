@@ -46,7 +46,10 @@ pub struct {{camelcase info.title "Client"}} {
     pub async fn {{snakecase operationId}}(
         &self,
         {{~#if ../parameters~}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
-        {{~#if requestBody~}} body: &{{snakecase operationId}}::Body,{{/if~}}
+        {{~#if requestBody~}}
+            {{~#with requestBody.content.[application/json]}}body: &{{snakecase ../operationId}}::Body,{{~/with}}
+            {{~#with requestBody.content.[multipart/form-data]}}form: reqwest::multipart::Form,{{~/with}}
+        {{/if~}}
     ) -> Result<{{snakecase operationId}}::Response<reqwest::Response>, Error> {
         let url = self.url.join(
             {{#if (has parameters "in" "path")~}}
@@ -65,7 +68,8 @@ pub struct {{camelcase info.title "Client"}} {
             .query(&parameters.query())
             {{~/if}}
             {{~#if requestBody}}
-            .json(&body)
+                {{~#with requestBody.content.[application/json]}}.json(&body){{~/with}}
+                {{~#with requestBody.content.[multipart/form-data]}}.multipart(form){{~/with}}
             {{~/if}}
             .send().await.map_err(ReqwestError)?;
         use {{snakecase operationId}}::Response::*;
@@ -77,10 +81,8 @@ pub struct {{camelcase info.title "Client"}} {
                 "{{@key}}" => {
                     log::debug!(r#"
 call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
-{{#if ../parameters~}}parameters:{:?}{{/if}}
-{{#if ../requestBody~}}requestBody:{:?}{{/if}}"#
+{{#if ../parameters~}}parameters:{:?}{{/if}}"#
                         {{#if ../parameters~}}, parameters{{/if}}
-                        {{#if ../requestBody~}}, body{{/if~}}
                     );
                     {{camelcase "Response" @key}}(())
                 }
@@ -97,10 +99,8 @@ call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
                     log::debug!(r#"
 call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
 {{#if ../parameters~}}parameters:{:?}{{/if}}
-{{#if ../requestBody~}}requestBody:{:?}{{/if}}
 response ({{@key}}):{:?}"#
                         {{#if ../parameters~}}, parameters{{/if}}
-                        {{#if ../requestBody~}}, body{{/if~}}
                         , response_body
                     );
                     {{camelcase "Response" @key}}(response_body)
@@ -111,10 +111,8 @@ response ({{@key}}):{:?}"#
                 _ => {
                     log::debug!(r#"
 call to {{snakecase ../operationId}} ({{shoutysnakecase ../operation_verb}})
-{{#if ../parameters~}}parameters:{:?}{{/if}}
-{{#if ../requestBody~}}requestBody:{:?}{{/if}}"#
+{{#if ../parameters~}}parameters:{:?}{{/if}}"#
                         {{#if ../parameters~}}, parameters{{/if}}
-                        {{#if ../requestBody~}}, body{{/if~}}
                     );
                     Unspecified(response)
                 },
