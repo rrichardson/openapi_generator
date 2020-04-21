@@ -77,24 +77,33 @@ pub mod {{snakecase operationId}} {
     {{~/unless}}
 
     #[derive(Debug)]
-    pub enum Response<T> {
+    pub enum HttpSuccess {
     {{~#each responses}}
-        {{~#if (not (eq @key "default"))}}
-        {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
+        {{~#if (is_http_code_success @key)}}
+        {{camelcase "HttpStatus" @key}}({{camelcase "HttpStatus" @key}}),
         {{~/if}}
     {{~/each}}
-        Unspecified(T),
+    }
+
+    #[derive(Debug)]
+    pub enum HttpError<T> {
+    {{~#each responses}}
+        {{~#if (not (or (eq @key "default") (is_http_code_success @key)))}}
+        {{camelcase "HttpStatus" @key}}({{camelcase "HttpStatus" @key}}),
+        {{~/if}}
+    {{~/each}}
+        Unknown(T),
     }
 
     {{#each responses}}
         {{~#if (not (eq @key "default"))}}
-            {{~#with content.[image/png]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
-            {{~#with content.[image/jpeg]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
-            {{~#with content.[text/plain]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
-            {{~#with content.[application/json]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[image/png]}}{{~>schema name=(camelcase "HttpStatus" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[image/jpeg]}}{{~>schema name=(camelcase "HttpStatus" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[text/plain]}}{{~>schema name=(camelcase "HttpStatus" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[application/json]}}{{~>schema name=(camelcase "HttpStatus" @../key) description=../description schema}}{{~/with}}
         {{~/if }}
         {{~#if (not content)}}
-            {{~>schema name=(camelcase "Response" @key) description=description}}
+            {{~>schema name=(camelcase "HttpStatus" @key) description=description}}
         {{~/if }}
     {{~/each}}
 }

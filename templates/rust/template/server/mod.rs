@@ -18,7 +18,7 @@ use std::convert::TryFrom;
         &self,
         _parameters: {{snakecase operationId}}::Parameters,
         {{#unless noBody~}} _body: {{snakecase operationId}}::Body, {{~/unless}}
-    ) -> Result<{{snakecase operationId}}::Response<HttpResponse>, Self::Error> {
+    ) -> Result<{{snakecase operationId}}::HttpSuccess, {{snakecase operationId}}::HttpError<Self::Error>> {
         unimplemented!()
     }
 {{~/inline}}
@@ -99,33 +99,45 @@ async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
     match server.{{snakecase operationId}}(parameters {{~#unless noBody}}, body{{/unless}}).await {
         {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
+                {{~#if (is_http_code_success @key)}}
+                    {{~#if content}}
 
-                {{~#if content}}
+                        {{~#with content.[image/png]}}
+                            Ok(HttpSuccess::{{camelcase "HttpStatus" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("image/png").body(response),
+                        {{~/with}}
 
-                    {{~#with content.[image/png]}}
-                        Ok(Response::{{camelcase "Response" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("image/png").body(response),
-                    {{~/with}}
+                        {{~#with content.[image/jpeg]}}
+                            Ok(HttpSuccess::{{camelcase "HttpStatus" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("image/jpeg").body(response),
+                        {{~/with}}
 
-                    {{~#with content.[image/jpeg]}}
-                        Ok(Response::{{camelcase "Response" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("image/jpeg").body(response),
-                    {{~/with}}
+                        {{~#with content.[text/plain]}}
+                            Ok(HttpSuccess::{{camelcase "HttpStatus" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("text/plain").body(response),
+                        {{~/with}}
 
-                    {{~#with content.[text/plain]}}
-                        Ok(Response::{{camelcase "Response" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("text/plain").body(response),
-                    {{~/with}}
+                        {{~#with content.[application/json]}}
+                            Ok(HttpSuccess::{{camelcase "HttpStatus" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).json(response),
+                        {{~/with}}
 
-                    {{~#with content.[application/json]}}
-                        Ok(Response::{{camelcase "Response" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).json(response),
-                    {{~/with}}
-
+                    {{~else~}}
+                        Ok(HttpSuccess::{{camelcase "HttpStatus" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
+                    {{~/if}}
                 {{~else~}}
-                    Ok(Response::{{camelcase "Response" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
-                {{~/if}}
+                    {{~#if content}}
+                        {{~#with content.[text/plain]}}
+                            Err(HttpError::{{camelcase "HttpStatus" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).content_type("text/plain").body(response),
+                        {{~/with}}
 
+                        {{~#with content.[application/json]}}
+                            Err(HttpError::{{camelcase "HttpStatus" @../key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@../key}}).unwrap()).json(response),
+                        {{~/with}}
+
+                    {{~else~}}
+                        Err(HttpError::{{camelcase "HttpStatus" @key}}(response)) => HttpResponseBuilder::new(StatusCode::from_u16({{@key}}).unwrap()).json(response),
+                    {{~/if}}
+                {{~/if}}
             {{~/if}}
         {{~/each}}
-        Ok(Response::Unspecified(response)) => response,
-        Err(err) => HttpResponse::InternalServerError().body(err_to_string(&err)),
+        Err(HttpError::Unknown(err)) => HttpResponse::InternalServerError().body(err_to_string(&err)),
     }
 }
 {{~/inline}}
