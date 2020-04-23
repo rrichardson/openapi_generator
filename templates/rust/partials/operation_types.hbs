@@ -77,6 +77,28 @@ pub mod {{snakecase operationId}} {
     {{~/unless}}
 
     #[derive(Debug)]
+    pub enum Response<T> {
+    {{~#each responses}}
+        {{~#if (not (eq @key "default"))}}
+        {{camelcase "Response" @key}}({{camelcase "Response" @key}}),
+        {{~/if}}
+    {{~/each}}
+        Unspecified(T),
+    }
+
+    {{#each responses}}
+        {{~#if (not (eq @key "default"))}}
+            {{~#with content.[image/png]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[image/jpeg]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[text/plain]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[application/json]}}{{~>schema name=(camelcase "Response" @../key) description=../description schema}}{{~/with}}
+        {{~/if }}
+        {{~#if (not content)}}
+            {{~>schema name=(camelcase "Response" @key) description=description}}
+        {{~/if }}
+    {{~/each}}
+
+    #[derive(Debug)]
     pub enum Success {
     {{~#each responses}}
         {{~#if (is_http_code_success @key)}}
