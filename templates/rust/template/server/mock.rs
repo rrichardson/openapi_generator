@@ -40,15 +40,16 @@ pub mod {{snakecase ../operationId}} {
             }
         }
 
-        pub fn with_response(mut self, response_body: {{snakecase ../operationId}}::Response{{@key}},) -> Self {
+        pub fn with_response(mut self, response_body: {{snakecase ../operationId}}::Status{{@key}},) -> Self {
             self.responses.push(json!(response_body).to_string());
             self
         }
 
-        pub fn with_responses(mut self, response_body: {{snakecase ../operationId}}::Response{{@key}}, expect: usize) -> Self {
+        pub fn with_responses(mut self, response_body: {{snakecase ../operationId}}::Status{{@key}}, expect: usize) -> Self {
             self.responses.extend(std::iter::repeat(json!(response_body).to_string()).take(expect));
             self
         }
+
 
         pub fn build(&self) -> mockito::Mock {
             let counter = self.counter.clone();
