@@ -97,5 +97,63 @@ pub mod {{snakecase operationId}} {
             {{~>schema name=(camelcase "Response" @key) description=description}}
         {{~/if }}
     {{~/each}}
+
+    #[derive(Debug)]
+    pub enum Success {
+    {{~#each responses}}
+        {{~#if (is_http_code_success @key)}}
+        {{camelcase "Status" @key}}({{camelcase "Status" @key}}),
+        {{~/if}}
+    {{~/each}}
+    }
+
+    pub enum Error<T> {
+    {{~#each responses}}
+        {{~#if (not (or (eq @key "default") (is_http_code_success @key)))}}
+        {{camelcase "Status" @key}}({{camelcase "Status" @key}}),
+        {{~/if}}
+    {{~/each}}
+        Unknown(T),
+    }
+
+    impl<T> std::fmt::Debug for Error<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                {{~#each responses}}
+                    {{~#if (not (or (eq @key "default") (is_http_code_success @key)))}}
+                    Self::{{camelcase "Status" @key}}(status) => write!(f, "{{snakecase "Status"}} {{@key}}: {:?}", status),
+                    {{~/if}}
+                {{~/each}}
+                _ => write!(f, "unknown"),
+            }
+        }
+    }
+
+    impl<T> std::fmt::Display for Error<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                {{~#each responses}}
+                    {{~#if (not (or (eq @key "default") (is_http_code_success @key)))}}
+                    Self::{{camelcase "Status" @key}}(status) => write!(f, "{{snakecase "Status"}} {{@key}}: {:?}", status),
+                    {{~/if}}
+                {{~/each}}
+                _ => write!(f, "unknown"),
+            }
+        }
+    }
+
+    impl<T> std::error::Error for Error<T> {}
+
+    {{#each responses}}
+        {{~#if (not (eq @key "default"))}}
+            {{~#with content.[image/png]}}{{~>schema name=(camelcase "Status" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[image/jpeg]}}{{~>schema name=(camelcase "Status" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[text/plain]}}{{~>schema name=(camelcase "Status" @../key) description=../description schema}}{{~/with}}
+            {{~#with content.[application/json]}}{{~>schema name=(camelcase "Status" @../key) description=../description schema}}{{~/with}}
+        {{~/if }}
+        {{~#if (not content)}}
+            {{~>schema name=(camelcase "Status" @key) description=description}}
+        {{~/if }}
+    {{~/each}}
 }
 {{/if}}
