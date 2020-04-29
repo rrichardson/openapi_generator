@@ -21,7 +21,7 @@ pub enum Error<T: std::fmt::Debug> {
     ParametersSerialization(#[from] serde_urlencoded::ser::Error),
     /// Timeout occured during request
     Timeout(#[from] async_std::future::TimeoutError),
-    /// Status error
+    /// Status error: {0:?}
     Status(T),
 }
 
@@ -45,7 +45,7 @@ pub struct ReqwestError(pub reqwest::Error);
 
 impl std::error::Error for ReqwestError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        None
+        Some(&self.0)
     }
 }
 

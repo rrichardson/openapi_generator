@@ -107,7 +107,8 @@ pub mod {{snakecase operationId}} {
     {{~/each}}
     }
 
-    pub enum Error<T> {
+    #[derive(Debug)]
+    pub enum Error<T: std::fmt::Debug> {
     {{~#each responses}}
         {{~#if (not (or (eq @key "default") (is_http_code_success @key)))}}
         {{camelcase "Status" @key}}({{camelcase "Status" @key}}),
@@ -116,7 +117,7 @@ pub mod {{snakecase operationId}} {
         Unknown(T),
     }
 
-    impl<T> std::fmt::Debug for Error<T> {
+    impl<T: std::fmt::Debug + std::fmt::Display> std::fmt::Display for Error<T> {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
                 {{~#each responses}}
@@ -124,25 +125,12 @@ pub mod {{snakecase operationId}} {
                     Self::{{camelcase "Status" @key}}(status) => write!(f, "{{snakecase "Status"}} {{@key}}: {:?}", status),
                     {{~/if}}
                 {{~/each}}
-                _ => write!(f, "unknown"),
+                Self::Unknown(response) => write!(f, "Unspecified response: `{}`", response),
             }
         }
     }
 
-    impl<T> std::fmt::Display for Error<T> {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            match self {
-                {{~#each responses}}
-                    {{~#if (not (or (eq @key "default") (is_http_code_success @key)))}}
-                    Self::{{camelcase "Status" @key}}(status) => write!(f, "{{snakecase "Status"}} {{@key}}: {:?}", status),
-                    {{~/if}}
-                {{~/each}}
-                _ => write!(f, "unknown"),
-            }
-        }
-    }
-
-    impl<T> std::error::Error for Error<T> {}
+    impl<T: std::fmt::Debug + std::fmt::Display> std::error::Error for Error<T> {}
 
     {{#each responses}}
         {{~#if (not (eq @key "default"))}}
