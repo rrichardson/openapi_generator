@@ -1,41 +1,7 @@
 #![allow(clippy::ptr_arg)]
-use crate::models::*;
 use url::{Url};
 use std::sync::Arc;
 use std::time::Duration;
-use displaydoc::Display;
-
-{{~#*inline "async_operation_error"}}
-pub type {{camelcase operationId}}Error = Error<{{snakecase operationId}}::Error<reqwest::Response>>;
-{{~/inline}}
-
-#[derive(Debug, thiserror::Error, Display)]
-pub enum Error<T: std::fmt::Debug> {
-    /// Request failed
-    Client(#[from] ReqwestError),
-    /// IO error occured while retrieving response body
-    Io(#[from] std::io::Error),
-    /// Request body serialization to JSON failed
-    BodySerialization(#[from] serde_json::Error),
-    /// Request parameters serialization failed
-    ParametersSerialization(#[from] serde_urlencoded::ser::Error),
-    /// Timeout occured during request
-    Timeout(#[from] async_std::future::TimeoutError),
-    /// Status error: {0:?}
-    Status(T),
-}
-
-{{~#each paths}}
-{{~#with get}}{{~> async_operation_error}}{{~/with}}
-{{~#with head}}{{~> async_operation_error}}{{~/with}}
-{{~#with post}}{{~> async_operation_error}}{{~/with}}
-{{~#with put}}{{~> async_operation_error}}{{~/with}}
-{{~#with delete}}{{~> async_operation_error}}{{~/with}}
-{{~#with options}}{{~> async_operation_error}}{{~/with}}
-{{~#with trace}}{{~> async_operation_error}}{{~/with}}
-{{~#with patch}}{{~> async_operation_error}}{{~/with}}
-{{~/each}}
-
 
 /* Reqwest's errors are bad-mannered and recurse on their source when displayed.
  * This behavior doesn't interact well with thiserror which also recurse on error's cause
@@ -82,7 +48,8 @@ pub struct {{camelcase info.title "Client"}} {
             {{~#with requestBody.content.[application/json]}}body: &{{snakecase ../operationId}}::Body,{{~/with}}
             {{~#with requestBody.content.[multipart/form-data]}}form: reqwest::multipart::Form,{{~/with}}
         {{/if~}}
-    ) -> Result<{{snakecase operationId}}::Success, {{camelcase operationId}}Error> {
+    ) -> Result<{{snakecase operationId}}::Success, {{snakecase operationId}}::Error> {
+        use {{snakecase ../operationId}}::*;
         let url = self.url.join(
             {{#if (has parameters "in" "path")~}}
             format!("{{@../key}}"
@@ -109,7 +76,7 @@ pub struct {{camelcase info.title "Client"}} {
             {{~#if (not (eq @key "default"))}}
                 {{~#if (eq @key "204")}}
                 "{{@key}}" => {
-                    Ok({{snakecase ../operationId}}::Success::{{camelcase "Status" @key}}(()))
+                    Ok(Success::{{camelcase "Status" @key}}(()))
                 }
                 {{~else~}}
                 "{{@key}}" => {
@@ -122,15 +89,15 @@ pub struct {{camelcase info.title "Client"}} {
                         let response_body = ();
                     {{~/if}}
                     {{~#if (is_http_code_success @key)}}
-                    Ok({{snakecase ../operationId}}::Success::{{camelcase "Status" @key}}(response_body))
+                    Ok(Success::{{camelcase "Status" @key}}(response_body))
                     {{else}}
-                    Err({{camelcase ../operationId}}Error::Status({{snakecase ../operationId}}::Error::{{camelcase "Status" @key}}(response_body)))
+                    Err(Error::{{camelcase "Status" @key}}(response_body))
                     {{~/if}}
                 }
                 {{~/if}}
             {{~/if}}
             {{~/each}}
-                _ => Err({{camelcase ../operationId}}Error::Status({{snakecase ../operationId}}::Error::Unknown(response))),
+                _ => Err(Error::Unknown(response)),
         }
     }
 {{~/inline}}
@@ -160,3 +127,45 @@ impl {{camelcase info.title "Client"}} {
         {{~#with patch}}{{~> async_operation_fn operation_verb="patch"}}{{~/with}}
     {{~/each}}
 }
+
+{{~#*inline "shortcut_to_data_model"}}
+
+pub mod {{snakecase operationId}} {
+    use super::ReqwestError;
+    use displaydoc::Display;
+    pub use crate::models::{{snakecase operationId}}::*;
+
+    #[derive(Debug, thiserror::Error, Display)]
+    pub enum Error {
+        /// Request failed
+        Client(#[from] ReqwestError),
+        /// IO error occured while retrieving response body
+        Io(#[from] std::io::Error),
+        /// Request body serialization to JSON failed
+        BodySerialization(#[from] serde_json::Error),
+        /// Request parameters serialization failed
+        ParametersSerialization(#[from] serde_urlencoded::ser::Error),
+        /// Timeout occured during request
+        Timeout(#[from] async_std::future::TimeoutError),
+        {{~#each responses}}
+        {{~#if (not (eq @key "default"))}}
+        /// Status {{@key}} error: {0:?}
+        {{camelcase "Status" @key}}({{camelcase "Status" @key}}),
+        {{~/if}}
+        {{~/each}}
+        /// Unknown: {0:?}
+        Unknown(reqwest::Response),
+    }
+}
+{{~/inline}}
+
+{{~#each paths}}
+{{~#with get}}{{~> shortcut_to_data_model}}{{~/with}}
+{{~#with head}}{{~> shortcut_to_data_model}}{{~/with}}
+{{~#with post}}{{~> shortcut_to_data_model}}{{~/with}}
+{{~#with put}}{{~> shortcut_to_data_model}}{{~/with}}
+{{~#with delete}}{{~> shortcut_to_data_model}}{{~/with}}
+{{~#with options}}{{~> shortcut_to_data_model}}{{~/with}}
+{{~#with trace}}{{~> shortcut_to_data_model}}{{~/with}}
+{{~#with patch}}{{~> shortcut_to_data_model}}{{~/with}}
+{{~/each}}
