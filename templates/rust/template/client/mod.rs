@@ -131,14 +131,12 @@ impl {{camelcase info.title "Client"}} {
 {{~#*inline "shortcut_to_data_model"}}
 
 pub mod {{snakecase operationId}} {
-    use super::ReqwestError;
-    use displaydoc::Display;
     pub use crate::models::{{snakecase operationId}}::*;
 
-    #[derive(Debug, thiserror::Error, Display)]
+    #[derive(Debug, thiserror::Error, displaydoc::Display)]
     pub enum Error {
         /// Request failed
-        Client(#[from] ReqwestError),
+        Client(#[from] super::ReqwestError),
         /// IO error occured while retrieving response body
         Io(#[from] std::io::Error),
         /// Request body serialization to JSON failed
