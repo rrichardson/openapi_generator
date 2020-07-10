@@ -1,5 +1,6 @@
 use crate::helpers::{
-    camelcase, component_path, has, json, mixedcase, sanitize, shoutysnakecase, snakecase,is_http_code_success
+    camelcase, component_path, has, is_http_code_success, json, mixedcase, sanitize,
+    shoutysnakecase, snakecase,
 };
 use anyhow::{anyhow, Context, Result};
 use handlebars::Handlebars;
@@ -67,7 +68,8 @@ impl OpenApiGenerator {
             .register_helper("sanitize", Box::new(sanitize));
         self.handlebars.register_helper("has", Box::new(has));
         self.handlebars.register_helper("json", Box::new(json));
-        self.handlebars.register_helper("is_http_code_success", Box::new(is_http_code_success));
+        self.handlebars
+            .register_helper("is_http_code_success", Box::new(is_http_code_success));
     }
 
     fn register_partials<T: AsRef<Path>>(&mut self, partials_dir: T) -> Result<()> {
@@ -95,17 +97,26 @@ impl OpenApiGenerator {
     }
 
     pub fn render<T: AsRef<Path>>(&mut self, output_path: T) -> Result<()> {
-        self.render_from_path(output_path.as_ref(), &PathBuf::new())
+        let ignore_file_path = output_path.as_ref().join("openapi-generator.ignore");
+        log::info!("searching ignore file: {}", ignore_file_path.display());
+        let mut walk_builder = ignore::WalkBuilder::new(&self.template_path);
+        if ignore_file_path.exists() {
+            walk_builder.add_ignore(ignore_file_path.clone());
+            log::info!("found ignore file: {}", ignore_file_path.display());
+        }
+        self.render_from_path(output_path.as_ref(), &PathBuf::new(), walk_builder.build())
     }
 
-    fn render_from_path(&mut self, output_path: &Path, path: &Path) -> Result<()> {
-        let template_path = self.template_path.join(path);
-        for entry in std::fs::read_dir(&template_path).context(format!(
-            "Cannot walk into template directory `{}`",
-            template_path.display()
-        ))? {
+    fn render_from_path(
+        &mut self,
+        output_path: &Path,
+        path: &Path,
+        walker: ignore::Walk,
+    ) -> Result<()> {
+        for entry in walker {
             if let Ok(entry) = entry {
-                if entry.file_type()?.is_file() {
+                println!("{}", entry.path().display());
+                if entry.file_type().unwrap().is_file() {
                     let template_key = &format!("{}", path.join(entry.file_name()).display());
                     self.handlebars
                         .register_template_file(template_key, entry.path())
@@ -128,19 +139,13 @@ impl OpenApiGenerator {
                             output_file_path.display()
                         ))?;
                     log::info!("render {} to {}", template_key, output_file_path.display());
-                } else if entry.file_type()?.is_dir() {
-                    let mut path = path.to_path_buf();
-                    path.push(entry.file_name());
-                    let new_output_path = output_path.join(&path);
+                } else if entry.file_type().unwrap().is_dir() {
+                    let new_output_path = entry.path();
                     std::fs::create_dir_all(&new_output_path).context(format!(
                         "Cannot create directory `{}`",
                         new_output_path.display()
                     ))?;
                     log::info!("create {}", new_output_path.display());
-                    self.render_from_path(output_path, &path).context(format!(
-                        "Failed to render templates under `{}`",
-                        new_output_path.display()
-                    ))?;
                 }
             }
         }
