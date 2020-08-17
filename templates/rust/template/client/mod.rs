@@ -7,29 +7,41 @@ use std::time::Duration;
  * This behavior doesn't interact well with thiserror which also recurse on error's cause
  * when displayed. To prevent this issue, this wrapper hides the error's source from thiserror.
  */
-pub struct ReqwestError(pub reqwest::Error);
+pub struct ReqwestError {
+    err: reqwest::Error,
+}
 
-impl std::error::Error for ReqwestError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        Some(&self.0)
+impl ReqwestError {
+    pub fn new(err: reqwest::Error) -> Self {
+        Self { err }
     }
 }
 
+impl std::error::Error for ReqwestError {}
+
 impl From<reqwest::Error> for ReqwestError {
     fn from(err: reqwest::Error) -> Self {
-        Self(err)
+        Self::new(err)
     }
 }
 
 impl std::fmt::Debug for ReqwestError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        std::fmt::Debug::fmt(&self.0, f)
+        if let Some(status) = self.err.status() {
+            write!(f, "{:?}: {:?}", self.err, status)
+        } else {
+            std::fmt::Debug::fmt(&self.err, f)
+        }
     }
 }
 
 impl std::fmt::Display for ReqwestError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        std::fmt::Display::fmt(&self.0, f)
+        if let Some(status) = self.err.status() {
+            write!(f, "{}: {}", self.err, status)
+        } else {
+            std::fmt::Display::fmt(&self.err, f)
+        }
     }
 }
 
@@ -70,7 +82,7 @@ pub struct {{camelcase info.title "Client"}} {
                 {{~#with requestBody.content.[application/json]}}.json(&body){{~/with}}
                 {{~#with requestBody.content.[multipart/form-data]}}.multipart(form){{~/with}}
             {{~/if}}
-            .send().await.map_err(ReqwestError)?;
+            .send().await.map_err(ReqwestError::new)?;
         match response.status().as_str() {
             {{~#each responses}}
             {{~#if (not (eq @key "default"))}}
@@ -81,10 +93,10 @@ pub struct {{camelcase info.title "Client"}} {
                 {{~else~}}
                 "{{@key}}" => {
                     {{~#if content}}
-                        {{~#with content.[image/png]}}let response_body = response.json().await.map_err(ReqwestError)?;{{~/with}}
-                        {{~#with content.[image/jpeg]}}let response_body = response.json().await.map_err(ReqwestError)?;{{~/with}}
-                        {{~#with content.[text/plain]}}let response_body = response.text().await.map_err(ReqwestError)?;{{~/with}}
-                        {{~#with content.[application/json]}}let response_body = response.json().await.map_err(ReqwestError)?;{{~/with}}
+                        {{~#with content.[image/png]}}let response_body = response.json().await.map_err(ReqwestError::new)?;{{~/with}}
+                        {{~#with content.[image/jpeg]}}let response_body = response.json().await.map_err(ReqwestError::new)?;{{~/with}}
+                        {{~#with content.[text/plain]}}let response_body = response.text().await.map_err(ReqwestError::new)?;{{~/with}}
+                        {{~#with content.[application/json]}}let response_body = response.json().await.map_err(ReqwestError::new)?;{{~/with}}
                     {{~else~}}
                         let response_body = ();
                     {{~/if}}
@@ -97,7 +109,7 @@ pub struct {{camelcase info.title "Client"}} {
                 {{~/if}}
             {{~/if}}
             {{~/each}}
-                _ => Err(Error::Unknown(response)),
+                _ => Err(Error::unknown(response).await),
         }
     }
 {{~/inline}}
@@ -151,8 +163,20 @@ pub mod {{snakecase operationId}} {
         {{camelcase "Status" @key}}({{camelcase "Status" @key}}),
         {{~/if}}
         {{~/each}}
-        /// Unknown: {0:?}
-        Unknown(reqwest::Response),
+        /// Unknown: {headers:?} {text:?}
+        Unknown {
+            headers: reqwest::header::HeaderMap,
+            text: reqwest::Result<String>
+        },
+    }
+
+    impl Error {
+        pub async fn unknown(response: reqwest::Response) -> Self {
+            Self::Unknown{
+                headers: response.headers().clone(),
+                text: response.text().await,
+            }
+        }
     }
 }
 {{~/inline}}
