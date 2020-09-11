@@ -1,13 +1,15 @@
 use actix_web::http::Method;
 use maplit::hashmap;
+use maplit::hashset;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
+use std::collections::HashSet;
 
-pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), Vec<&str>>> = Lazy::new(|| {
+pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), HashSet<&str>>> = Lazy::new(|| {
     hashmap! {
     {{~#each paths as | _ path |}}
         {{~#with get}}
-            ("{{regexify_path path}}", Method::GET) => vec![
+            (r"{{regexify_path path}}", Method::GET) => hashset![
                 {{~#each security}}
                     {{~#each auth as | scope |}}
                         "{{scope}}",
@@ -16,7 +18,7 @@ pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), Vec<&str>>> = Lazy::new
             ],
         {{~/with}}
         {{~#with head}}
-            ("{{regexify_path path}}", Method::HEAD) => vec![
+            (r"{{regexify_path path}}", Method::HEAD) => hashset![
                 {{~#each security}}
                     {{~#each auth as | scope |}}
                         "{{scope}}",
@@ -25,7 +27,7 @@ pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), Vec<&str>>> = Lazy::new
             ],
         {{~/with}}
         {{~#with post}}
-            ("{{regexify_path path}}", Method::POST) => vec![
+            (r"{{regexify_path path}}", Method::POST) => hashset![
                 {{~#each security}}
                     {{~#each auth as | scope |}}
                         "{{scope}}",
@@ -34,7 +36,7 @@ pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), Vec<&str>>> = Lazy::new
             ],
         {{~/with}}
         {{~#with put}}
-            ("{{regexify_path path}}", Method::PUT) => vec![
+            (r"{{regexify_path path}}", Method::PUT) => hashset![
                 {{~#each security}}
                     {{~#each auth as | scope |}}
                         "{{scope}}",
@@ -43,7 +45,7 @@ pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), Vec<&str>>> = Lazy::new
             ],
         {{~/with}}
         {{~#with delete}}
-            ("{{regexify_path path}}", Method::DELETE) => vec![
+            (r"{{regexify_path path}}", Method::DELETE) => hashset![
                 {{~#each security}}
                     {{~#each auth as | scope |}}
                         "{{scope}}",
@@ -52,7 +54,7 @@ pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), Vec<&str>>> = Lazy::new
             ],
         {{~/with}}
         {{~#with options}}
-            ("{{regexify_path path}}", Method::OPTIONS) => vec![
+            (r"{{regexify_path path}}", Method::OPTIONS) => hashset![
                 {{~#each security}}
                     {{~#each auth as | scope |}}
                         "{{scope}}",
@@ -61,7 +63,7 @@ pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), Vec<&str>>> = Lazy::new
             ],
         {{~/with}}
         {{~#with trace}}
-            ("{{regexify_path path}}", Method::TRACE) => vec![
+            (r"{{regexify_path path}}", Method::TRACE) => hashset![
                 {{~#each security}}
                     {{~#each auth as | scope |}}
                         "{{scope}}",
@@ -70,7 +72,7 @@ pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), Vec<&str>>> = Lazy::new
             ],
         {{~/with}}
         {{~#with patch}}
-            ("{{regexify_path path}}", Method::PATCH) => vec![
+            (r"{{regexify_path path}}", Method::PATCH) => hashset![
                 {{~#each security}}
                     {{~#each auth as | scope |}}
                         "{{scope}}",
