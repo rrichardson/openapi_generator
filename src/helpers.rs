@@ -3,6 +3,7 @@ use handlebars::{
     handlebars_helper, Context, Handlebars, Helper, JsonRender, Output, RenderContext, RenderError,
 };
 use json_pointer::JsonPointer;
+use regex::Regex;
 use serde_json::value::Value as Json;
 
 macro_rules! case_helper {
@@ -35,6 +36,11 @@ handlebars_helper!(component_path: |ref_path: str| parse_component_path(ref_path
 handlebars_helper!(sanitize: |word: str| apply_sanitize(word));
 handlebars_helper!(json: |data: Json| apply_json(data));
 handlebars_helper!(is_http_code_success: |http_status: str| http_status.starts_with("1") || http_status.starts_with("2") || http_status.starts_with("3"));
+handlebars_helper!(regexify_path: |path: str| {
+    let escaped_path = path.replace(".", r"\.");
+    let regexifier = Regex::new(r"\{.*\}").unwrap();
+    regexifier.replace_all(&escaped_path, r".*").to_string()
+});
 
 pub(crate) fn parse_component_path(ref_path: &str) -> String {
     use heck::CamelCase;
