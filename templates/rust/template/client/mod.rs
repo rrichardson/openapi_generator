@@ -53,6 +53,7 @@ pub struct {{camelcase info.title "Client"}} {
 
 {{~#*inline "async_operation_fn"}}
 
+    #[allow(clippy::unit_arg)]
     pub async fn {{snakecase operationId}}(
         &self,
         {{~#if ../parameters~}} parameters: &{{snakecase operationId}}::Parameters,{{/if}}
@@ -145,6 +146,7 @@ impl {{camelcase info.title "Client"}} {
 pub mod {{snakecase operationId}} {
     pub use crate::models::{{snakecase operationId}}::*;
 
+    #[allow(clippy::large_enum_variant)]
     #[derive(Debug, thiserror::Error, displaydoc::Display)]
     pub enum Error {
         /// Request failed
