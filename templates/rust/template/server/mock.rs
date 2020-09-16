@@ -35,7 +35,7 @@ pub mod {{snakecase ../operationId}} {
             Self {
                 counter: Arc::new(AtomicUsize::new(0)),
                 responses: Vec::new(),
-                {{~#if ../requestBody}} request_body: body.clone(),{{/if}}
+                {{~#if ../requestBody}} request_body: body,{{/if}}
                 url,
             }
         }
