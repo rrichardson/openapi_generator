@@ -2,10 +2,11 @@
 pub mod {{snakecase operationId}} {
     use super::components;
     use serde::{Deserialize, Serialize};
-
-    {{#each parameters}}
-        {{~>schema name=name schema}}
-    {{~/each}}
+    {{~#if (has parameters "in" "header")~}}
+    use actix_web::error::ErrorBadRequest;
+    use actix_web::{dev, FromRequest, HttpRequest};
+    use futures::future::{err, ok, Ready};
+    {{~/if}}
 
     /// Parameters for {{snakecase operationId}} operation
     {{~#if parameters}}
@@ -27,12 +28,14 @@ pub mod {{snakecase operationId}} {
         pub fn new(
             {{~#if (has parameters "in" "query")~}}query: Query,{{~/if}}
             {{~#if (has parameters "in" "path")~}}path: Path,{{~/if}}
+            {{~#if (has parameters "in" "header")~}}header: Header,{{~/if}}
         ) -> Self {
             Self {
             {{~#each parameters}}
                 {{snakecase name}}:
                     {{~#if (eq in "query")}} query.{{snakecase name}}, {{~/if}}
                     {{~#if (eq in "path")}} path.{{snakecase name}}, {{~/if}}
+                    {{~#if (eq in "header")}} header.{{snakecase name}}, {{~/if}}
             {{~/each}}
             }
         }
@@ -56,6 +59,16 @@ pub mod {{snakecase operationId}} {
             }
         }
         {{~/if}}
+
+        {{#if (has parameters "in" "header")~}}
+        pub fn header(&self) -> Header {
+            Header {
+            {{~#each parameters}}
+                {{~#if (eq in "header")}}{{snakecase name}}: self.{{snakecase name}}.clone(),{{~/if}}
+            {{~/each}}
+            }
+        }
+        {{~/if}}
     }
 
     {{~#if (has parameters "in" "query")~}}
@@ -64,6 +77,31 @@ pub mod {{snakecase operationId}} {
 
     {{~#if (has parameters "in" "path")~}}
     {{>parameter_type type="path"}}
+    {{~/if}}
+
+    {{~#if (has parameters "in" "header")~}}
+    {{>parameter_type type="header"}}
+
+    impl FromRequest for Header {
+        type Error = actix_web::Error;
+        type Future = Ready<Result<Self, Self::Error>>;
+        type Config = ();
+
+        fn from_request(req: &HttpRequest, _: &mut dev::Payload) -> Self::Future {
+            let headers = req.headers();
+            ok(Self {
+            {{~#each parameters}}
+                {{~#if (eq in "header")}}{{snakecase name}}: match headers.get("{{snakecase name}}") {
+                Some(value) => match value.to_str() {
+                    Ok(value) => value.to_string(),
+                    Err(_) => return err(ErrorBadRequest("{{snakecase name}} should be a string")),
+                },
+                None => return err(ErrorBadRequest("missing {{snakecase name}} in header")),
+            },{{~/if}}
+            {{~/each}}
+            })
+        }
+    }
     {{~/if}}
 
     {{#unless noBody}}

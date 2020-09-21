@@ -48,6 +48,9 @@ async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
     {{~#if (has parameters "in" "path")~}}
     path: Path<{{snakecase operationId}}::Path>,
     {{~/if}}
+    {{~#if (has parameters "in" "header")~}}
+    header: {{snakecase operationId}}::Header,
+    {{~/if}}
 
     {{~#if (and requestBody (not noBody))}}
         {{~#with requestBody.content.[application/json]}}
@@ -62,6 +65,7 @@ async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
     let parameters = Parameters::new(
         {{~#if (has parameters "in" "query")~}}query.into_inner(),{{~/if}}
         {{~#if (has parameters "in" "path")~}}path.into_inner(),{{~/if}}
+        {{~#if (has parameters "in" "header")~}}header,{{~/if}}
     );
     {{~#unless noBody}}
         {{~#if requestBody}}
