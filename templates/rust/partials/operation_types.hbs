@@ -5,7 +5,7 @@ pub mod {{snakecase operationId}} {
     {{~#if (has parameters "in" "header")~}}
     use actix_web::error::ErrorBadRequest;
     use actix_web::{dev, FromRequest, HttpRequest};
-    use futures_util::future::{err, ok, Ready};
+    use futures::future::{err, ok, Ready};
     {{~/if}}
 
     /// Parameters for {{snakecase operationId}} operation
