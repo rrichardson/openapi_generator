@@ -4,7 +4,6 @@
 pub mod mock;
 
 use crate::models::*;
-use crate::extractors::Authorization;
 use actix_multipart::Multipart;
 use actix_web::{web::*, Responder, HttpResponse, dev::HttpResponseBuilder, http::StatusCode};
 use async_trait::async_trait;
@@ -50,7 +49,7 @@ async fn {{snakecase operationId}}<Server: {{camelcase title}}>(
     path: Path<{{snakecase operationId}}::Path>,
     {{~/if}}
     {{~#if (has parameters "in" "header")~}}
-    header: Authorization,
+    header: {{snakecase operationId}}::Header,
     {{~/if}}
 
     {{~#if (and requestBody (not noBody))}}
