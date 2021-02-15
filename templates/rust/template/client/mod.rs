@@ -157,8 +157,6 @@ pub mod {{snakecase operationId}} {
         BodySerialization(#[from] serde_json::Error),
         /// Request parameters serialization failed
         ParametersSerialization(#[from] serde_urlencoded::ser::Error),
-        /// Timeout occured during request
-        Timeout(#[from] async_std::future::TimeoutError),
         {{~#each responses}}
         {{~#if (not (eq @key "default"))}}
         /// Status {{@key}} error: {0:?}
