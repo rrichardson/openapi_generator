@@ -46,7 +46,7 @@ optional = true
 femme = "1.3.0"
 
 [features]
-default = ["server"]
+default = ["client"]
 server = [
     "actix-web",
     "actix-service",

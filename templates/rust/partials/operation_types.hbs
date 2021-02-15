@@ -13,8 +13,16 @@ pub mod {{snakecase operationId}} {
     #[derive(Deserialize, Debug)]
     pub struct Parameters {
     {{~#each parameters}}
-        {{#if description}}/// {{description}}{{/if}}
-        pub {{snakecase name}}: {{>data_type name=name required=required schema}},
+    	{{~#if description}}
+	{{prefix_lines "/// " description}}
+	{{~/if}}
+	{{~#unless (eq (sane_snakecase name) (snakecase name))}}
+	#[serde(rename = "{{snakecase name}}")]
+	{{~/unless}}
+	{{~#unless required}}
+	#[serde(skip_serializing_if = "Option::is_none")]
+	{{~/unless}}
+        pub {{sane_snakecase name}}: {{>data_type name=name required=required schema}},
     {{~/each}}
     }
     {{~else}}
@@ -32,10 +40,10 @@ pub mod {{snakecase operationId}} {
         ) -> Self {
             Self {
             {{~#each parameters}}
-                {{snakecase name}}:
-                    {{~#if (eq in "query")}} query.{{snakecase name}}, {{~/if}}
-                    {{~#if (eq in "path")}} path.{{snakecase name}}, {{~/if}}
-                    {{~#if (eq in "header")}} header.{{snakecase name}}, {{~/if}}
+                {{sane_snakecase name}}:
+                    {{~#if (eq in "query")}} query.{{sane_snakecase name}}, {{~/if}}
+                    {{~#if (eq in "path")}} path.{{sane_snakecase name}}, {{~/if}}
+                    {{~#if (eq in "header")}} header.{{sane_snakecase name}}, {{~/if}}
             {{~/each}}
             }
         }
@@ -44,7 +52,7 @@ pub mod {{snakecase operationId}} {
         pub fn query(&self) -> Query {
             Query {
             {{~#each parameters}}
-                {{~#if (eq in "query")}}{{snakecase name}}: self.{{snakecase name}}.clone(),{{~/if}}
+                {{~#if (eq in "query")}}{{sane_snakecase name}}: self.{{sane_snakecase name}}.clone(),{{~/if}}
             {{~/each}}
             }
         }
@@ -54,7 +62,7 @@ pub mod {{snakecase operationId}} {
         pub fn path(&self) -> Path {
             Path {
             {{~#each parameters}}
-                {{~#if (eq in "path")}}{{snakecase name}}: self.{{snakecase name}}.clone(),{{~/if}}
+                {{~#if (eq in "path")}}{{sane_snakecase name}}: self.{{sane_snakecase name}}.clone(),{{~/if}}
             {{~/each}}
             }
         }
@@ -64,12 +72,18 @@ pub mod {{snakecase operationId}} {
         pub fn header(&self) -> Header {
             Header {
             {{~#each parameters}}
-                {{~#if (eq in "header")}}{{snakecase name}}: self.{{snakecase name}}.clone(),{{~/if}}
+                {{~#if (eq in "header")}}{{sane_snakecase name}}: self.{{sane_snakecase name}}.clone(),{{~/if}}
             {{~/each}}
             }
         }
         {{~/if}}
     }
+
+    {{~#each parameters}}
+        {{~#if (ne @key "$ref")}}
+            {{~>schema name=name description=description schema}}
+        {{~/if}}
+    {{/each}}
 
     {{~#if (has parameters "in" "query")~}}
     {{>parameter_type type="query"}}
@@ -91,12 +105,12 @@ pub mod {{snakecase operationId}} {
             let headers = req.headers();
             ok(Self {
             {{~#each parameters}}
-                {{~#if (eq in "header")}}{{snakecase name}}: match headers.get("{{snakecase name}}") {
+                {{~#if (eq in "header")}}{{sane_snakecase name}}: match headers.get("{{sane_snakecase name}}") {
                 Some(value) => match value.to_str() {
                     Ok(value) => value.to_string(),
-                    Err(_) => return err(ErrorBadRequest("{{snakecase name}} should be a string")),
+                    Err(_) => return err(ErrorBadRequest("{{sane_snakecase name}} should be a string")),
                 },
-                None => return err(ErrorBadRequest("missing {{snakecase name}} in header")),
+                None => return err(ErrorBadRequest("missing {{sane_snakecase name}} in header")),
             },{{~/if}}
             {{~/each}}
             })

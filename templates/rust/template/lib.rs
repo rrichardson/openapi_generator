@@ -6,6 +6,7 @@ pub mod client;
 pub mod example;
 pub mod models;
 pub mod openapi_serialization;
+#[cfg(feature = "server")]
 pub mod security;
 #[cfg(feature = "server")]
 pub mod server;

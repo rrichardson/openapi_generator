@@ -3,8 +3,12 @@
 pub struct {{camelcase type}} {
 {{~#each parameters}}
     {{~#if (eq in ../type)}}
-    {{#if description}}/// {{description}}{{/if}}
-    pub {{snakecase name}}: {{>data_type name=name required=required schema}},
+    {{#if description}}{{prefix_lines "/// " description}}{{/if}}
+    #[serde(rename = "{{snakecase name}}")]
+    {{#unless required}}
+    #[serde(skip_serializing_if = "Option::is_none")]
+    {{/unless}}
+    pub {{sane_snakecase name}}: {{>data_type name=name required=required schema}},
     {{~/if}}
 {{~/each}}
 }

@@ -1,6 +1,6 @@
 {{~>subtypes name=name}}
 {{~#if description~}}
-/// {{description}}
+{{prefix_lines "/// " description}}
 {{/if}}
 {{~#if [$ref]~}}
 pub type {{camelcase name suffix}} = {{>data_type required="true"}};
@@ -10,12 +10,14 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
             #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
             pub struct {{camelcase name suffix}} {
             {{~#each properties}}
-                #[serde(rename = "{{snakecase @key}}")]
+   		{{~#unless (eq (sane_snakecase @key) (snakecase @key))}}
+		#[serde(rename = "{{snakecase @key}}")]
+		{{~/unless}}
                 {{~#if (has ../../required @key)}}
-                pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key) required="true"}},
+                pub {{sane_snakecase @key}}: {{>data_type name=(camelcase ../name @key) required="true"}},
                 {{~else}}
                 #[serde(skip_serializing_if = "Option::is_none")]
-                pub {{sanitize (snakecase @key)}}: {{>data_type name=(camelcase ../name @key)}},
+                pub {{sane_snakecase @key}}: {{>data_type name=(camelcase ../name @key)}},
                 {{~/if}}
             {{~/each}}
             {{~#if additionalProperties}}
@@ -30,16 +32,18 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
                 fn try_from(mut data: HashMap<String, Vec<u8>>) -> Result<Self, Self::Error> {
                     Ok({{camelcase name suffix}} {
                         {{~#each properties}}
-                            {{sanitize (snakecase @key)}}: data.remove("{{snakecase @key}}").ok_or_else(|| "missing field {{sanitize (snakecase @key)}}")?,
+                            {{sane_ snakecase @key}}: data.remove("{{snakecase @key}}").ok_or_else(|| "missing field {{sane_snakecase @key}}")?,
                         {{~/each}}
                     })
                 }
             }
             {{~/if}}
-
-        {{~else~}}
-            {{~#if additionalProperties}}
-                pub type {{camelcase name suffix}} = serde_json::Map<String, serde_json::Value>;
+	{{~else}}
+	    {{~#if additionalProperties~}}
+	        pub type {{camelcase name suffix}} = serde_json::Map<String, serde_json::Value>;
+	    {{~else}}
+	        {{! Empty/missing properties is acceptable according to the spec }}
+		pub type {{camelcase name suffix}} = ();
             {{~/if}}
         {{~/if}}
     {{~else~}}
@@ -47,8 +51,9 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
             #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize)]
             pub enum {{camelcase ../name @key suffix}} {
                 {{~#each enum}}
-                #[serde(rename = "{{this}}")]
-                {{camelcase this}},
+		#[serde(rename = "{{this}}")]
+		#[allow(non_camel_case_types)]
+                {{sane_camelcase this}},
                 {{~/each}}
             }
 
@@ -57,7 +62,7 @@ pub type {{camelcase name suffix}} = {{>data_type required="true"}};
                     write!(f, "{}",
                         match self {
                             {{~#each enum}}
-                            {{camelcase ../name @key suffix}}::{{camelcase this}} => "{{this}}",
+                            {{camelcase ../name @key suffix}}::{{sane_camelcase this}} => "{{this}}",
                             {{~/each}}
                         }
                     )
